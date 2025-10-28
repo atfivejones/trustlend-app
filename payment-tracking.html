@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Tracking - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <div class="text-sm text-gray-600">Payment Tracking</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Payment Tracking Dashboard -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment Tracking & Reminders</h1>
+            <p class="text-gray-600">Automated payment management and borrower communication</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <button onclick="sendAllReminders()" class="bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700 transition-all">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Send All Reminders</h3>
+                <p class="text-blue-100 text-sm">Email & SMS to all active borrowers</p>
+            </button>
+
+            <button onclick="setupAutomation()" class="bg-purple-600 text-white p-6 rounded-xl hover:bg-purple-700 transition-all">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Setup Automation</h3>
+                <p class="text-purple-100 text-sm">Configure smart reminder schedules</p>
+            </button>
+
+            <button onclick="generateReports()" class="bg-green-600 text-white p-6 rounded-xl hover:bg-green-700 transition-all">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Payment Reports</h3>
+                <p class="text-green-100 text-sm">Download payment history & analytics</p>
+            </button>
+        </div>
+
+        <!-- Active Payments Table -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">Active Payment Tracking</h2>
+                <div class="flex space-x-2">
+                    <button onclick="markPaid('bulk')" class="text-green-600 hover:text-green-700 text-sm font-medium">Mark as Paid</button>
+                    <button onclick="sendReminder('bulk')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Send Reminders</button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left">
+                                <input type="checkbox" class="rounded text-blue-600">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Borrower</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Due</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days Overdue</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Reminder</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-blue-600">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                        MT
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">Mike Thompson</div>
+                                        <div class="text-sm text-gray-500">mike.t@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-semibold">$2,525.00</div>
+                                <div class="text-xs text-gray-500">$25 late fee included</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dec 15, 2024</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                    12 days
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dec 20, 2024</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button onclick="sendUrgentReminder('MT-001')" class="text-red-600 hover:text-red-900">Urgent</button>
+                                <button onclick="markPaid('MT-001')" class="text-green-600 hover:text-green-900">Mark Paid</button>
+                                <button onclick="escalate('MT-001')" class="text-orange-600 hover:text-orange-900">Escalate</button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-blue-600">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                        SJ
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">Sarah Johnson</div>
+                                        <div class="text-sm text-gray-500">sarah.j@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-semibold">$841.67</div>
+                                <div class="text-xs text-gray-500">Payment 1 of 6</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Feb 25, 2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Due in 32 days
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Never</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button onclick="sendReminder('SJ-001')" class="text-blue-600 hover:text-blue-900">Remind</button>
+                                <button onclick="markPaid('SJ-001')" class="text-green-600 hover:text-green-900">Mark Paid</button>
+                                <button onclick="viewSchedule('SJ-001')" class="text-purple-600 hover:text-purple-900">Schedule</button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-blue-600">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                        JM
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">Janet Miller</div>
+                                        <div class="text-sm text-gray-500">janet.m@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-semibold">$750.00</div>
+                                <div class="text-xs text-gray-500">Payment 2 of 4</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jan 30, 2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Due in 5 days
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button onclick="sendReminder('JM-001')" class="text-blue-600 hover:text-blue-900">Remind</button>
+                                <button onclick="markPaid('JM-001')" class="text-green-600 hover:text-green-900">Mark Paid</button>
+                                <button onclick="viewSchedule('JM-001')" class="text-purple-600 hover:text-purple-900">Schedule</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reminder Templates -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Automated Reminder System</h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Friendly Reminder -->
+                <div class="border border-green-200 rounded-lg p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-green-600 text-sm">😊</span>
+                        </div>
+                        <h4 class="font-semibold text-green-800">Friendly Reminder</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">
+                        "Hi [Name], hope you're doing well! Just a gentle reminder that your loan payment of $[Amount] is due on [Date]. Thanks!"
+                    </p>
+                    <div class="text-xs text-gray-500">
+                        • Sent 3 days before due date<br>
+                        • Email + SMS<br>
+                        • Includes payment link
+                    </div>
+                </div>
+
+                <!-- Standard Reminder -->
+                <div class="border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-blue-600 text-sm">📅</span>
+                        </div>
+                        <h4 class="font-semibold text-blue-800">Standard Reminder</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">
+                        "Payment of $[Amount] was due on [Date]. Please make payment as soon as possible to avoid late fees. [Payment Link]"
+                    </p>
+                    <div class="text-xs text-gray-500">
+                        • Sent 1 day after due date<br>
+                        • Email + SMS<br>
+                        • Mentions late fees
+                    </div>
+                </div>
+
+                <!-- Urgent Notice -->
+                <div class="border border-red-200 rounded-lg p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-red-600 text-sm">⚠️</span>
+                        </div>
+                        <h4 class="font-semibold text-red-800">Urgent Notice</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">
+                        "URGENT: Payment of $[Amount] is now [Days] days overdue. Immediate payment required to avoid legal action."
+                    </p>
+                    <div class="text-xs text-gray-500">
+                        • Sent 7+ days after due date<br>
+                        • Email, SMS + phone call<br>
+                        • Legal action warning
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Analytics -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Analytics</h3>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">94%</div>
+                    <div class="text-sm text-gray-600">On-Time Payment Rate</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600">2.3</div>
+                    <div class="text-sm text-gray-600">Avg Reminders to Collect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600">$312</div>
+                    <div class="text-sm text-gray-600">Avg Recovery Time (days)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-600">0</div>
+                    <div class="text-sm text-gray-600">Uncollectable Loans</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendAllReminders() {
+            alert('📧 Sending reminders to all active borrowers...\n\n• 8 borrowers notified\n• Personalized messages sent\n• Payment links included\n• Tracking activated');
+        }
+
+        function setupAutomation() {
+            alert('⚙️ Payment Automation Setup\n\n• 3-day advance reminder: Enabled\n• 1-day overdue notice: Enabled\n• 7-day escalation: Enabled\n• Smart scheduling: Active\n\nCustomize timing in settings.');
+        }
+
+        function generateReports() {
+            alert('📊 Generating Payment Reports...\n\n• Payment history: Excel export\n• Borrower analytics: PDF report\n• Recovery rates: Monthly summary\n• Tax documentation: Available');
+        }
+
+        function sendUrgentReminder(borrowerId) {
+            alert(`🚨 URGENT reminder sent to ${borrowerId}\n\n• Formal demand notice\n• Legal action warning\n• Phone call scheduled\n• Court filing in 14 days if unpaid`);
+        }
+
+        function markPaid(borrowerId) {
+            if (borrowerId === 'bulk') {
+                alert('✅ Bulk payment marking...\n\nSelect borrowers to mark as paid.\nPayment confirmation will be sent automatically.');
+            } else {
+                alert(`✅ Payment marked for ${borrowerId}\n\n• Status updated to "Paid"\n• Confirmation email sent\n• Next payment scheduled\n• Late fees removed`);
+            }
+        }
+
+        function escalate(borrowerId) {
+            alert(`⚖️ Escalating ${borrowerId} to legal action\n\n• Demand letter prepared\n• Court documents ready\n• Legal filing initiated\n• Recovery agency contacted`);
+        }
+
+        function viewSchedule(borrowerId) {
+            alert(`📅 Payment Schedule for ${borrowerId}\n\n• 6 payments total\n• 1 completed, 5 remaining\n• Next due: Feb 25, 2025\n• Auto-reminders: Enabled`);
+        }
+
+        function sendReminder(borrowerId) {
+            if (borrowerId === 'bulk') {
+                alert('📨 Bulk reminder system...\n\nSelect borrowers to send reminders.\nPersonalized messages will be sent via email and SMS.');
+            } else {
+                alert(`📱 Reminder sent to ${borrowerId}\n\n• Email delivered\n• SMS sent\n• Payment link included\n• Response tracking active`);
+            }
+        }
+    </script>
+</body>
+</html>
