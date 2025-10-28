@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Contract - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .signature-canvas {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            cursor: crosshair;
+        }
+        .signature-canvas.active {
+            border-color: #3b82f6;
+            border-style: solid;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+        }
+        .step-active {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+        }
+        .step-completed {
+            background-color: #22c55e;
+            color: white;
+        }
+        .step-inactive {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-600">
+                        Contract: <span class="font-semibold text-gray-900">TL-1234567890</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Signing Method Selection -->
+    <div id="signing-method-selection" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">How would you like to sign?</h1>
+            <p class="text-gray-600">Choose the signing method that works best for your situation</p>
+        </div>
+
+        <!-- Contract Summary -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Contract Summary</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-600">Principal Amount:</span>
+                    <div class="font-bold text-lg text-gray-900">$5,000.00</div>
+                </div>
+                <div>
+                    <span class="text-gray-600">Service Fee:</span>
+                    <div class="font-bold text-lg text-gray-900">$50.00</div>
+                </div>
+                <div>
+                    <span class="text-gray-600">Total Due:</span>
+                    <div class="font-bold text-lg text-blue-600">$5,050.00</div>
+                </div>
+                <div>
+                    <span class="text-gray-600">Due Date:</span>
+                    <div class="font-bold text-lg text-gray-900">July 25, 2025</div>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-gray-600">Borrower:</span>
+                        <div class="font-semibold text-gray-900">Sarah Johnson</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Lender:</span>
+                        <div class="font-semibold text-gray-900">John Doe</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signing Options -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- In-Person Signing -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="selectSigningMethod('in-person')">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Sign In Person</h3>
+                    <p class="text-gray-600 mb-4">Both parties sign on this device right now</p>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Fastest method</span>
+                        </div>
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>No waiting for emails/texts</span>
+                        </div>
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Complete in 2-3 minutes</span>
+                        </div>
+                    </div>
+                    <button class="w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all">
+                        Start In-Person Signing
+                    </button>
+                </div>
+            </div>
+
+            <!-- Remote Signing -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="selectSigningMethod('remote')">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Send for Remote Signing</h3>
+                    <p class="text-gray-600 mb-4">Send invitation to borrower via email/SMS</p>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Sign from anywhere</span>
+                        </div>
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Secure OTP verification</span>
+                        </div>
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Automatic reminders</span>
+                        </div>
+                    </div>
+                    <button class="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">
+                        Send Signing Invitation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-Person Signing Flow -->
+    <div id="in-person-signing" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Progress Steps -->
+        <div class="bg-white border-b border-gray-200 rounded-t-xl">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div id="lender-step" class="step-active flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm">
+                            1
+                        </div>
+                        <div class="w-16 h-1 bg-gray-300"></div>
+                        <div id="borrower-step" class="step-inactive flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm">
+                            2
+                        </div>
+                        <div class="w-16 h-1 bg-gray-300"></div>
+                        <div id="complete-step" class="step-inactive flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm">
+                            3
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span id="current-signer">Lender</span> Signing
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div id="step-instruction" class="text-lg font-semibold text-gray-900">
+                        John Doe (Lender) - Please sign below
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-b-xl border border-gray-200 border-t-0">
+            <div class="grid lg:grid-cols-2 gap-8 p-6">
+                <!-- Signing Interface -->
+                <div class="space-y-6">
+                    <!-- Current Signer Info -->
+                    <div id="signer-info" class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">
+                                JD
+                            </div>
+                            <div>
+                                <div id="signer-name" class="font-semibold text-gray-900">John Doe (Lender)</div>
+                                <div id="signer-role" class="text-sm text-gray-600">Ready to sign as Lender</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signature Methods -->
+                    <div class="space-y-4">
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="currentSignatureType" value="draw" checked class="text-blue-600" onchange="switchCurrentSignatureType()">
+                                <span class="ml-2 text-gray-700">Draw Signature</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="currentSignatureType" value="type" class="text-blue-600" onchange="switchCurrentSignatureType()">
+                                <span class="ml-2 text-gray-700">Type Name</span>
+                            </label>
+                        </div>
+
+                        <!-- Draw Signature -->
+                        <div id="current-draw-signature" class="space-y-4">
+                            <div class="text-center">
+                                <canvas id="current-signature-canvas" width="400" height="200" class="signature-canvas mx-auto bg-white"></canvas>
+                                <p class="text-sm text-gray-600 mt-2">Draw your signature above</p>
+                            </div>
+                            <div class="flex justify-center space-x-2">
+                                <button onclick="clearCurrentSignature()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                    Clear
+                                </button>
+                                <button onclick="saveCurrentSignature()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    Save & Continue
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Type Signature -->
+                        <div id="current-type-signature" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Type your full legal name</label>
+                                <input type="text" id="current-typed-signature" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl text-lg" 
+                                       placeholder="John Doe" style="font-family: cursive;">
+                            </div>
+                            <button onclick="saveCurrentTypedSignature()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                                Save & Continue
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Legal Agreement -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <label class="flex items-start">
+                            <input type="checkbox" id="current-legal-consent" class="text-blue-600 mt-1">
+                            <span class="ml-2 text-sm text-gray-700">
+                                I acknowledge that this electronic signature has the same legal effect as a handwritten signature
+                                and I am signing this promissory note voluntarily.
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Contract Preview -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Contract Preview</h3>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto text-sm" style="font-family: 'Times New Roman', serif;">
+                        <div class="text-center mb-6">
+                            <h1 class="text-xl font-bold mb-2">PROMISSORY NOTE</h1>
+                        </div>
+
+                        <div class="space-y-3 text-justify">
+                            <p><strong>Principal Amount:</strong> $5,000.00</p>
+                            <p><strong>Service Fee:</strong> $50.00</p>
+                            <p><strong>Total Amount Due:</strong> $5,050.00</p>
+                            <p><strong>Borrower:</strong> Sarah Johnson</p>
+                            <p><strong>Lender:</strong> John Doe</p>
+                            <p><strong>Date:</strong> January 25, 2025</p>
+                            <p><strong>Due Date:</strong> July 25, 2025</p>
+
+                            <div class="my-4 p-3 bg-white rounded border">
+                                <p class="leading-relaxed">
+                                    FOR VALUE RECEIVED, the undersigned Borrower promises to pay to the order of the Lender 
+                                    the principal sum of Five Thousand Dollars ($5,000.00), plus a service fee of Fifty Dollars ($50.00), 
+                                    with the entire amount of Five Thousand Fifty Dollars ($5,050.00) due and payable on July 25, 2025.
+                                </p>
+                            </div>
+
+                            <p><strong>Late Fees:</strong> $25.00 flat fee for payments more than 5 days late</p>
+
+                            <div class="mt-6 pt-4 border-t">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="mb-2"><strong>Lender Signature:</strong></p>
+                                        <div id="lender-signature-display" class="h-16 border border-gray-300 rounded bg-white flex items-center justify-center text-gray-400">
+                                            <span id="lender-sig-status">Awaiting signature...</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">John Doe</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-2"><strong>Borrower Signature:</strong></p>
+                                        <div id="borrower-signature-display" class="h-16 border border-gray-300 rounded bg-white flex items-center justify-center text-gray-400">
+                                            <span id="borrower-sig-status">Awaiting signature...</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">Sarah Johnson</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                <!-- Navigation Buttons -->
+                <div class="flex space-x-4 mt-6">
+                    <button onclick="goBackToSelection()" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50">
+                        ← Back to Selection
+                    </button>
+                    <button onclick="resetCurrentSigner()" class="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50">
+                        Reset Signature
+                    </button>
+                </div>
+
+    <!-- Remote Signing Setup -->
+    <div id="remote-signing-setup" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Send Signing Invitation</h2>
+            
+            <div class="space-y-6">
+                <!-- Borrower Contact Verification -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Verify Borrower Contact Information</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="borrower-email" value="sarah.johnson@example.com"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="borrower-phone" value="(555) 123-4567"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Message -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message (Optional)</label>
+                    <textarea id="custom-message" rows="4" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                              placeholder="Hi Sarah, please review and sign our loan agreement. Let me know if you have any questions!"></textarea>
+                </div>
+
+                <!-- Signing Options -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-blue-900 mb-2">Security Features Included:</h4>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• 6-digit OTP sent to both email and phone</li>
+                        <li>• Identity verification required</li>
+                        <li>• Time-limited signing link (24 hours)</li>
+                        <li>• IP address and device tracking</li>
+                        <li>• Automatic reminder emails</li>
+                    </ul>
+                </div>
+
+                <!-- Send Options -->
+                <div class="flex space-x-4">
+                    <button onclick="sendSigningInvitation()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
+                        Send Invitation Now
+                    </button>
+                    <button onclick="scheduleInvitation()" class="flex-1 border border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50">
+                        Schedule for Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div id="completion-screen" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+        <div class="bg-white rounded-xl border border-gray-200 p-8">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Contract Successfully Signed! 🎉</h2>
+            <p class="text-lg text-gray-600 mb-8">Both parties have signed the promissory note. The contract is now legally binding.</p>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Contract ID:</span>
+                        <div class="font-bold">TL-1234567890</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Completion Time:</span>
+                        <div class="font-bold" id="completion-time"></div>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Blockchain Hash:</span>
+                        <div class="font-mono text-xs">0x1a2b3c4d5e6f...</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Legal Status:</span>
+                        <div class="font-bold text-green-600">Fully Executed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex space-x-4 justify-center">
+                <button onclick="downloadContract()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download PDF
+                </button>
+                <button onclick="goToDashboard()" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50">
+                    Return to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSigningMethod = '';
+        let currentSignerIndex = 0; // 0 = lender, 1 = borrower
+        let signatures = { lender: null, borrower: null };
+        let canvas, ctx;
+
+        const signers = [
+            { name: 'John Doe', role: 'Lender', initials: 'JD', color: 'green' },
+            { name: 'Sarah Johnson', role: 'Borrower', initials: 'SJ', color: 'blue' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCanvas();
+        });
+
+        function selectSigningMethod(method) {
+            currentSigningMethod = method;
+            document.getElementById('signing-method-selection').classList.add('hidden');
+            
+            if (method === 'in-person') {
+                document.getElementById('in-person-signing').classList.remove('hidden');
+                setupInPersonSigning();
+            } else {
+                document.getElementById('remote-signing-setup').classList.remove('hidden');
+            }
+        }
+
+        function setupInPersonSigning() {
+            updateCurrentSigner();
+            // Wait a bit for DOM to update, then setup canvas
+            setTimeout(() => {
+                setupCanvas();
+            }, 100);
+        }
+
+        function updateCurrentSigner() {
+            const signer = signers[currentSignerIndex];
+            
+            // Update UI for current signer
+            document.getElementById('current-signer').textContent = signer.role;
+            document.getElementById('step-instruction').textContent = `${signer.name} (${signer.role}) - Please sign below`;
+            document.getElementById('signer-name').textContent = `${signer.name} (${signer.role})`;
+            document.getElementById('signer-role').textContent = `Ready to sign as ${signer.role}`;
+            
+            // Update signer info styling with proper classes
+            const signerInfo = document.getElementById('signer-info');
+            const colorClass = signer.color === 'green' ? 'green' : 'blue';
+            signerInfo.className = `bg-${colorClass}-50 border border-${colorClass}-200 rounded-lg p-4`;
+            
+            const signerInitials = signerInfo.querySelector('.w-10.h-10');
+            signerInitials.className = `w-10 h-10 bg-${colorClass}-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3`;
+            signerInitials.textContent = signer.initials;
+
+            // Update step indicators
+            updateStepIndicators();
+            
+            // Clear previous signature and reset form
+            clearCurrentSignature();
+            document.getElementById('current-legal-consent').checked = false;
+            
+            // Reset signature type to draw
+            document.querySelector('input[name="currentSignatureType"][value="draw"]').checked = true;
+            switchCurrentSignatureType();
+            
+            // Pre-fill typed signature with current signer name
+            document.getElementById('current-typed-signature').value = signer.name;
+        }
+
+        function updateStepIndicators() {
+            const steps = ['lender-step', 'borrower-step', 'complete-step'];
+            
+            steps.forEach((stepId, index) => {
+                const step = document.getElementById(stepId);
+                step.classList.remove('step-active', 'step-completed', 'step-inactive');
+                
+                if (index < currentSignerIndex) {
+                    step.classList.add('step-completed');
+                    step.textContent = '✓';
+                } else if (index === currentSignerIndex) {
+                    step.classList.add('step-active');
+                    step.textContent = index + 1;
+                } else {
+                    step.classList.add('step-inactive');
+                    step.textContent = index + 1;
+                }
+            });
+        }
+
+        function setupCanvas() {
+            canvas = document.getElementById('current-signature-canvas');
+            if (!canvas) {
+                console.log('Canvas not found, will retry when needed');
+                return;
+            }
+            
+            ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            let isDrawing = false;
+
+            function startDrawing(e) {
+                isDrawing = true;
+                canvas.classList.add('active');
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+
+            function stopDrawing() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    canvas.classList.remove('active');
+                }
+            }
+
+            function handleTouchStart(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrawing({ clientX: touch.clientX, clientY: touch.clientY });
+            }
+
+            function handleTouchMove(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                draw({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} });
+            }
+
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function switchCurrentSignatureType() {
+            const signatureType = document.querySelector('input[name="currentSignatureType"]:checked').value;
+            const drawDiv = document.getElementById('current-draw-signature');
+            const typeDiv = document.getElementById('current-type-signature');
+            
+            if (signatureType === 'draw') {
+                drawDiv.classList.remove('hidden');
+                typeDiv.classList.add('hidden');
+            } else {
+                drawDiv.classList.add('hidden');
+                typeDiv.classList.remove('hidden');
+                
+                // Pre-fill with current signer name
+                const signer = signers[currentSignerIndex];
+                document.getElementById('current-typed-signature').value = signer.name;
+            }
+        }
+
+        function clearCurrentSignature() {
+            if (ctx && canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            document.getElementById('current-typed-signature').value = '';
+        }
+
+        function saveCurrentSignature() {
+            if (!document.getElementById('current-legal-consent').checked) {
+                alert('Please acknowledge the legal agreement before signing.');
+                return;
+            }
+
+            const signatureData = canvas.toDataURL();
+            if (isCanvasEmpty()) {
+                alert('Please draw your signature first.');
+                return;
+            }
+
+            saveSignatureAndProceed(signatureData);
+        }
+
+        function saveCurrentTypedSignature() {
+            const typedName = document.getElementById('current-typed-signature').value.trim();
+            if (!typedName) {
+                alert('Please enter your full legal name');
+                return;
+            }
+
+            if (!document.getElementById('current-legal-consent').checked) {
+                alert('Please acknowledge the legal agreement before signing.');
+                return;
+            }
+
+            // Create signature from typed text
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 400;
+            tempCanvas.height = 100;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCtx.font = '30px cursive';
+            tempCtx.fillStyle = '#000';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText(typedName, 200, 60);
+            
+            const signatureData = tempCanvas.toDataURL();
+            saveSignatureAndProceed(signatureData);
+        }
+
+        function saveSignatureAndProceed(signatureData) {
+            const signer = signers[currentSignerIndex];
+            signatures[signer.role.toLowerCase()] = signatureData;
+
+            // Update signature display
+            const displayId = signer.role.toLowerCase() + '-signature-display';
+            const statusId = signer.role.toLowerCase() + '-sig-status';
+            
+            document.getElementById(displayId).innerHTML = 
+                `<img src="${signatureData}" alt="Signature" class="h-full w-full object-contain">`;
+            document.getElementById(statusId).textContent = '✓ Signed';
+
+            // Move to next signer or complete
+            if (currentSignerIndex < signers.length - 1) {
+                currentSignerIndex++;
+                updateCurrentSigner();
+                
+                // Clear the form for next signer
+                document.getElementById('current-legal-consent').checked = false;
+                
+                // Show transition message
+                const prevSigner = signers[currentSignerIndex - 1];
+                const nextSigner = signers[currentSignerIndex];
+                alert(`✅ ${prevSigner.name} signed successfully!\n\n👉 Please pass the device to ${nextSigner.name} to complete their signature.`);
+            } else {
+                completeInPersonSigning();
+            }
+        }
+
+        function completeInPersonSigning() {
+            // Final step indicator
+            document.getElementById('complete-step').classList.remove('step-inactive');
+            document.getElementById('complete-step').classList.add('step-completed');
+            document.getElementById('complete-step').textContent = '✓';
+
+            // Simulate blockchain anchoring
+            setTimeout(() => {
+                document.getElementById('in-person-signing').classList.add('hidden');
+                document.getElementById('completion-screen').classList.remove('hidden');
+                document.getElementById('completion-time').textContent = new Date().toLocaleString();
+                
+                alert('🎉 Contract completed successfully!\n\nBoth signatures captured and anchored to blockchain.\nLegally binding promissory note is now active.');
+            }, 2000);
+        }
+
+        function isCanvasEmpty() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            return !imageData.data.some(channel => channel !== 0);
+        }
+
+        function sendSigningInvitation() {
+            const email = document.getElementById('borrower-email').value;
+            const phone = document.getElementById('borrower-phone').value;
+            const message = document.getElementById('custom-message').value;
+
+            if (!email || !phone) {
+                alert('Please provide both email and phone number');
+                return;
+            }
+
+            // Simulate sending invitation
+            alert(`📧 Signing invitation sent to:\n\nEmail: ${email}\nPhone: ${phone}\n\nThe borrower will receive:\n• Secure signing link\n• 6-digit OTP codes\n• 24-hour expiration\n\nYou'll be notified when they sign!`);
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+
+        function scheduleInvitation() {
+            alert('Scheduling feature coming soon! For now, the invitation will be sent immediately when you click "Send Invitation Now".');
+        }
+
+        function downloadContract() {
+            alert('📄 Downloading signed contract PDF...\n\nFile includes:\n• Complete signed promissory note\n• UCC filing addendum\n• Blockchain verification certificate\n• Signature audit trail');
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Back navigation
+        function goBackToSelection() {
+            if (confirm('Are you sure you want to go back? All signatures will be lost.')) {
+                document.getElementById('in-person-signing').classList.add('hidden');
+                document.getElementById('remote-signing-setup').classList.add('hidden');
+                document.getElementById('signing-method-selection').classList.remove('hidden');
+                currentSignerIndex = 0;
+                signatures = { lender: null, borrower: null };
+                
+                // Reset signature displays
+                document.getElementById('lender-signature-display').innerHTML = 
+                    '<span id="lender-sig-status">Awaiting signature...</span>';
+                document.getElementById('borrower-signature-display').innerHTML = 
+                    '<span id="borrower-sig-status">Awaiting signature...</span>';
+            }
+        }
+
+        function resetCurrentSigner() {
+            clearCurrentSignature();
+            document.getElementById('current-legal-consent').checked = false;
+            
+            // Reset signature type to draw
+            document.querySelector('input[name="currentSignatureType"][value="draw"]').checked = true;
+            switchCurrentSignatureType();
+        }
+    </script>
+</body>
+</html>
