@@ -653,12 +653,18 @@
                     const loanDate = document.getElementById('loanDate').value;
                     const dueDate = document.getElementById('dueDate').value;
                     
+                    console.log('Validating Step 1:', {principal, loanDate, dueDate});
+                    
                     if (!principal || parseFloat(principal) <= 0) {
-                        alert('Please enter a valid principal amount');
+                        alert('Please enter a valid principal amount greater than $0');
                         return false;
                     }
-                    if (!loanDate || !dueDate) {
-                        alert('Please select both loan date and due date');
+                    if (!loanDate) {
+                        alert('Please select a loan date');
+                        return false;
+                    }
+                    if (!dueDate) {
+                        alert('Please select a due date');
                         return false;
                     }
                     if (new Date(dueDate) <= new Date(loanDate)) {
@@ -666,16 +672,8 @@
                         return false;
                     }
                     
-                    // Validate payment schedule if not lump sum
-                    const paymentSchedule = document.getElementById('paymentSchedule').value;
-                    if (paymentSchedule !== 'lump_sum') {
-                        const numberOfPayments = document.getElementById('numberOfPayments').value;
-                        if (!numberOfPayments || parseInt(numberOfPayments) < 2) {
-                            alert('Please enter at least 2 payments for installment plans');
-                            return false;
-                        }
-                    }
-                    break;
+                    console.log('Step 1 validation passed');
+                    return true;
                     
                 case 2:
                     const borrowerFirst = document.getElementById('borrowerFirstName').value;
@@ -1059,7 +1057,7 @@
             if (currentStep > 1) {
                 saveDraft();
             }
-        }, 60000); // Save every minute(s)
+        }, 60000); // Save every minute
     </script>
 </body>
 </html>
