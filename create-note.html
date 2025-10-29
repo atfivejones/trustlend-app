@@ -592,11 +592,51 @@
         });
 
         function nextStep() {
-            if (currentStep < totalSteps) {
-                if (validateCurrentStep()) {
-                    currentStep++;
-                    updateStepDisplay();
+            console.log('Next step clicked. Current step:', currentStep);
+            
+            // Simple validation that actually works
+            if (currentStep === 1) {
+                const principal = document.getElementById('principal').value;
+                const loanDate = document.getElementById('loanDate').value;
+                const dueDate = document.getElementById('dueDate').value;
+                
+                if (!principal || parseFloat(principal) <= 0) {
+                    alert('Please enter a valid principal amount');
+                    return;
                 }
+                if (!loanDate) {
+                    alert('Please select a loan date');
+                    return;
+                }
+                if (!dueDate) {
+                    alert('Please select a due date'); 
+                    return;
+                }
+                if (new Date(dueDate) <= new Date(loanDate)) {
+                    alert('Due date must be after loan date');
+                    return;
+                }
+            }
+            
+            if (currentStep === 2) {
+                const borrowerFirst = document.getElementById('borrowerFirstName').value;
+                const borrowerLast = document.getElementById('borrowerLastName').value;
+                const borrowerEmail = document.getElementById('borrowerEmail').value;
+                
+                if (!borrowerFirst || !borrowerLast) {
+                    alert('Please enter borrower first and last name');
+                    return;
+                }
+                if (!borrowerEmail || !borrowerEmail.includes('@')) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+            }
+            
+            // Step validation passed, move to next step
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
             }
         }
 
@@ -1060,86 +1100,6 @@
                 saveDraft();
             }
         }, 60000); // Save every minute
-
-        // DEBUG SCRIPT - Remove after fixing
-        console.log('DEBUG SCRIPT LOADED');
-
-        function nextStep() {
-            console.log('DEBUG: Next Step button clicked!');
-            console.log('Current step:', currentStep);
-            console.log('Total steps:', totalSteps);
-            
-            if (typeof currentStep === 'undefined') {
-                console.log('ERROR: currentStep variable not defined!');
-                return;
-            }
-            
-            if (currentStep < totalSteps) {
-                console.log('Calling validation for step', currentStep);
-                
-                if (currentStep === 1) {
-                    const principal = document.getElementById('principal');
-                    const loanDate = document.getElementById('loanDate');
-                    const dueDate = document.getElementById('dueDate');
-                    
-                    console.log('STEP 1 DEBUG:');
-                    console.log('  Principal field found:', !!principal);
-                    console.log('  Principal value:', principal ? principal.value : 'NOT FOUND');
-                    console.log('  Loan Date field found:', !!loanDate);
-                    console.log('  Loan Date value:', loanDate ? loanDate.value : 'NOT FOUND');
-                    console.log('  Due Date field found:', !!dueDate);
-                    console.log('  Due Date value:', dueDate ? dueDate.value : 'NOT FOUND');
-                    
-                    if (principal && principal.value) {
-                        const principalNum = parseFloat(principal.value);
-                        console.log('  Principal as number:', principalNum);
-                        console.log('  Principal > 0:', principalNum > 0);
-                    }
-                    
-                    if (loanDate && dueDate && loanDate.value && dueDate.value) {
-                        const loanDateObj = new Date(loanDate.value);
-                        const dueDateObj = new Date(dueDate.value);
-                        console.log('  Due Date after Loan Date:', dueDateObj > loanDateObj);
-                    }
-                }
-                
-                console.log('Calling validateCurrentStep()...');
-                try {
-                    if (validateCurrentStep()) {
-                        console.log('Validation passed! Moving to next step.');
-                        currentStep++;
-                        updateStepDisplay();
-                    } else {
-                        console.log('Validation failed');
-                    }
-                } catch (error) {
-                    console.log('ERROR in validateCurrentStep():', error);
-                }
-            } else {
-                console.log('Already at last step');
-            }
-        }
-
-        // Override the Next button click
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up debug listeners');
-            
-            const nextBtn = document.getElementById('next-btn');
-            if (nextBtn) {
-                console.log('Found Next button');
-                nextBtn.onclick = function() {
-                    console.log('Next button clicked via onclick');
-                    nextStep();
-                };
-            } else {
-                console.log('Next button not found!');
-            }
-            
-            console.log('Variables check:');
-            console.log('  currentStep exists:', typeof currentStep !== 'undefined');
-            console.log('  totalSteps exists:', typeof totalSteps !== 'undefined');
-            console.log('  validateCurrentStep exists:', typeof validateCurrentStep !== 'undefined');
-        });
     </script>
 </body>
 </html>
