@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Promissory Note - TrustLend</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="css/mobile-enhancements.css">
-    <script src="js/smart-form-enhancements.js"></script>
-    <script src="js/premium-features.js"></script>
+    <link rel="stylesheet" href="mobile-enhancements.css">
+    <script src="smart-form-enhancements.js"></script>
+    <script src="premium-features.js"></script>
     <style>
         .hero-gradient {
             background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
@@ -939,36 +939,6 @@
                     paymentDetailsDiv.classList.add('hidden');
                 }
             }
-
-            // Update late fees
-            const lateFeeType = document.querySelector('input[name="lateFeeType"]:checked')?.value;
-            const lateFeeSection = document.getElementById('preview-late-fees');
-            
-            if (lateFeeType === 'flat') {
-                const flatFee = document.getElementById('lateFeeFlat').value;
-                if (flatFee) {
-                    lateFeeSection.classList.remove('hidden');
-                    document.getElementById('preview-late-fee-text').textContent = `$${flatFee} flat fee for late payments`;
-                }
-            } else if (lateFeeType === 'percentage') {
-                const percentFee = document.getElementById('lateFeePercent').value;
-                if (percentFee) {
-                    lateFeeSection.classList.remove('hidden');
-                    document.getElementById('preview-late-fee-text').textContent = `${percentFee}% of payment amount for late payments`;
-                }
-            } else {
-                lateFeeSection.classList.add('hidden');
-            }
-
-            // Update acceleration clause
-            const acceleration = document.getElementById('accelerationClause')?.checked;
-            document.getElementById('preview-acceleration').classList.toggle('hidden', !acceleration);
-        }
-            document.getElementById('preview-borrower').textContent = borrowerName;
-            
-            document.getElementById('preview-loan-date').textContent = loanDate ? new Date(loanDate).toLocaleDateString() : '______';
-            document.getElementById('preview-due-date').textContent = dueDate ? new Date(dueDate).toLocaleDateString() : '______';
-            document.getElementById('preview-due-text').textContent = dueDate ? new Date(dueDate).toLocaleDateString() : '______';
 
             // Update late fees
             const lateFeeType = document.querySelector('input[name="lateFeeType"]:checked')?.value;
