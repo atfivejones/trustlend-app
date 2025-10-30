@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .input-focus:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </a>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
+            <p class="text-gray-600">Manage your personal information (used for all loan contracts)</p>
+        </div>
+
+        <!-- Profile Photo -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Profile Photo</h2>
+            <div class="flex items-center gap-6">
+                <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-3xl">
+                    JD
+                </div>
+                <div class="flex-1">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium mb-2">
+                        Upload Photo
+                    </button>
+                    <button class="block text-sm text-gray-600 hover:text-gray-900">
+                        Remove Photo
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Personal Information</h2>
+            <p class="text-sm text-gray-600 mb-6">This information will automatically populate when creating loan contracts</p>
+            
+            <form id="profileForm" class="space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                        <input type="text" id="firstName" value="John" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                        <input type="text" id="lastName" value="Doe" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="email" value="john.doe@example.com" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" id="phone" value="(555) 123-4567" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
+                    <input type="text" id="street" value="123 Main Street" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                        <input type="text" id="city" value="Atlanta" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                        <select id="state" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                            <option value="GA" selected>Georgia</option>
+                            <option value="AL">Alabama</option>
+                            <option value="FL">Florida</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="TN">Tennessee</option>
+                            <!-- Add more states as needed -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+                        <input type="text" id="zip" value="30301" maxlength="5" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">County</label>
+                        <input type="text" id="county" value="Fulton" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        <p class="text-xs text-gray-500 mt-1">Required for legal contracts</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="saveProfile()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all font-semibold">
+                        Save Changes
+                    </button>
+                    <button type="button" onclick="window.location.href='dashboard.html'" class="bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all font-semibold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Account Settings</h2>
+            
+            <div class="space-y-4">
+                <a href="settings.html" class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div>
+                            <div class="font-semibold text-gray-900">Security Settings</div>
+                            <div class="text-sm text-gray-600">Password and authentication</div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+
+                <a href="notification-settings.html" class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <div>
+                            <div class="font-semibold text-gray-900">Notifications</div>
+                            <div class="text-sm text-gray-600">Email and SMS preferences</div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Delete Account -->
+        <div class="bg-white rounded-xl border border-red-200 p-6">
+            <h2 class="text-xl font-bold text-red-600 mb-2">Danger Zone</h2>
+            <p class="text-gray-600 text-sm mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+            <button onclick="confirmDelete()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-all font-semibold">
+                Delete Account
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Save profile to localStorage
+        function saveProfile() {
+            const profile = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                zip: document.getElementById('zip').value,
+                county: document.getElementById('county').value
+            };
+            
+            localStorage.setItem('trustlend_profile', JSON.stringify(profile));
+            
+            // Show success message
+            alert('Profile saved successfully! This information will be used when creating new loan contracts.');
+        }
+
+        // Load profile from localStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedProfile = localStorage.getItem('trustlend_profile');
+            if (savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                document.getElementById('firstName').value = profile.firstName || 'John';
+                document.getElementById('lastName').value = profile.lastName || 'Doe';
+                document.getElementById('email').value = profile.email || 'john.doe@example.com';
+                document.getElementById('phone').value = profile.phone || '(555) 123-4567';
+                document.getElementById('street').value = profile.street || '123 Main Street';
+                document.getElementById('city').value = profile.city || 'Atlanta';
+                document.getElementById('state').value = profile.state || 'GA';
+                document.getElementById('zip').value = profile.zip || '30301';
+                document.getElementById('county').value = profile.county || 'Fulton';
+            }
+        });
+
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                if (confirm('This will permanently delete all your contracts and data. Are you absolutely sure?')) {
+                    alert('Account deletion request submitted. You will receive a confirmation email within 24 hours.');
+                    // In production: window.location.href = '/api/delete-account';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
