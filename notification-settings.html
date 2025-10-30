@@ -3,19 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Protection Tips - TrustLend</title>
+    <title>Notification Settings - TrustLend</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="css/mobile-enhancements.css">
     <style>
-        .hero-gradient {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
-        }
-        .tip-card {
-            transition: all 0.3s ease;
-        }
-        .tip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .input-focus:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
     </style>
 </head>
@@ -32,590 +26,216 @@
                     </div>
                     <span class="text-xl font-bold text-gray-900">TrustLend</span>
                 </a>
-                </div>
                 
                 <div class="flex items-center space-x-4">
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="create-note-fixed-validation.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Create Contract</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Dashboard
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-gradient py-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">💡 Loan Protection Tips & Best Practices</h1>
-            <p class="text-xl text-blue-100 mb-8">Expert guidance to protect your money and preserve your relationships</p>
-            
-            <!-- Quick Stats -->
-            <div class="grid md:grid-cols-3 gap-6 mt-12">
-                <div class="bg-white/10 backdrop-blur rounded-lg p-6">
-                    <div class="text-3xl font-bold text-white">94%</div>
-                    <div class="text-blue-100">Recovery Rate with Contracts</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur rounded-lg p-6">
-                    <div class="text-3xl font-bold text-white">60%</div>
-                    <div class="text-blue-100">Family Loans Never Repaid (Without Contracts)</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur rounded-lg p-6">
-                    <div class="text-3xl font-bold text-white">5 Min</div>
-                    <div class="text-blue-100">Average Contract Creation Time</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Navigation Tabs -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-            <div class="flex flex-wrap justify-center p-2">
-                <button onclick="showSection('before-lending')" class="tab-btn active px-6 py-3 rounded-lg font-semibold transition-all">Before Lending</button>
-                <button onclick="showSection('creating-contracts')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all">Creating Contracts</button>
-                <button onclick="showSection('relationship-tips')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all">Relationship Tips</button>
-                <button onclick="showSection('collection-strategies')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all">Collection Strategies</button>
-                <button onclick="showSection('legal-protection')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all">Legal Protection</button>
-            </div>
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Notification Settings</h1>
+            <p class="text-gray-600">Manage how you receive notifications and updates</p>
         </div>
 
-        <!-- Before Lending Section -->
-        <div id="before-lending" class="section-content">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">🤔 Before You Lend: Critical Questions</h2>
+        <!-- Email Notifications -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Email Notifications</h2>
             
-            <div class="grid md:grid-cols-2 gap-8 mb-12">
-                <div class="tip-card bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-start">
-                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
-                            <span class="text-2xl">🚨</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Red Flags to Avoid</h3>
-                            <ul class="text-gray-600 space-y-2 text-sm">
-                                <li>• Vague reasons for needing money</li>
-                                <li>• Pressure to lend immediately</li>
-                                <li>• History of not paying back debts</li>
-                                <li>• Reluctance to discuss repayment terms</li>
-                                <li>• Already owes you money</li>
-                                <li>• No stable income source</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tip-card bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-start">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
-                            <span class="text-2xl">✅</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Good Signs to Look For</h3>
-                            <ul class="text-gray-600 space-y-2 text-sm">
-                                <li>• Clear, specific reason for the loan</li>
-                                <li>• Realistic repayment timeline</li>
-                                <li>• Willing to sign a contract</li>
-                                <li>• Has steady income or assets</li>
-                                <li>• History of financial responsibility</li>
-                                <li>• Offers collateral or guarantor</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Amount Guidelines -->
-            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
-                <h3 class="text-lg font-bold text-yellow-800 mb-4">💰 How Much Should You Lend?</h3>
-                <div class="grid md:grid-cols-3 gap-6">
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                     <div>
-                        <h4 class="font-semibold text-yellow-800 mb-2">Under $1,000</h4>
-                        <p class="text-sm text-yellow-700">Consider it a gift if relationship matters more than money. Simple contract recommended.</p>
+                        <div class="font-semibold text-gray-900">Payment Reminders</div>
+                        <div class="text-sm text-gray-600">Get notified when payments are due</div>
                     </div>
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                     <div>
-                        <h4 class="font-semibold text-yellow-800 mb-2">$1,000 - $10,000</h4>
-                        <p class="text-sm text-yellow-700">Always use a contract. Consider payment plan. Verify their ability to repay.</p>
+                        <div class="font-semibold text-gray-900">Payment Received</div>
+                        <div class="text-sm text-gray-600">Get notified when borrowers make payments</div>
                     </div>
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                     <div>
-                        <h4 class="font-semibold text-yellow-800 mb-2">Over $10,000</h4>
-                        <p class="text-sm text-yellow-700">Require collateral, guarantor, or co-signer. Full legal documentation essential.</p>
+                        <div class="font-semibold text-gray-900">Contract Signed</div>
+                        <div class="text-sm text-gray-600">Get notified when contracts are signed</div>
                     </div>
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div>
+                        <div class="font-semibold text-gray-900">Overdue Payments</div>
+                        <div class="text-sm text-gray-600">Get alerted when payments are overdue</div>
+                    </div>
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div>
+                        <div class="font-semibold text-gray-900">Weekly Summary</div>
+                        <div class="text-sm text-gray-600">Receive a weekly summary of your loans</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div>
+                        <div class="font-semibold text-gray-900">Product Updates</div>
+                        <div class="text-sm text-gray-600">Get notified about new features and updates</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+            </div>
+        </div>
+
+        <!-- SMS Notifications -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">SMS Notifications</h2>
+                    <p class="text-sm text-gray-600 mt-1">Receive text message alerts (carrier rates may apply)</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+            </div>
+
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div>
+                        <div class="font-semibold text-gray-900">Critical Alerts Only</div>
+                        <div class="text-sm text-gray-600">Overdue payments and contract signing</div>
+                    </div>
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div>
+                        <div class="font-semibold text-gray-900">All SMS Notifications</div>
+                        <div class="text-sm text-gray-600">Receive all updates via SMS</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                </label>
+            </div>
+        </div>
+
+        <!-- Notification Schedule -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Notification Schedule</h2>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Do Not Disturb</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">From</label>
+                            <input type="time" value="22:00" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">To</label>
+                            <input type="time" value="08:00" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">You won't receive notifications during this time (except critical alerts)</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Reminder Frequency</label>
+                    <select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        <option>Send reminders 3 days before due date</option>
+                        <option>Send reminders 5 days before due date</option>
+                        <option>Send reminders 7 days before due date</option>
+                        <option>Send reminders 14 days before due date</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <!-- Creating Contracts Section -->
-        <div id="creating-contracts" class="section-content hidden">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">📝 Creating Bulletproof Contracts</h2>
+        <!-- Contact Preferences -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Contact Preferences</h2>
             
-            <div class="space-y-8">
-                <!-- Essential Terms -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">🎯 Essential Contract Terms</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">Must-Have Terms:</h4>
-                            <ul class="text-gray-600 space-y-1 text-sm">
-                                <li>• Exact loan amount in numbers and words</li>
-                                <li>• Clear repayment date or schedule</li>
-                                <li>• Both parties' full legal names</li>
-                                <li>• Purpose of the loan (optional but helpful)</li>
-                                <li>• Signatures with dates</li>
-                                <li>• Witness or notary (for larger amounts)</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">Highly Recommended:</h4>
-                            <ul class="text-gray-600 space-y-1 text-sm">
-                                <li>• Late fee structure (specific amounts)</li>
-                                <li>• Grace period (usually 5-15 days)</li>
-                                <li>• Acceleration clause for default</li>
-                                <li>• Attorney fees provision</li>
-                                <li>• Governing law clause</li>
-                                <li>• Collateral description (if any)</li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Primary Email</label>
+                    <input type="email" value="john.doe@example.com" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50" readonly>
+                    <p class="text-xs text-gray-500 mt-1">Change in <a href="profile.html" class="text-blue-600 hover:text-blue-700">Profile Settings</a></p>
                 </div>
 
-                <!-- Payment Schedule Tips -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">📅 Smart Payment Scheduling</h3>
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <div class="border border-blue-200 rounded-lg p-4">
-                            <h4 class="font-semibold text-blue-800 mb-2">Lump Sum</h4>
-                            <p class="text-sm text-gray-600 mb-2">Best for: Small amounts under $2,000</p>
-                            <div class="text-xs text-gray-500">
-                                ✅ Simple and clear<br>
-                                ❌ Can be overwhelming for borrower
-                            </div>
-                        </div>
-                        <div class="border border-green-200 rounded-lg p-4">
-                            <h4 class="font-semibold text-green-800 mb-2">Monthly Payments</h4>
-                            <p class="text-sm text-gray-600 mb-2">Best for: $2,000 - $20,000</p>
-                            <div class="text-xs text-gray-500">
-                                ✅ Manageable payments<br>
-                                ✅ Regular contact opportunity
-                            </div>
-                        </div>
-                        <div class="border border-purple-200 rounded-lg p-4">
-                            <h4 class="font-semibold text-purple-800 mb-2">Flexible Schedule</h4>
-                            <p class="text-sm text-gray-600 mb-2">Best for: Irregular income borrowers</p>
-                            <div class="text-xs text-gray-500">
-                                ✅ Accommodates borrower situation<br>
-                                ❌ Requires more tracking
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Interest and Fees -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                    <h3 class="text-lg font-bold text-blue-800 mb-4">💡 Pro Tip: Keep It Simple</h3>
-                    <div class="text-blue-700">
-                        <p class="mb-2"><strong>Avoid Interest:</strong> Charging interest to family/friends can complicate relationships and may require additional legal compliance.</p>
-                        <p class="mb-2"><strong>Use Service Fees Instead:</strong> A one-time "administrative fee" is simpler and avoids interest rate regulations.</p>
-                        <p><strong>Focus on Late Fees:</strong> These provide incentive to pay on time without the complexity of compound interest.</p>
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">SMS Phone Number</label>
+                    <input type="tel" value="(555) 123-4567" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50" readonly>
+                    <p class="text-xs text-gray-500 mt-1">Change in <a href="profile.html" class="text-blue-600 hover:text-blue-700">Profile Settings</a></p>
                 </div>
             </div>
         </div>
 
-        <!-- Relationship Tips Section -->
-        <div id="relationship-tips" class="section-content hidden">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">💕 Preserving Relationships While Protecting Money</h2>
-            
-            <div class="space-y-8">
-                <!-- Communication Strategies -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">🗣️ How to Bring Up a Contract</h3>
-                    <div class="space-y-4">
-                        <div class="bg-green-50 border-l-4 border-green-400 p-4">
-                            <h4 class="font-semibold text-green-800 mb-2">✅ What TO Say:</h4>
-                            <ul class="text-green-700 space-y-1 text-sm">
-                                <li>"I want to help you, and I also want to make sure we're both protected."</li>
-                                <li>"Let's make this official so there's no confusion later."</li>
-                                <li>"I always use contracts - it's not personal, it's just how I handle all loans."</li>
-                                <li>"This protects both of us and keeps our relationship clear."</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-red-50 border-l-4 border-red-400 p-4">
-                            <h4 class="font-semibold text-red-800 mb-2">❌ What NOT to Say:</h4>
-                            <ul class="text-red-700 space-y-1 text-sm">
-                                <li>"I don't trust you, so we need a contract."</li>
-                                <li>"You have to sign this or no deal."</li>
-                                <li>"Remember what happened with [other person]..."</li>
-                                <li>"My lawyer says I have to do this."</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Family vs Friends -->
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="tip-card bg-white rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">👨‍👩‍👧‍👦 Family Loans</h3>
-                        <div class="space-y-3 text-sm">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Special Considerations:</h4>
-                                <ul class="text-gray-600 space-y-1 ml-4">
-                                    <li>• More flexibility with repayment</li>
-                                    <li>• Focus on preserving long-term relationship</li>
-                                    <li>• Consider it a gift if under $500</li>
-                                    <li>• Involve spouse in decision if married</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Recommended Approach:</h4>
-                                <p class="text-gray-600">"I love you and want to help. Let's just put this in writing so we're both clear on the details."</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tip-card bg-white rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">👫 Friend Loans</h3>
-                        <div class="space-y-3 text-sm">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Special Considerations:</h4>
-                                <ul class="text-gray-600 space-y-1 ml-4">
-                                    <li>• More business-like approach acceptable</li>
-                                    <li>• Stricter terms generally appropriate</li>
-                                    <li>• Consider their financial habits carefully</li>
-                                    <li>• Be prepared to lose friendship if things go bad</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Recommended Approach:</h4>
-                                <p class="text-gray-600">"I'm happy to help! I always use contracts for financial matters to keep things professional."</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Difficult Conversations -->
-                <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
-                    <h3 class="text-lg font-bold text-orange-800 mb-4">🤝 Handling Objections</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-orange-800">"Don't you trust me?"</h4>
-                            <p class="text-orange-700 text-sm">"I trust you completely! This is about being clear and organized, not about trust. It actually shows I care about our relationship."</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-orange-800">"That seems unnecessary between us."</h4>
-                            <p class="text-orange-700 text-sm">"I understand it might feel formal, but I've learned that writing things down prevents misunderstandings later. It's actually more considerate."</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-orange-800">"I'll pay you back, you know that."</h4>
-                            <p class="text-orange-700 text-sm">"Of course you will! This just helps us both remember the details and shows we're taking this seriously."</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Collection Strategies Section -->
-        <div id="collection-strategies" class="section-content hidden">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">💪 Getting Your Money Back</h2>
-            
-            <div class="space-y-8">
-                <!-- Escalation Timeline -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">📈 Payment Reminder Escalation</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">3 Days Before Due Date</h4>
-                                <p class="text-gray-600 text-sm">Friendly reminder: "Hi! Just a heads up that your payment is due on [date]. Thanks!"</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">1 Day After Due Date</h4>
-                                <p class="text-gray-600 text-sm">Gentle follow-up: "Your payment was due yesterday. Is everything okay? Please let me know when you can send it."</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">7 Days After Due Date</h4>
-                                <p class="text-gray-600 text-sm">Firmer reminder: "Payment is now 7 days overdue. Please contact me immediately to arrange payment."</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">14+ Days After Due Date</h4>
-                                <p class="text-gray-600 text-sm">Formal demand letter: Legal notice with deadline before pursuing legal action.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Communication Scripts -->
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">📱 Text Message Templates</h3>
-                        <div class="space-y-4 text-sm">
-                            <div>
-                                <h4 class="font-semibold text-blue-600">Friendly Reminder:</h4>
-                                <div class="bg-gray-100 p-3 rounded italic">
-                                    "Hi [Name]! Quick reminder that your loan payment of $[amount] is due on [date]. Thanks! 😊"
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-yellow-600">Overdue Notice:</h4>
-                                <div class="bg-gray-100 p-3 rounded italic">
-                                    "Hi [Name], your payment of $[amount] was due on [date]. Can you please send it today or let me know when you can? Thanks."
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-red-600">Final Notice:</h4>
-                                <div class="bg-gray-100 p-3 rounded italic">
-                                    "[Name], your payment is now [X] days overdue. I need to receive payment by [date] or I'll need to take further action. Please call me."
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">📧 Email Templates</h3>
-                        <div class="space-y-4 text-sm">
-                            <div>
-                                <h4 class="font-semibold text-blue-600">Professional Follow-up:</h4>
-                                <div class="bg-gray-100 p-3 rounded text-xs">
-                                    Subject: Loan Payment Reminder<br><br>
-                                    Hi [Name],<br><br>
-                                    I hope you're doing well. This is a friendly reminder that your loan payment of $[amount] is due on [date].<br><br>
-                                    If you have any questions or need to discuss the payment, please let me know.<br><br>
-                                    Thanks!<br>
-                                    [Your name]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Payment Options -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                    <h3 class="text-lg font-bold text-blue-800 mb-4">💳 Making Payment Easy</h3>
-                    <div class="grid md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                            <h4 class="font-semibold text-blue-800 mb-2">Digital Options:</h4>
-                            <ul class="text-blue-700 space-y-1">
-                                <li>• Venmo</li>
-                                <li>• PayPal</li>
-                                <li>• Zelle</li>
-                                <li>• Apple Pay / Google Pay</li>
-                                <li>• Bank transfer</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-800 mb-2">Traditional Options:</h4>
-                            <ul class="text-blue-700 space-y-1">
-                                <li>• Personal check</li>
-                                <li>• Cashier's check</li>
-                                <li>• Money order</li>
-                                <li>• Cash (get receipt!)</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-800 mb-2">Pro Tips:</h4>
-                            <ul class="text-blue-700 space-y-1">
-                                <li>• Offer multiple options</li>
-                                <li>• Include payment info in reminders</li>
-                                <li>• Confirm receipt immediately</li>
-                                <li>• Keep records of all payments</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Legal Protection Section -->
-        <div id="legal-protection" class="section-content hidden">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8">⚖️ Legal Protection & Enforcement</h2>
-            
-            <div class="space-y-8">
-                <!-- When to Take Legal Action -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">🚨 When to Consider Legal Action</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold text-green-800 mb-2">Good Candidates for Legal Action:</h4>
-                            <ul class="text-gray-600 space-y-2 text-sm">
-                                <li>• Loan amount over $1,000</li>
-                                <li>• Clear written contract exists</li>
-                                <li>• Borrower has assets or income</li>
-                                <li>• 30+ days overdue with no communication</li>
-                                <li>• Borrower is avoiding you completely</li>
-                                <li>• Multiple failed payment promises</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-red-800 mb-2">Poor Candidates for Legal Action:</h4>
-                            <ul class="text-gray-600 space-y-2 text-sm">
-                                <li>• Loan amount under $500</li>
-                                <li>• No written agreement</li>
-                                <li>• Borrower has no assets</li>
-                                <li>• Family member you want to keep relationship with</li>
-                                <li>• Borrower is communicating and trying to pay</li>
-                                <li>• Cost of legal action exceeds loan amount</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Claims Court Process -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">🏛️ Small Claims Court Process</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Send Demand Letter</h4>
-                                <p class="text-gray-600 text-sm">Required in most states. Give 10-30 days for response. Use TrustLend's demand letter generator.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">File Court Papers</h4>
-                                <p class="text-gray-600 text-sm">Visit local courthouse or file online. Filing fee usually $30-$100. Bring your contract and evidence.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Serve the Defendant</h4>
-                                <p class="text-gray-600 text-sm">Court will serve papers or you can hire a process server. Cost usually $50-$150.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Attend Court Hearing</h4>
-                                <p class="text-gray-600 text-sm">Present your case to the judge. Bring all documents, evidence, and witnesses if available.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Collect Judgment</h4>
-                                <p class="text-gray-600 text-sm">If you win, you may need to take additional steps to collect (wage garnishment, asset seizure).</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Documentation Tips -->
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-green-50 border border-green-200 rounded-xl p-6">
-                        <h3 class="text-lg font-bold text-green-800 mb-4">📂 What to Keep for Court</h3>
-                        <ul class="text-green-700 space-y-2 text-sm">
-                            <li>• Original signed contract</li>
-                            <li>• All payment records</li>
-                            <li>• Text messages and emails</li>
-                            <li>• Photos of any collateral</li>
-                            <li>• Demand letter and delivery proof</li>
-                            <li>• Bank statements showing the loan</li>
-                            <li>• Any witness statements</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                        <h3 class="text-lg font-bold text-blue-800 mb-4">💰 Cost-Benefit Analysis</h3>
-                        <div class="space-y-3 text-sm">
-                            <div>
-                                <h4 class="font-semibold text-blue-800">Typical Costs:</h4>
-                                <ul class="text-blue-700 space-y-1">
-                                    <li>• Filing fee: $30-$100</li>
-                                    <li>• Service fee: $50-$150</li>
-                                    <li>• Your time: 1-2 days</li>
-                                    <li>• Collection costs: Variable</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-blue-800">Break-even:</h4>
-                                <p class="text-blue-700">Generally worth it for loans over $1,000 if borrower has assets.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- State-by-State Limits -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                    <h3 class="text-lg font-bold text-yellow-800 mb-4">📍 Small Claims Court Limits by State</h3>
-                    <p class="text-yellow-700 text-sm mb-4">Maximum amounts you can sue for in small claims court (varies by state):</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-yellow-700">
-                        <div>
-                            <strong>$2,500-$5,000:</strong><br>
-                            Kentucky, Rhode Island, Pennsylvania
-                        </div>
-                        <div>
-                            <strong>$5,000-$7,500:</strong><br>
-                            Most states including California, Texas, Florida
-                        </div>
-                        <div>
-                            <strong>$10,000+:</strong><br>
-                            Georgia ($15,000), Tennessee ($25,000)
-                        </div>
-                        <div>
-                            <strong>Check your state:</strong><br>
-                            Limits change frequently - verify current amounts
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Save Button -->
+        <div class="flex gap-3">
+            <button onclick="saveSettings()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all font-semibold">
+                Save Preferences
+            </button>
+            <button onclick="window.location.href='dashboard.html'" class="bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all font-semibold">
+                Cancel
+            </button>
         </div>
     </div>
 
-    <!-- CTA Section -->
-    <section class="bg-blue-600 py-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-white mb-4">Ready to Protect Your Next Loan?</h2>
-            <p class="text-xl text-blue-100 mb-8">Create a professional contract in under 5 minutes</p>
-            <a href="create-note-fixed-validation.html" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all">
-                Create Your Contract Now
-            </a>
-        </div>
-    </section>
-
     <script>
-        // Tab functionality
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section-content').forEach(section => {
-                section.classList.add('hidden');
-            });
+        function saveSettings() {
+            // Collect all notification preferences
+            const preferences = {
+                email: {
+                    paymentReminders: document.querySelectorAll('input[type="checkbox"]')[0].checked,
+                    paymentReceived: document.querySelectorAll('input[type="checkbox"]')[1].checked,
+                    contractSigned: document.querySelectorAll('input[type="checkbox"]')[2].checked,
+                    overduePayments: document.querySelectorAll('input[type="checkbox"]')[3].checked,
+                    weeklySummary: document.querySelectorAll('input[type="checkbox"]')[4].checked,
+                    productUpdates: document.querySelectorAll('input[type="checkbox"]')[5].checked
+                },
+                sms: {
+                    enabled: document.querySelectorAll('input[type="checkbox"]')[6].checked,
+                    criticalOnly: document.querySelectorAll('input[type="checkbox"]')[7].checked,
+                    allNotifications: document.querySelectorAll('input[type="checkbox"]')[8].checked
+                }
+            };
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-blue-600', 'text-white');
-                btn.classList.add('text-gray-600', 'hover:text-gray-900');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-            
-            // Add active class to clicked tab
-            event.target.classList.add('active', 'bg-blue-600', 'text-white');
-            event.target.classList.remove('text-gray-600', 'hover:text-gray-900');
+            localStorage.setItem('trustlend_notifications', JSON.stringify(preferences));
+            alert('Notification preferences saved successfully!');
         }
 
-        // Initialize active tab
+        // Load saved preferences on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const activeTab = document.querySelector('.tab-btn.active');
-            if (activeTab) {
-                activeTab.classList.add('bg-blue-600', 'text-white');
-                activeTab.classList.remove('text-gray-600');
+            const savedPreferences = localStorage.getItem('trustlend_notifications');
+            if (savedPreferences) {
+                const preferences = JSON.parse(savedPreferences);
+                // Apply saved preferences to checkboxes
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes[0].checked = preferences.email.paymentReminders;
+                checkboxes[1].checked = preferences.email.paymentReceived;
+                checkboxes[2].checked = preferences.email.contractSigned;
+                checkboxes[3].checked = preferences.email.overduePayments;
+                checkboxes[4].checked = preferences.email.weeklySummary;
+                checkboxes[5].checked = preferences.email.productUpdates;
+                checkboxes[6].checked = preferences.sms.enabled;
+                checkboxes[7].checked = preferences.sms.criticalOnly;
+                checkboxes[8].checked = preferences.sms.allNotifications;
             }
-            
-            // Set other tabs to inactive styling
-            document.querySelectorAll('.tab-btn:not(.active)').forEach(btn => {
-                btn.classList.add('text-gray-600', 'hover:text-gray-900');
-            });
         });
     </script>
 </body>
