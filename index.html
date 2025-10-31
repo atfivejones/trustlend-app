@@ -73,7 +73,7 @@
                     <button onclick="showSignIn()" class="text-gray-600 hover:text-gray-900">
                         Sign In
                     </button>
-                    <a href="create-note.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <a href="create-note-advanced.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                         Get Started
                     </a>
                 </div>
@@ -83,7 +83,7 @@
                     <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 hidden md:inline">
                         Dashboard
                     </a>
-                    <a href="create-note.html" class="text-gray-600 hover:text-gray-900 hidden md:inline">
+                    <a href="create-note-advanced.html" class="text-gray-600 hover:text-gray-900 hidden md:inline">
                         Create Note
                     </a>
                     <a href="contracts.html" class="text-gray-600 hover:text-gray-900 hidden md:inline">
@@ -106,7 +106,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="create-note.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <a href="create-note-advanced.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                         Create Note
                     </a>
                 </div>
@@ -128,13 +128,13 @@
                     <button onclick="scrollToPricing()" class="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900">Pricing</button>
                     <a href="#demo" class="block px-4 py-2 text-gray-600 hover:text-gray-900">How It Works</a>
                     <button onclick="showSignIn()" class="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900">Sign In</button>
-                    <a href="create-note.html" class="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">Get Started</a>
+                    <a href="create-note-advanced.html" class="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">Get Started</a>
                 </div>
 
                 <!-- Authenticated Mobile Menu -->
                 <div id="mobileAuthenticatedNav" class="hidden space-y-2">
                     <a href="dashboard.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="create-note.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">Create Note</a>
+                    <a href="create-note-advanced.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">Create Note</a>
                     <a href="contracts.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">My Contracts</a>
                     <a href="profile.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">Profile Settings</a>
                     <a href="billing.html" class="block px-4 py-2 text-gray-600 hover:text-gray-900">Billing</a>
@@ -634,7 +634,7 @@
                     
                     <p class="text-gray-500 text-sm mb-6">Perfect for smaller personal loans</p>
                     
-                    <a href="create-note.html" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors block">
+                    <a href="create-note-advanced.html" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors block">
                         Get Started
                     </a>
                 </div>
@@ -687,7 +687,7 @@
                     
                     <p class="text-blue-100 text-sm mb-6">Recommended for all serious loans</p>
                     
-                    <a href="create-note.html" class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors block">
+                    <a href="create-note-advanced.html" class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors block">
                         Get Started
                     </a>
                 </div>
@@ -833,7 +833,7 @@
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="#demo" class="hover:text-white">How it works</a></li>
                         <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
-                        <li><a href="create-note.html" class="hover:text-white">Create Note</a></li>
+                        <li><a href="create-note-advanced.html" class="hover:text-white">Create Note</a></li>
                         <li><a href="dashboard.html" class="hover:text-white">Dashboard</a></li>
                     </ul>
                 </div>
@@ -842,7 +842,7 @@
                     <h4 class="font-semibold mb-4">Contact</h4>
                     <ul class="space-y-2 text-gray-400">
                         <li>hello@trustlend.app</li>
-                        <li><a href="create-note.html" class="hover:text-white">Get started free</a></li>
+                        <li><a href="create-note-advanced.html" class="hover:text-white">Get started free</a></li>
                         <li><a href="#" class="hover:text-white">Support</a></li>
                     </ul>
                 </div>
@@ -971,7 +971,7 @@
         // Page-specific functions for testing
         function createFirstContract() {
             if (isAuthenticated) {
-                window.location.href = 'create-note.html';
+                window.location.href = 'create-note-advanced.html';
             } else {
                 if (confirm('You need to sign in to create a contract. Sign in now?')) {
                     showSignIn();
@@ -996,7 +996,7 @@
         // Update all "Create Note" and "Dashboard" buttons to use these functions
         document.addEventListener('DOMContentLoaded', function() {
             // Update Create Note buttons
-            const createNoteButtons = document.querySelectorAll('a[href="create-note.html"]');
+            const createNoteButtons = document.querySelectorAll('a[href="create-note-advanced.html"]');
             createNoteButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
