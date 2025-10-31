@@ -3,71 +3,846 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Contracts - TrustLend</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Contract Management - TrustLend</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .user-profile-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #1e293b;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.contracts {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-icon.pending {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-icon.paid {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-icon.overdue {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Filters and Actions */
+        .controls-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        select, input {
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* Contracts Table */
+        .contracts-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: #f8fafc;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-paid {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-overdue {
+            background: #fecaca;
+            color: #dc2626;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Payment Tracking */
+        .payment-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            min-width: 60px;
+        }
+
+        /* Contract Actions */
+        .contract-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.4rem;
+            border: none;
+            background: none;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #f1f5f9;
+            color: #374151;
+        }
+
+        /* Payment Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .payment-timeline {
+            margin-top: 1rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-left: 2px solid #e5e7eb;
+            padding-left: 1rem;
+            margin-left: 1rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-item.completed::before {
+            background: #10b981;
+        }
+
+        .timeline-item.overdue::before {
+            background: #ef4444;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                text-align: center;
+            }
+
+            .controls-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters {
+                justify-content: center;
+            }
+
+            .table {
+                font-size: 0.9rem;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem;
+            }
+
+            .contract-actions {
+                flex-direction: column;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">TrustLend</a>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contracts.html" style="opacity: 0.8;">Contracts</a></li>
+                <li><a href="billing.html">Billing</a></li>
+                <li><a href="support.html">Support</a></li>
+            </ul>
+            <div class="user-profile-nav">
+                <span>John Doe</span>
+                <a href="profile.html" style="color: white;"><i class="fas fa-user-circle"></i></a>
+                <a href="signin.html" style="color: white;"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Contract Management</h1>
+                <p class="page-subtitle">Manage your lending agreements and track payment progress</p>
+            </div>
+            <a href="create-note-legal.html" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                New Contract
+            </a>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon contracts">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Total Contracts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">4</div>
+                <div class="stat-label">Pending Payments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon paid">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">$8,250</div>
+                <div class="stat-label">Total Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon overdue">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value">2</div>
+                <div class="stat-label">Overdue</div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-header">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="statusFilter">
+                            <option value="">All Contracts</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending Payment</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="completed">Completed</option>
+                        </select>
                     </div>
-                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
-                </a>
-                
-                <div class="flex items-center space-x-4">
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="create-note-legal.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        Create Note
-                    </a>
+                    <div class="filter-group">
+                        <label>Amount Range</label>
+                        <select id="amountFilter">
+                            <option value="">Any Amount</option>
+                            <option value="0-500">$0 - $500</option>
+                            <option value="500-2000">$500 - $2,000</option>
+                            <option value="2000-5000">$2,000 - $5,000</option>
+                            <option value="5000+">$5,000+</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Due Date</label>
+                        <select id="dueDateFilter">
+                            <option value="">Any Date</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="next7">Next 7 Days</option>
+                            <option value="next30">Next 30 Days</option>
+                            <option value="future">Future</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="sendReminders()">
+                        <i class="fas fa-bell"></i>
+                        Send Reminders
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
                 </div>
             </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Contracts</h1>
-            <p class="text-gray-600 mt-2">Manage and track all your loan agreements</p>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <div class="text-2xl font-bold text-blue-600">0</div>
-                <div class="text-sm text-gray-600">Active Loans</div>
+        <!-- Contracts Table -->
+        <div class="contracts-table">
+            <div class="table-header">
+                <h3>Your Contracts</h3>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <div class="text-2xl font-bold text-green-600">$0</div>
-                <div class="text-sm text-gray-600">Total Loaned</div>
-            </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <div class="text-2xl font-bold text-yellow-600">$0</div>
-                <div class="text-sm text-gray-600">Outstanding</div>
-            </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <div class="text-2xl font-bold text-gray-900">100%</div>
-                <div class="text-sm text-gray-600">Recovery Rate</div>
-            </div>
-        </div>
-
-        <!-- Empty State -->
-        <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <div class="text-6xl mb-6">📄</div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">No contracts yet</h2>
-            <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                Start protecting your money by creating your first legally enforceable loan agreement.
-            </p>
-            <a href="create-note-legal.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Create Your First Contract
-            </a>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Payment Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>Sarah Johnson</strong>
+                                <div style="font-size: 0.8rem; color: #64748b;">sarah.johnson@email.com</div>
+                            </div>
+                        </td>
+                        <td><strong>$2,500</strong></td>
+                        <td>Dec 15, 2025</td>
+                        <td>
+                            <div class="payment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%;"></div>
+                                </div>
+                                <span class="progress-text">100%</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                        <td>
+                            <div class="contract-actions">
+                                <button class="action-btn" title="View Details" onclick="viewContract('CT001')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Download PDF" onclick="downloadPDF('CT001')">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn" title="Payment History" onclick="showPaymentHistory('CT001')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>Mike Chen</strong>
+                                <div style="font-size: 0.8rem; color: #64748b;">mike.chen@email.com</div>
+                            </div>
+                        </td>
+                        <td><strong>$1,200</strong></td>
+                        <td>Nov 5, 2025</td>
+                        <td>
+                            <div class="payment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-overdue">Overdue</span></td>
+                        <td>
+                            <div class="contract-actions">
+                                <button class="action-btn" title="View Details" onclick="viewContract('CT002')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Send Reminder" onclick="sendReminder('CT002')">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                                <button class="action-btn" title="Payment History" onclick="showPaymentHistory('CT002')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>Emily Rodriguez</strong>
+                                <div style="font-size: 0.8rem; color: #64748b;">emily.r@email.com</div>
+                            </div>
+                        </td>
+                        <td><strong>$850</strong></td>
+                        <td>Nov 20, 2025</td>
+                        <td>
+                            <div class="payment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                                <span class="progress-text">60%</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>
+                            <div class="contract-actions">
+                                <button class="action-btn" title="View Details" onclick="viewContract('CT003')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Record Payment" onclick="recordPayment('CT003')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="action-btn" title="Payment History" onclick="showPaymentHistory('CT003')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>David Wilson</strong>
+                                <div style="font-size: 0.8rem; color: #64748b;">d.wilson@email.com</div>
+                            </div>
+                        </td>
+                        <td><strong>$3,000</strong></td>
+                        <td>Dec 1, 2025</td>
+                        <td>
+                            <div class="payment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="contract-actions">
+                                <button class="action-btn" title="View Details" onclick="viewContract('CT004')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Send Reminder" onclick="sendReminder('CT004')">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                                <button class="action-btn" title="Payment History" onclick="showPaymentHistory('CT004')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>Lisa Park</strong>
+                                <div style="font-size: 0.8rem; color: #64748b;">lisa.park@email.com</div>
+                            </div>
+                        </td>
+                        <td><strong>$1,800</strong></td>
+                        <td>Dec 10, 2025</td>
+                        <td>
+                            <div class="payment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 33%;"></div>
+                                </div>
+                                <span class="progress-text">33%</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>
+                            <div class="contract-actions">
+                                <button class="action-btn" title="View Details" onclick="viewContract('CT005')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Record Payment" onclick="recordPayment('CT005')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="action-btn" title="Payment History" onclick="showPaymentHistory('CT005')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <!-- Payment History Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h3 id="modalTitle">Payment History</h3>
+            <div id="modalContent">
+                <div class="payment-timeline">
+                    <div class="timeline-item completed">
+                        <div>
+                            <strong>Payment Received</strong> - $500
+                            <div style="font-size: 0.8rem; color: #64748b;">Oct 15, 2025 • Bank Transfer</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item completed">
+                        <div>
+                            <strong>Reminder Sent</strong>
+                            <div style="font-size: 0.8rem; color: #64748b;">Oct 10, 2025 • Email</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div>
+                            <strong>Contract Signed</strong>
+                            <div style="font-size: 0.8rem; color: #64748b;">Oct 1, 2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        document.getElementById('statusFilter').addEventListener('change', filterContracts);
+        document.getElementById('amountFilter').addEventListener('change', filterContracts);
+        document.getElementById('dueDateFilter').addEventListener('change', filterContracts);
+
+        function filterContracts() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const amountFilter = document.getElementById('amountFilter').value;
+            const dueDateFilter = document.getElementById('dueDateFilter').value;
+            
+            // Filter logic would go here
+            console.log('Filtering contracts:', { statusFilter, amountFilter, dueDateFilter });
+        }
+
+        function viewContract(contractId) {
+            window.location.href = `contract-details.html?id=${contractId}`;
+        }
+
+        function downloadPDF(contractId) {
+            // Simulate PDF download
+            const link = document.createElement('a');
+            link.href = '#';
+            link.download = `contract-${contractId}.pdf`;
+            link.click();
+        }
+
+        function showPaymentHistory(contractId) {
+            document.getElementById('paymentModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = `Payment History - ${contractId}`;
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function sendReminder(contractId) {
+            alert(`Reminder sent for contract ${contractId}`);
+        }
+
+        function recordPayment(contractId) {
+            const amount = prompt('Enter payment amount:');
+            if (amount) {
+                alert(`Payment of $${amount} recorded for contract ${contractId}`);
+                // Update progress bar logic would go here
+            }
+        }
+
+        function sendReminders() {
+            alert('Reminders sent to all overdue contracts');
+        }
+
+        function exportData() {
+            alert('Exporting contract data...');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
