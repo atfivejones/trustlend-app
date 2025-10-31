@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Advanced Contract - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- TrustLend Assets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-enhancements.css') }}">
+    <script src="{{ url_for('static', filename='js/smart-form-enhancements.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/premium-features.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/promissory-note-generator.js') }}"></script>
+    
+    <style>
+        .step-active { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; }
+        .step-completed { background-color: #22c55e; color: white; }
+        .step-inactive { background-color: #e5e7eb; color: #6b7280; }
+        .pricing-card { transition: all 0.3s ease; cursor: pointer; }
+        .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .pricing-card.selected { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+        .input-focus:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .fee-explanation { font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem; }
+        .payment-breakdown { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Universal Navigation -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </a>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="saveDraft()" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Save Draft
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div id="step1" class="flex items-center step-active rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold mr-3">1</span>
+                    <span class="font-semibold">Loan Information</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step2" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">2</span>
+                    <span class="font-semibold">Party Information</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step3" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">3</span>
+                    <span class="font-semibold">Review Contract</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step4" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">4</span>
+                    <span class="font-semibold">Choose Plan</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step5" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">5</span>
+                    <span class="font-semibold">Complete Payment</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step6" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">6</span>
+                    <span class="font-semibold">Sign & Send</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+                <div id="step7" class="flex items-center step-inactive rounded-lg px-4 py-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold mr-3">7</span>
+                    <span class="font-semibold">Done</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Steps -->
+        <!-- Step 1: Loan Information -->
+        <div id="loanInfoStep" class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 1: Loan Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Principal Amount -->
+                <div>
+                    <label for="principal" class="block text-sm font-semibold text-gray-700 mb-2">Principal Amount *</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input type="number" id="principal" name="principal" required 
+                               class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="10,000" min="1" step="0.01" onchange="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Flat Fee (FIXED) -->
+                <div>
+                    <label for="flatFee" class="block text-sm font-semibold text-gray-700 mb-2">Flat Fee (Optional)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input type="number" id="flatFee" name="flatFee" 
+                               class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="0.00" min="0" step="0.01" onchange="updatePreview()">
+                    </div>
+                    <!-- FIXED: Added explanation text -->
+                    <p class="fee-explanation">A one-time fee you can charge the borrower to cover contract processing or platform costs.</p>
+                    
+                    <!-- FIXED: Added "No Fee" checkbox -->
+                    <div class="mt-3">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="noFeeCheckbox" onchange="toggleFlatFee()" 
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-600">No fee - waive all charges</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Interest Rate -->
+                <div>
+                    <label for="interestRate" class="block text-sm font-semibold text-gray-700 mb-2">Interest Rate (Annual %)</label>
+                    <input type="number" id="interestRate" name="interestRate" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                           placeholder="5.5" min="0" max="30" step="0.1" onchange="updatePreview()">
+                </div>
+
+                <!-- Term Length -->
+                <div>
+                    <label for="termLength" class="block text-sm font-semibold text-gray-700 mb-2">Term Length (Months)</label>
+                    <input type="number" id="termLength" name="termLength" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                           placeholder="12" min="1" max="360" onchange="updatePreview()">
+                </div>
+
+                <!-- Payment Frequency -->
+                <div>
+                    <label for="paymentFrequency" class="block text-sm font-semibold text-gray-700 mb-2">Payment Frequency</label>
+                    <select id="paymentFrequency" name="paymentFrequency" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" onchange="updatePreview()">
+                        <option value="lump-sum">Lump Sum (Due at end)</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="bi-weekly">Bi-weekly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+
+                <!-- FIXED: Loan Purpose - Changed to dropdown -->
+                <div>
+                    <label for="loanPurpose" class="block text-sm font-semibold text-gray-700 mb-2">Loan Purpose</label>
+                    <select id="loanPurpose" name="loanPurpose" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" onchange="updatePreview()">
+                        <option value="">Select purpose...</option>
+                        <option value="personal">Personal Use</option>
+                        <option value="business">Business Investment</option>
+                        <option value="education">Education/Training</option>
+                        <option value="vehicle">Vehicle Purchase</option>
+                        <option value="home-improvement">Home Improvement</option>
+                        <option value="medical">Medical Expenses</option>
+                        <option value="debt-consolidation">Debt Consolidation</option>
+                        <option value="real-estate">Real Estate</option>
+                        <option value="equipment">Equipment Purchase</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Due Date -->
+                <div class="md:col-span-2">
+                    <label for="dueDate" class="block text-sm font-semibold text-gray-700 mb-2">Loan Start Date</label>
+                    <input type="date" id="dueDate" name="dueDate" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                           onchange="updatePreview()">
+                </div>
+
+                <!-- Late Fee Options -->
+                <div class="md:col-span-2">
+                    <label class="flex items-center mb-4">
+                        <input type="checkbox" id="enableLateFee" onchange="toggleLateFeeOptions()" 
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="ml-2 text-sm font-semibold text-gray-700">Enable Late Fees</span>
+                    </label>
+                    
+                    <div id="lateFeeOptions" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <label for="lateFeeAmount" class="block text-sm font-medium text-gray-700 mb-2">Late Fee Amount</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input type="number" id="lateFeeAmount" name="lateFeeAmount" 
+                                       class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                       placeholder="25.00" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="gracePeriod" class="block text-sm font-medium text-gray-700 mb-2">Grace Period (Days)</label>
+                            <input type="number" id="gracePeriod" name="gracePeriod" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                   placeholder="10" min="0" max="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Preview -->
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-blue-900 mb-2">Quick Preview</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-700 font-medium">Principal:</span>
+                        <div id="previewPrincipal" class="text-blue-900 font-bold">$0</div>
+                    </div>
+                    <div>
+                        <span class="text-blue-700 font-medium">Fee:</span>
+                        <div id="previewFee" class="text-blue-900 font-bold">$0</div>
+                    </div>
+                    <div>
+                        <span class="text-blue-700 font-medium">Total:</span>
+                        <div id="previewTotal" class="text-blue-900 font-bold">$0</div>
+                    </div>
+                    <div>
+                        <span class="text-blue-700 font-medium">Purpose:</span>
+                        <div id="previewPurpose" class="text-blue-900 font-bold">Not specified</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-end mt-8">
+                <button onclick="nextStep()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Next: Party Information →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Party Information -->
+        <div id="partyInfoStep" class="hidden bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 2: Party Information</h2>
+            
+            <!-- Lender Information -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Lender Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="lenderFirstName" class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                        <input type="text" id="lenderFirstName" name="lenderFirstName" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="John" onchange="updatePreview()">
+                    </div>
+                    <div>
+                        <label for="lenderLastName" class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                        <input type="text" id="lenderLastName" name="lenderLastName" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="Smith" onchange="updatePreview()">
+                    </div>
+                    <div>
+                        <label for="lenderEmail" class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="lenderEmail" name="lenderEmail" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label for="lenderPhone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" id="lenderPhone" name="lenderPhone" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Borrower Information -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Borrower Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="borrowerFirstName" class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                        <input type="text" id="borrowerFirstName" name="borrowerFirstName" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="Jane" onchange="updatePreview()">
+                    </div>
+                    <div>
+                        <label for="borrowerLastName" class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                        <input type="text" id="borrowerLastName" name="borrowerLastName" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="Doe" onchange="updatePreview()">
+                    </div>
+                    <div>
+                        <label for="borrowerEmail" class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="borrowerEmail" name="borrowerEmail" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="jane@example.com">
+                    </div>
+                    <div>
+                        <label for="borrowerPhone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" id="borrowerPhone" name="borrowerPhone" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="(555) 987-6543" oninput="formatPhoneNumber(this)">
+                    </div>
+                    
+                    <!-- FIXED: Date of Birth with proper 18+ validation -->
+                    <div>
+                        <label for="borrowerDOB" class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth *</label>
+                        <input type="date" id="borrowerDOB" name="borrowerDOB" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               onchange="validateAge(this)">
+                        <div id="ageError" class="hidden text-red-600 text-sm mt-1">
+                            Borrower must be 18 years or older
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="borrowerSSN" class="block text-sm font-semibold text-gray-700 mb-2">SSN (Last 4 digits)</label>
+                        <input type="text" id="borrowerSSN" name="borrowerSSN" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="1234" maxlength="4" pattern="[0-9]{4}" oninput="formatSSN(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between mt-8">
+                <button onclick="previousStep()" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                    ← Previous
+                </button>
+                <button onclick="nextStep()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Next: Review Contract →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Review Contract (ENHANCED) -->
+        <div id="reviewStep" class="hidden bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 3: Review Contract</h2>
+            
+            <!-- Contract Summary -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Left Column: Basic Info -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Contract Details</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Principal Amount:</span>
+                            <span id="reviewPrincipal" class="font-semibold">$0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Processing Fee:</span>
+                            <span id="reviewFee" class="font-semibold">$0</span>
+                        </div>
+                        <div class="flex justify-between border-t pt-2">
+                            <span class="text-gray-900 font-semibold">Total Amount:</span>
+                            <span id="reviewTotal" class="font-bold text-lg">$0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Interest Rate:</span>
+                            <span id="reviewInterestRate" class="font-semibold">0%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Loan Purpose:</span>
+                            <span id="reviewPurpose" class="font-semibold">Not specified</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 mt-8">Parties</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-gray-600">Lender:</span>
+                            <div id="reviewLender" class="font-semibold">Not specified</div>
+                            <div id="reviewLenderEmail" class="text-sm text-gray-500">—</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Borrower:</span>
+                            <div id="reviewBorrower" class="font-semibold">Not specified</div>
+                            <div id="reviewBorrowerEmail" class="text-sm text-gray-500">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FIXED: Right Column: Payment Breakdown -->
+                <div class="payment-breakdown p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Breakdown</h3>
+                    <div id="paymentScheduleContainer">
+                        <div id="lumpSumPayment" class="hidden">
+                            <div class="text-center p-4 bg-white rounded-lg border-2 border-dashed border-blue-300">
+                                <div class="text-3xl font-bold text-blue-600" id="lumpSumAmount">$0</div>
+                                <div class="text-gray-600">Due on</div>
+                                <div class="font-semibold" id="lumpSumDate">—</div>
+                            </div>
+                        </div>
+                        
+                        <div id="installmentPayments" class="hidden">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <div class="font-bold text-blue-600" id="installmentAmount">$0</div>
+                                    <div class="text-sm text-gray-600">Per Payment</div>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <div class="font-bold text-green-600" id="totalPayments">0</div>
+                                    <div class="text-sm text-gray-600">Total Payments</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg p-4">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>Start Date:</span>
+                                    <span id="paymentStartDate">—</span>
+                                </div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>End Date:</span>
+                                    <span id="paymentEndDate">—</span>
+                                </div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-4">
+                                    <span>Frequency:</span>
+                                    <span id="paymentFreq">—</span>
+                                </div>
+                                
+                                <h4 class="font-semibold text-gray-800 mb-2">Upcoming Payment Dates:</h4>
+                                <div id="upcomingDates" class="text-sm space-y-1">
+                                    <!-- Payment dates will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interest & Fee Breakdown -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Financial Summary</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div id="totalInterest" class="text-2xl font-bold text-blue-600">$0</div>
+                        <div class="text-sm text-gray-600">Total Interest</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="totalAmount" class="text-2xl font-bold text-green-600">$0</div>
+                        <div class="text-sm text-gray-600">Total to be Paid</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="effectiveRate" class="text-2xl font-bold text-orange-600">0%</div>
+                        <div class="text-sm text-gray-600">Effective APR</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between mt-8">
+                <button onclick="previousStep()" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                    ← Previous
+                </button>
+                <button onclick="nextStep()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Next: Choose Plan →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Choose Plan (No Changes Needed) -->
+        <div id="planStep" class="hidden bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 4: Choose Your Plan</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Basic Plan -->
+                <div class="pricing-card border-2 border-gray-200 rounded-xl p-6" onclick="selectPlan('basic')">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Basic</h3>
+                        <div class="text-3xl font-bold text-blue-600 mb-4">$9.99</div>
+                        <p class="text-gray-600 mb-6">Perfect for simple contracts</p>
+                        
+                        <ul class="text-left space-y-2 mb-6">
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Contract creation & management
+                            </li>
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Digital signatures
+                            </li>
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Email support
+                            </li>
+                            <li class="flex items-center feature-excluded">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                Auto payment reminders
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Enhanced Plan -->
+                <div class="pricing-card border-2 border-blue-500 rounded-xl p-6 selected" onclick="selectPlan('enhanced')">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">Recommended</span>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Enhanced</h3>
+                        <div class="text-3xl font-bold text-blue-600 mb-4">$19.99</div>
+                        <p class="text-gray-600 mb-6">Advanced features for professionals</p>
+                        
+                        <ul class="text-left space-y-2 mb-6">
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Everything in Basic
+                            </li>
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Auto payment reminders
+                            </li>
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Credit reporting
+                            </li>
+                            <li class="flex items-center feature-included">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Analytics & reports
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between mt-8">
+                <button onclick="previousStep()" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                    ← Previous
+                </button>
+                <button onclick="nextStep()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Next: Complete Payment →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 5: Complete Payment (STREAMLINED - Removed Manual Payment) -->
+        <div id="paymentStep" class="hidden bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 5: Complete Payment</h2>
+            
+            <!-- Payment Summary -->
+            <div class="bg-blue-50 p-6 rounded-lg mb-8">
+                <h3 class="text-lg font-semibold text-blue-900 mb-4">Payment Summary</h3>
+                <div class="flex justify-between items-center">
+                    <span class="text-blue-800">Selected Plan:</span>
+                    <span id="selectedPlanName" class="font-bold text-blue-900">Enhanced Plan</span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-blue-800">Amount:</span>
+                    <span id="selectedPlanPrice" class="font-bold text-blue-900 text-xl">$19.99</span>
+                </div>
+            </div>
+
+            <!-- Credit Card Payment Form -->
+            <div class="space-y-6">
+                <h3 class="text-lg font-semibold text-gray-800">Payment Information</h3>
+                
+                <!-- Stripe Elements Containers -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
+                        <div id="card-number" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Expiry Date</label>
+                        <div id="card-expiry" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">CVC</label>
+                        <div id="card-cvc" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <label for="cardholderName" class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
+                        <input type="text" id="cardholderName" name="cardholderName" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                               placeholder="John Smith">
+                    </div>
+                </div>
+
+                <!-- Billing Address -->
+                <div class="mt-8">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Billing Address</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label for="billingAddress" class="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
+                            <input type="text" id="billingAddress" name="billingAddress" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                   placeholder="123 Main St">
+                        </div>
+                        <div>
+                            <label for="billingCity" class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                            <input type="text" id="billingCity" name="billingCity" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                   placeholder="New York">
+                        </div>
+                        <div>
+                            <label for="billingState" class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                            <input type="text" id="billingState" name="billingState" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                   placeholder="NY">
+                        </div>
+                        <div>
+                            <label for="billingZip" class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+                            <input type="text" id="billingZip" name="billingZip" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus" 
+                                   placeholder="10001">
+                        </div>
+                        <div>
+                            <label for="billingCountry" class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                            <select id="billingCountry" name="billingCountry" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus">
+                                <option value="US" selected>United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="GB">United Kingdom</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="text-sm text-green-800">
+                            Your payment is secured with 256-bit SSL encryption. We never store your card details.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between mt-8">
+                <button onclick="previousStep()" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                    ← Previous
+                </button>
+                <button onclick="processPayment()" id="paymentButton" class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    Process Payment →
+                </button>
+            </div>
+        </div>
+
+        <!-- Remaining steps (6 & 7) would continue here... -->
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        let currentStep = 1;
+        let selectedPlan = 'enhanced';
+        let stripe, elements, cardNumber, cardExpiry, cardCvc;
+
+        // Initialize Stripe
+        function initializeStripe() {
+            stripe = Stripe('pk_test_your_publishable_key_here'); // Replace with your Stripe publishable key
+            elements = stripe.elements();
+
+            cardNumber = elements.create('cardNumber', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+            cardNumber.mount('#card-number');
+
+            cardExpiry = elements.create('cardExpiry', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+            cardExpiry.mount('#card-expiry');
+
+            cardCvc = elements.create('cardCvc', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+            cardCvc.mount('#card-cvc');
+        }
+
+        // FIXED: Flat Fee Toggle Function
+        function toggleFlatFee() {
+            const checkbox = document.getElementById('noFeeCheckbox');
+            const feeInput = document.getElementById('flatFee');
+            
+            if (checkbox.checked) {
+                feeInput.value = '0.00';
+                feeInput.disabled = true;
+                feeInput.style.backgroundColor = '#f3f4f6';
+            } else {
+                feeInput.disabled = false;
+                feeInput.style.backgroundColor = '';
+            }
+            updatePreview();
+        }
+
+        // FIXED: Age Validation Function
+        function validateAge(input) {
+            const birthDate = new Date(input.value);
+            const today = new Date();
+            const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            const ageError = document.getElementById('ageError');
+            
+            if (birthDate > eighteenYearsAgo) {
+                ageError.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                ageError.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+
+        // FIXED: Enhanced updatePreview function
+        function updatePreview() {
+            const principal = parseFloat(document.getElementById('principal').value) || 0;
+            const fee = parseFloat(document.getElementById('flatFee').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const termLength = parseInt(document.getElementById('termLength').value) || 0;
+            const frequency = document.getElementById('paymentFrequency').value;
+            const purposeSelect = document.getElementById('loanPurpose');
+            const purpose = purposeSelect.options[purposeSelect.selectedIndex].text;
+            
+            const total = principal + fee;
+            
+            // Update quick preview
+            document.getElementById('previewPrincipal').textContent = '$' + principal.toLocaleString();
+            document.getElementById('previewFee').textContent = '$' + fee.toLocaleString();
+            document.getElementById('previewTotal').textContent = '$' + total.toLocaleString();
+            document.getElementById('previewPurpose').textContent = purpose !== 'Select purpose...' ? purpose : 'Not specified';
+            
+            // Update review step
+            if (document.getElementById('reviewPrincipal')) {
+                document.getElementById('reviewPrincipal').textContent = '$' + principal.toLocaleString();
+                document.getElementById('reviewFee').textContent = '$' + fee.toLocaleString();
+                document.getElementById('reviewTotal').textContent = '$' + total.toLocaleString();
+                document.getElementById('reviewInterestRate').textContent = interestRate + '%';
+                document.getElementById('reviewPurpose').textContent = purpose !== 'Select purpose...' ? purpose : 'Not specified';
+                
+                // FIXED: Calculate and display payment breakdown
+                updatePaymentBreakdown(principal, fee, interestRate, termLength, frequency);
+            }
+        }
+
+        // FIXED: New function for payment breakdown calculation
+        function updatePaymentBreakdown(principal, fee, interestRate, termLength, frequency) {
+            const total = principal + fee;
+            
+            if (frequency === 'lump-sum') {
+                // Show lump sum payment
+                document.getElementById('lumpSumPayment').classList.remove('hidden');
+                document.getElementById('installmentPayments').classList.add('hidden');
+                
+                document.getElementById('lumpSumAmount').textContent = '$' + total.toLocaleString();
+                
+                const dueDate = document.getElementById('dueDate').value;
+                if (dueDate) {
+                    const endDate = new Date(dueDate);
+                    endDate.setMonth(endDate.getMonth() + termLength);
+                    document.getElementById('lumpSumDate').textContent = endDate.toLocaleDateString();
+                }
+            } else {
+                // Show installment payments
+                document.getElementById('lumpSumPayment').classList.add('hidden');
+                document.getElementById('installmentPayments').classList.remove('hidden');
+                
+                // Calculate payment details
+                const monthlyRate = interestRate / 100 / 12;
+                let paymentAmount, totalPayments, totalInterest;
+                
+                if (interestRate > 0 && termLength > 0) {
+                    // Calculate using loan formula
+                    const totalPaymentsCount = termLength;
+                    paymentAmount = total * (monthlyRate * Math.pow(1 + monthlyRate, totalPaymentsCount)) / 
+                                   (Math.pow(1 + monthlyRate, totalPaymentsCount) - 1);
+                    totalInterest = (paymentAmount * totalPaymentsCount) - total;
+                } else {
+                    // Simple division if no interest
+                    totalPayments = termLength || 1;
+                    paymentAmount = total / totalPayments;
+                    totalInterest = 0;
+                }
+                
+                // Adjust for frequency
+                let paymentsPerYear = 12;
+                switch(frequency) {
+                    case 'weekly': paymentsPerYear = 52; break;
+                    case 'bi-weekly': paymentsPerYear = 26; break;
+                    case 'quarterly': paymentsPerYear = 4; break;
+                }
+                
+                const adjustedPayments = Math.ceil(termLength * paymentsPerYear / 12);
+                const adjustedPaymentAmount = total / adjustedPayments;
+                
+                // Update display
+                document.getElementById('installmentAmount').textContent = '$' + Math.round(adjustedPaymentAmount).toLocaleString();
+                document.getElementById('totalPayments').textContent = adjustedPayments;
+                document.getElementById('paymentFreq').textContent = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+                
+                // Calculate dates
+                const startDate = new Date(document.getElementById('dueDate').value || Date.now());
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + termLength);
+                
+                document.getElementById('paymentStartDate').textContent = startDate.toLocaleDateString();
+                document.getElementById('paymentEndDate').textContent = endDate.toLocaleDateString();
+                
+                // Show upcoming payment dates
+                const upcomingDates = calculateUpcomingDates(startDate, frequency, Math.min(5, adjustedPayments));
+                const upcomingContainer = document.getElementById('upcomingDates');
+                upcomingContainer.innerHTML = upcomingDates.map((date, index) => 
+                    `<div>Payment ${index + 1}: ${date.toLocaleDateString()}</div>`
+                ).join('');
+                
+                // Update financial summary
+                document.getElementById('totalInterest').textContent = '$' + Math.round(totalInterest).toLocaleString();
+                document.getElementById('totalAmount').textContent = '$' + Math.round(total + totalInterest).toLocaleString();
+                document.getElementById('effectiveRate').textContent = Math.round(((total + totalInterest) / total - 1) * 100) + '%';
+            }
+        }
+
+        // Helper function to calculate upcoming payment dates
+        function calculateUpcomingDates(startDate, frequency, count) {
+            const dates = [];
+            const currentDate = new Date(startDate);
+            
+            for (let i = 0; i < count; i++) {
+                dates.push(new Date(currentDate));
+                
+                switch(frequency) {
+                    case 'weekly':
+                        currentDate.setDate(currentDate.getDate() + 7);
+                        break;
+                    case 'bi-weekly':
+                        currentDate.setDate(currentDate.getDate() + 14);
+                        break;
+                    case 'monthly':
+                        currentDate.setMonth(currentDate.getMonth() + 1);
+                        break;
+                    case 'quarterly':
+                        currentDate.setMonth(currentDate.getMonth() + 3);
+                        break;
+                }
+            }
+            
+            return dates;
+        }
+
+        // Step navigation functions
+        function nextStep() {
+            // Validate current step
+            if (!validateCurrentStep()) return;
+            
+            // Hide current step
+            document.getElementById(getStepId(currentStep)).classList.add('hidden');
+            
+            // Update step indicators
+            document.getElementById(`step${currentStep}`).classList.remove('step-active');
+            document.getElementById(`step${currentStep}`).classList.add('step-completed');
+            
+            // Move to next step
+            currentStep++;
+            
+            // Show next step
+            document.getElementById(getStepId(currentStep)).classList.remove('hidden');
+            document.getElementById(`step${currentStep}`).classList.add('step-active');
+            
+            // Initialize step-specific functionality
+            if (currentStep === 5) {
+                initializeStripe();
+            }
+        }
+
+        function previousStep() {
+            // Hide current step
+            document.getElementById(getStepId(currentStep)).classList.add('hidden');
+            document.getElementById(`step${currentStep}`).classList.remove('step-active');
+            document.getElementById(`step${currentStep}`).classList.add('step-inactive');
+            
+            // Move to previous step
+            currentStep--;
+            
+            // Show previous step
+            document.getElementById(getStepId(currentStep)).classList.remove('hidden');
+            document.getElementById(`step${currentStep}`).classList.remove('step-completed', 'step-inactive');
+            document.getElementById(`step${currentStep}`).classList.add('step-active');
+        }
+
+        function getStepId(step) {
+            const stepIds = ['', 'loanInfoStep', 'partyInfoStep', 'reviewStep', 'planStep', 'paymentStep', 'signStep', 'doneStep'];
+            return stepIds[step];
+        }
+
+        function validateCurrentStep() {
+            switch(currentStep) {
+                case 1:
+                    return validateLoanInfo();
+                case 2:
+                    return validatePartyInfo();
+                default:
+                    return true;
+            }
+        }
+
+        function validateLoanInfo() {
+            const principal = document.getElementById('principal').value;
+            if (!principal || parseFloat(principal) <= 0) {
+                alert('Please enter a valid principal amount');
+                return false;
+            }
+            return true;
+        }
+
+        function validatePartyInfo() {
+            const required = ['lenderFirstName', 'lenderLastName', 'lenderEmail', 'borrowerFirstName', 'borrowerLastName', 'borrowerEmail'];
+            for (let field of required) {
+                if (!document.getElementById(field).value.trim()) {
+                    alert('Please fill in all required fields');
+                    return false;
+                }
+            }
+            
+            // Validate age if DOB is provided
+            const dobField = document.getElementById('borrowerDOB');
+            if (dobField.value && !validateAge(dobField)) {
+                alert('Borrower must be 18 years or older');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Plan selection
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            
+            // Update UI
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.pricing-card').classList.add('selected');
+            
+            // Update payment step
+            const planNames = { basic: 'Basic Plan', enhanced: 'Enhanced Plan' };
+            const planPrices = { basic: '$9.99', enhanced: '$19.99' };
+            
+            document.getElementById('selectedPlanName').textContent = planNames[plan];
+            document.getElementById('selectedPlanPrice').textContent = planPrices[plan];
+        }
+
+        // Payment processing
+        function processPayment() {
+            const button = document.getElementById('paymentButton');
+            button.disabled = true;
+            button.innerHTML = 'Processing...';
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = 'Process Payment →';
+                alert('Payment processed successfully!');
+                nextStep();
+            }, 2000);
+        }
+
+        // Utility functions
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.substring(0, 10);
+            
+            if (value.length >= 6) {
+                value = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+            } else if (value.length >= 3) {
+                value = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+            }
+            
+            input.value = value;
+        }
+
+        function formatSSN(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.substring(0, 4);
+            input.value = value;
+        }
+
+        function toggleLateFeeOptions() {
+            const enabled = document.getElementById('enableLateFee').checked;
+            document.getElementById('lateFeeOptions').classList.toggle('hidden', !enabled);
+        }
+
+        function saveDraft() {
+            // Save form data to localStorage
+            const formData = {
+                currentStep,
+                selectedPlan,
+                // ... collect all form data
+            };
+            localStorage.setItem('trustlend_draft', JSON.stringify(formData));
+            alert('Draft saved successfully!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dueDate').value = today;
+            
+            // Set max date for DOB (18 years ago)
+            const eighteenYearsAgo = new Date();
+            eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+            document.getElementById('borrowerDOB').max = eighteenYearsAgo.toISOString().split('T')[0];
+            
+            updatePreview();
+        });
+    </script>
+</body>
+</html>
