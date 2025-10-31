@@ -3,135 +3,820 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support - TrustLend</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Help & Support - TrustLend</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .user-profile-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search Box */
+        .search-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .action-icon.faq {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .action-icon.guides {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .action-icon.tips {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .action-icon.contact {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .action-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-description {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* FAQ Section */
+        .faq-item {
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .faq-question {
+            background: none;
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+        .faq-question:hover {
+            color: #667eea;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 1rem 0 0 0;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s;
+        }
+
+        .faq-question.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Tips & Guides */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tip-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .tip-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .tip-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-description {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Contact Options */
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.2rem;
+        }
+
+        .contact-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: #5a6fd8;
+        }
+
+        /* Best Practices Section */
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .practice-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .practice-content h4 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-content p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 2rem 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-options {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
-                </a>
-                
-                <div class="flex items-center space-x-4">
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="profile.html" class="text-gray-600 hover:text-gray-900">Profile</a>
-                </div>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">TrustLend</a>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contracts.html">Contracts</a></li>
+                <li><a href="billing.html">Billing</a></li>
+                <li><a href="support.html" style="opacity: 0.8;">Support</a></li>
+            </ul>
+            <div class="user-profile-nav">
+                <span>John Doe</span>
+                <a href="profile.html" style="color: white;"><i class="fas fa-user-circle"></i></a>
+                <a href="signin.html" style="color: white;"><i class="fas fa-sign-out-alt"></i></a>
             </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">How can we help you?</h1>
-            <p class="text-gray-600">Get answers to common questions or contact our support team</p>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Help & Support</h1>
+            <p class="page-subtitle">Find answers to your questions, learn best practices, and get the help you need to make the most of TrustLend</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search for help articles, guides, or FAQs...">
+            </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                <div class="text-4xl mb-4">📧</div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Email Support</h3>
-                <p class="text-gray-600 mb-4">Get help within 24 hours</p>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                    Send Email
-                </button>
+        <div class="quick-actions">
+            <div class="action-card" onclick="scrollToSection('faq')">
+                <div class="action-icon faq">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3 class="action-title">Frequently Asked Questions</h3>
+                <p class="action-description">Find quick answers to common questions about TrustLend</p>
             </div>
-
-            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                <div class="text-4xl mb-4">💬</div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Live Chat</h3>
-                <p class="text-gray-600 mb-4">Chat with our team now</p>
-                <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                    Start Chat
-                </button>
+            <div class="action-card" onclick="scrollToSection('guides')">
+                <div class="action-icon guides">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="action-title">User Guides</h3>
+                <p class="action-description">Step-by-step instructions for using TrustLend features</p>
             </div>
-
-            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                <div class="text-4xl mb-4">📞</div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Phone Support</h3>
-                <p class="text-gray-600 mb-4">Priority users only</p>
-                <div class="text-gray-500 text-sm">Available 9am-5pm EST</div>
+            <div class="action-card" onclick="scrollToSection('tips')">
+                <div class="action-icon tips">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="action-title">Tips & Best Practices</h3>
+                <p class="action-description">Expert advice for secure and effective lending</p>
+            </div>
+            <div class="action-card" onclick="scrollToSection('contact')">
+                <div class="action-icon contact">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="action-title">Contact Support</h3>
+                <p class="action-description">Get personalized help from our support team</p>
             </div>
         </div>
 
         <!-- FAQ Section -->
-        <div class="bg-white rounded-lg border border-gray-200 p-8 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
-            
-            <div class="space-y-6">
-                <div class="border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">How do I create my first contract?</h3>
-                    <p class="text-gray-600">Click "Create Note" in the navigation, fill in the loan details and party information, then proceed through our guided signing process.</p>
-                </div>
+        <div id="faq" class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </h2>
 
-                <div class="border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Are these contracts legally enforceable?</h3>
-                    <p class="text-gray-600">Yes! Our contracts are UCC Article 3-104 compliant and designed to hold up in small claims court. Users have a 100% success rate so far.</p>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How does TrustLend protect my contracts?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>TrustLend uses multiple layers of protection including encrypted storage, blockchain timestamping (Premium tier), email delivery tracking, and legal-grade PDF generation. All contracts are stored securely and can be used as evidence in legal proceedings.</p>
                 </div>
+            </div>
 
-                <div class="border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">What's the difference between the $9.99 and $19.99 plans?</h3>
-                    <p class="text-gray-600">The $19.99 Maximum Protection includes blockchain verification, ID verification, court evidence packages, and priority support. The $9.99 Essential Protection covers basic legal contracts with digital signatures.</p>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What's the difference between Essential and Maximum Protection?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p><strong>Essential Protection ($9.99/month):</strong> Email delivery tracking, payment reminders, PDF downloads, and basic support.<br><br>
+                    <strong>Maximum Protection ($19.99/month):</strong> All Essential features plus blockchain timestamping, ID verification, court evidence packages, smart reminder escalation, and priority support.</p>
                 </div>
+            </div>
 
-                <div class="border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I get a refund if my contract doesn't work?</h3>
-                    <p class="text-gray-600">Yes, we offer a money-back guarantee. If your TrustLend contract doesn't help you recover your loan, we'll refund your fee.</p>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can my contracts hold up in court?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! TrustLend generates legally compliant contracts with proper signatures, timestamps, and documentation. Maximum Protection tier includes blockchain proof and court evidence packages that strengthen your legal position.</p>
                 </div>
+            </div>
 
-                <div class="pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">How do payment reminders work?</h3>
-                    <p class="text-gray-600">We automatically send professional email and SMS reminders to borrowers before due dates and after missed payments, so you don't have to chase people for money.</p>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do payment reminders work?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>TrustLend automatically sends email reminders based on your contract terms. Essential tier provides basic reminders, while Maximum tier includes smart escalation with multiple reminder types and frequencies.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Is my personal information secure?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Absolutely. We use bank-level encryption, secure data centers, and follow strict privacy policies. Your information is never shared with third parties without your consent.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export my contract data?
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, you can export all your contract data in multiple formats (PDF, CSV, JSON) from your account settings. This ensures you always have access to your information.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Resources -->
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Legal Resources</h3>
-                <ul class="space-y-3">
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">Understanding UCC Article 9</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">Small Claims Court Guide</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">State-by-State Legal Requirements</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">How to Collect on a Defaulted Loan</a></li>
-                </ul>
-            </div>
+        <!-- User Guides Section -->
+        <div id="guides" class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-book"></i>
+                User Guides
+            </h2>
 
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Getting Started</h3>
-                <ul class="space-y-3">
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">Video Tutorial: Creating Your First Contract</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">Best Practices for Family Loans</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">How to Talk to Family About Contracts</a></li>
-                    <li><a href="#" class="text-blue-600 hover:text-blue-700">Setting Payment Schedules</a></li>
-                </ul>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h4 class="tip-title">Creating Your First Contract</h4>
+                    <p class="tip-description">Learn how to create, customize, and send your first lending agreement with all necessary legal protections.</p>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <h4 class="tip-title">Digital Signatures</h4>
+                    <p class="tip-description">Understand how digital signatures work, their legal validity, and how to ensure proper execution.</p>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="tip-title">Payment Tracking</h4>
+                    <p class="tip-description">Master the payment tracking system, set up automatic reminders, and manage overdue accounts.</p>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="tip-title">Security Features</h4>
+                    <p class="tip-description">Explore advanced security features like blockchain timestamping and ID verification.</p>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h4 class="tip-title">Legal Compliance</h4>
+                    <p class="tip-description">Ensure your contracts meet legal requirements and understand your rights and obligations.</p>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h4 class="tip-title">Account Settings</h4>
+                    <p class="tip-description">Configure your account preferences, notification settings, and security options.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Contact Information -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
-            <h3 class="text-lg font-bold text-blue-900 mb-4">Still need help?</h3>
-            <div class="grid md:grid-cols-2 gap-4 text-blue-800">
-                <div>
-                    <strong>Email:</strong> support@trustlend.app<br>
-                    <strong>Response time:</strong> Within 24 hours
+        <!-- Tips & Best Practices Section -->
+        <div id="tips" class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-lightbulb"></i>
+                Tips & Best Practices
+            </h2>
+
+            <div class="practice-item">
+                <div class="practice-number">1</div>
+                <div class="practice-content">
+                    <h4>Always Verify Borrower Identity</h4>
+                    <p>Use the ID verification feature (Maximum Protection) to confirm the borrower's identity before finalizing any agreement. This adds legal weight and reduces fraud risk.</p>
                 </div>
-                <div>
-                    <strong>Phone:</strong> (555) 123-LEND<br>
-                    <strong>Hours:</strong> Mon-Fri 9am-5pm EST (Priority users)
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">2</div>
+                <div class="practice-content">
+                    <h4>Set Clear Payment Terms</h4>
+                    <p>Specify exact payment amounts, due dates, and consequences for late payment. Ambiguous terms can lead to disputes and make enforcement difficult.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">3</div>
+                <div class="practice-content">
+                    <h4>Document Everything</h4>
+                    <p>Keep records of all communications, payment receipts, and changes to agreements. TrustLend automatically tracks many of these for you.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">4</div>
+                <div class="practice-content">
+                    <h4>Use Graduated Reminders</h4>
+                    <p>Start with friendly reminders and gradually increase urgency. The smart reminder system (Maximum Protection) handles this automatically.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">5</div>
+                <div class="practice-content">
+                    <h4>Consider Interest and Fees</h4>
+                    <p>Clearly state any interest rates or late fees in your contract. Ensure they comply with local laws and are reasonable.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">6</div>
+                <div class="practice-content">
+                    <h4>Plan for Default Scenarios</h4>
+                    <p>Include provisions for what happens if payments are missed. Consider payment plans, collateral, or legal remedies.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">7</div>
+                <div class="practice-content">
+                    <h4>Regular Account Monitoring</h4>
+                    <p>Check your dashboard regularly for overdue payments and contract status updates. Set up notifications to stay informed.</p>
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-number">8</div>
+                <div class="practice-content">
+                    <h4>Backup Your Data</h4>
+                    <p>Regularly export your contract data and store copies securely. This protects you if you need to change platforms or for legal proceedings.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Support Section -->
+        <div id="contact" class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-headset"></i>
+                Contact Support
+            </h2>
+
+            <div class="contact-options">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="contact-title">Email Support</h4>
+                    <p class="contact-info">Get detailed help via email<br>Response time: 24 hours</p>
+                    <button class="contact-btn" onclick="openEmail()">Send Email</button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4 class="contact-title">Live Chat</h4>
+                    <p class="contact-info">Chat with our support team<br>Available: Mon-Fri, 9AM-6PM</p>
+                    <button class="contact-btn" onclick="openChat()">Start Chat</button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h4 class="contact-title">Priority Phone</h4>
+                    <p class="contact-info">Maximum Protection users only<br>Direct line: 1-800-TRUST-01</p>
+                    <button class="contact-btn" onclick="callSupport()">Call Now</button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h4 class="contact-title">Support Ticket</h4>
+                    <p class="contact-info">Track your support requests<br>For complex technical issues</p>
+                    <button class="contact-btn" onclick="createTicket()">Create Ticket</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('.faq-icon');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                if (item !== answer) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.faq-question').forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Toggle current FAQ
+            answer.classList.toggle('active');
+            element.classList.toggle('active');
+        }
+
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        function openEmail() {
+            window.location.href = 'mailto:support@trustlend.com?subject=Support Request';
+        }
+
+        function openChat() {
+            // Simulate chat opening
+            alert('Live chat opening... Please wait while we connect you to a support agent.');
+        }
+
+        function callSupport() {
+            window.location.href = 'tel:1-800-878-7801';
+        }
+
+        function createTicket() {
+            // Simulate ticket creation
+            alert('Redirecting to support ticket system...');
+        }
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+            const tipCards = document.querySelectorAll('.tip-card');
+            
+            // Filter FAQ items
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(query) || answer.includes(query)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = query === '' ? 'block' : 'none';
+                }
+            });
+            
+            // Filter tip cards
+            tipCards.forEach(card => {
+                const title = card.querySelector('.tip-title').textContent.toLowerCase();
+                const description = card.querySelector('.tip-description').textContent.toLowerCase();
+                
+                if (title.includes(query) || description.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = query === '' ? 'block' : 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
