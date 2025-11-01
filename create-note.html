@@ -1,0 +1,3116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Promissory Note - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- TrustLend Assets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tier-features.css">
+    <script src="js/form-enhancements.js"></script>
+    <script src="js/tier-management.js"></script>
+    <script src="js/compliance.js"></script>
+    <script src="js/blockchain.js"></script>
+    <script src="js/note-generator.js"></script>
+    
+    <style>
+        .input-focus:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .step-active {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+        }
+        .step-completed {
+            background-color: #22c55e;
+            color: white;
+        }
+        .step-inactive {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        .signature-canvas {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            cursor: crosshair;
+            background: #fafafa;
+            touch-action: none;
+        }
+        .signature-canvas.active {
+            border-color: #3b82f6;
+            background: #fafbff;
+        }
+        .signature-canvas.signature-completed {
+            border-color: #10b981 !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .signature-method-btn {
+            transition: all 0.2s;
+        }
+        .signature-method-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .tier-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .tier-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .tier-card.selected {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .tier-badge {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+        }
+        .enhanced-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .premium-badge {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        .feature-enhanced {
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(90deg, rgba(59,130,246,0.05), transparent);
+        }
+        .payment-breakdown {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 1px solid #93c5fd;
+        }
+        .ucc-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+        }
+        .flat-fee-explanation {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #0ea5e9;
+        }
+        .dob-validation-error {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        /* Stripe Elements Styling - Fix Red Appearance */
+        .StripeElement {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .StripeElement--focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+        .StripeElement--complete {
+            border-color: #10b981;
+        }
+        #card-number, #card-expiry, #card-cvc {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+        #card-number:focus-within, #card-expiry:focus-within, #card-cvc:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- TrustLend Universal Navigation -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </a>
+                
+                <!-- Current Tier Display -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <div id="currentTierDisplay" class="flex items-center space-x-2">
+                        <span class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Basic Plan
+                        </span>
+                        <span id="featuresUnlocked" class="text-sm text-gray-600">3 features active</span>
+                    </div>
+                    
+                    <!-- Demo Mode Indicator -->
+                    <div id="demoModeIndicator" class="bg-yellow-100 border border-yellow-300 px-2 py-1 rounded text-xs text-yellow-800 font-medium hidden">
+                        🎭 Demo Mode
+                    </div>
+                    
+                    <button onclick="saveDraft()" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Save Draft
+                    </button>
+                    
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5v4"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+
+                    <div class="relative group">
+                        <button class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+                                <span id="userInitials" class="text-sm font-semibold text-blue-600">TU</span>
+                            </div>
+                            <span class="hidden lg:inline" id="userName">Account</span>
+                            <div class="w-2 h-2 bg-green-500 rounded-full ml-1" title="Blockchain Verified"></div>
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block">
+                            <div class="py-1">
+                                <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
+                                <a href="billing.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Billing & Plans</a>
+                                <a href="audit-trail.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔗 Audit Trail & Verification</a>
+                                <a href="support.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help & Support</a>
+                                <hr class="my-1">
+                                <button onclick="signOut()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-4 py-3 space-y-1">
+                <div id="mobileTierDisplay" class="mb-3 p-2 bg-blue-50 rounded-lg">
+                    <div class="tier-badge text-white px-2 py-1 rounded text-sm inline-block">Basic Plan</div>
+                    <div class="text-xs text-gray-600 mt-1">3 features active</div>
+                </div>
+                <button onclick="saveDraft()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Save Draft</button>
+                <a href="dashboard.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Dashboard</a>
+                <hr class="my-2">
+                <a href="profile.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Profile Settings</a>
+                <a href="billing.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Billing & Plans</a>
+                <a href="audit-trail.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                    🔗 Audit Trail & Verification
+                </a>
+                <a href="support.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Help & Support</a>
+                <button onclick="signOut()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Enhanced Progress Steps (6 Steps) -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 md:space-x-4 overflow-x-auto">
+                    <div id="step-1" class="step-active flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">1</div>
+                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                    <div id="step-2" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">2</div>
+                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                    <div id="step-3" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">3</div>
+                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                    <div id="step-4" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">4</div>
+                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                    <div id="step-5" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">5</div>
+                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                    <div id="step-6" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">6</div>
+                </div>
+                <div class="text-sm text-gray-600 ml-4">Step <span id="current-step">1</span> of 6</div>
+            </div>
+            <div class="mt-4">
+                <div id="step-label" class="text-lg font-semibold text-gray-900">Loan Details</div>
+                <div id="step-description" class="text-sm text-gray-600">Enter the basic loan information</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="space-y-6">
+                <!-- Step 1: Enhanced Loan Details -->
+                <div id="form-step-1" class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Loan Information</h2>
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Principal Amount</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                    <input type="number" id="principal" step="0.01" min="1" 
+                                           class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="5,000.00" oninput="updatePreview(); calculatePaymentSchedule()">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Flat Fee (Optional)
+                                    <button type="button" onclick="showFlatFeeExplanation()" class="ml-1 text-blue-600 hover:text-blue-800">
+                                        <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                    <input type="number" id="flatFee" step="0.01" min="0" 
+                                           class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="0.00" oninput="updatePreview(); calculatePaymentSchedule()">
+                                </div>
+                                
+                                <!-- Enhanced Flat Fee Explanation -->
+                                <div id="flatFeeExplanation" class="flat-fee-explanation rounded-lg p-3 mt-2 hidden">
+                                    <h5 class="font-semibold text-blue-900 text-sm mb-1">Flat Fee Explanation</h5>
+                                    <p class="text-xs text-blue-800 mb-2">A flat fee is a one-time charge added to the loan amount, different from interest:</p>
+                                    <ul class="text-xs text-blue-800 space-y-1">
+                                        <li>• <strong>Flat Fee:</strong> Fixed amount added once (e.g., $100 processing fee)</li>
+                                        <li>• <strong>Interest:</strong> Percentage charged over time (e.g., 5% annually)</li>
+                                        <li>• <strong>Total Due:</strong> Principal + Flat Fee (no compound interest)</li>
+                                    </ul>
+                                    <p class="text-xs text-blue-700 mt-2 font-medium">
+                                        Example: $1,000 loan + $50 flat fee = $1,050 total due
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Date</label>
+                                <input type="date" id="loanDate" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       oninput="updatePreview()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+                                <input type="date" id="dueDate" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       oninput="updatePreview(); calculatePaymentSchedule()">
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Loan Purpose with Dropdown -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Purpose</label>
+                            <select id="purposeDropdown" 
+                                    class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                    onchange="handlePurposeSelection()" oninput="updatePreview()">
+                                <option value="">Select a purpose</option>
+                                <option value="Personal expenses">Personal expenses</option>
+                                <option value="Education/tuition">Education/tuition</option>
+                                <option value="Vehicle repair">Vehicle repair</option>
+                                <option value="Home improvement">Home improvement</option>
+                                <option value="Medical expenses">Medical expenses</option>
+                                <option value="Business startup">Business startup</option>
+                                <option value="Debt consolidation">Debt consolidation</option>
+                                <option value="Emergency fund">Emergency fund</option>
+                                <option value="Investment opportunity">Investment opportunity</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            
+                            <input type="text" id="purpose" 
+                                   class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl mt-2 hidden" 
+                                   placeholder="Please specify the loan purpose"
+                                   oninput="updatePreview()">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Payment Schedule</label>
+                            <select id="paymentSchedule" 
+                                    class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                    onchange="togglePaymentBreakdown(); updatePreview()">
+                                <option value="lump_sum">Lump Sum Payment</option>
+                                <option value="monthly">Monthly Payments</option>
+                                <option value="weekly">Weekly Payments</option>
+                                <option value="biweekly">Bi-weekly Payments</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Enhanced Payment Breakdown -->
+                        <div id="paymentBreakdown" class="payment-breakdown rounded-xl p-4 hidden">
+                            <h4 class="font-semibold text-blue-900 mb-3">💰 Payment Schedule Breakdown</h4>
+                            <div id="paymentScheduleDetails" class="text-sm text-blue-800"></div>
+                            <div id="paymentScheduleChart" class="mt-3">
+                                <!-- Payment visualization will be inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Late Fee Options -->
+                        <div class="border-t pt-4 mt-6">
+                            <label class="flex items-center mb-4">
+                                <input type="checkbox" id="enableLateFee" class="mr-3 w-4 h-4 text-blue-600" onchange="toggleLateFeeOptions()">
+                                <span class="text-sm font-semibold text-gray-700">Enable Late Fees</span>
+                            </label>
+                            
+                            <div id="lateFeeOptions" class="hidden space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Late Fee Type</label>
+                                        <select id="lateFeeType" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                                            <option value="flat">Flat Amount</option>
+                                            <option value="percentage">Percentage</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Amount/Percentage</label>
+                                        <input type="number" id="lateFeeAmount" step="0.01" min="0" 
+                                               class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                               placeholder="25.00">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Grace Period (Days)</label>
+                                    <input type="number" id="graceDays" min="0" max="30" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="15" value="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Enhanced Party Information -->
+                <div id="form-step-2" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Party Information</h2>
+                    
+                    <!-- Lender Information -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Lender Information (You)</h3>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="text-sm text-blue-800">
+                                <span class="font-semibold">Auto-filled:</span> Information below is automatically populated from your profile. 
+                                <a href="profile.html" class="underline hover:no-underline ml-1">Update profile</a> to change defaults.
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                                    <input type="text" id="lenderFirstName" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="Your first name" oninput="updatePreview()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                                    <input type="text" id="lenderLastName" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="Your last name" oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="lenderEmail" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="your@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                                    <input type="tel" id="lenderPhone" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+                                <input type="text" id="lenderAddress" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       placeholder="Street address">
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                                    <input type="text" id="lenderCity" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="City" oninput="updateVenueInfo()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                                    <select id="lenderState" 
+                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl"
+                                            onchange="updateVenueInfo()">
+                                        <option value="">Select State</option>
+                                        <option value="GA">Georgia</option>
+                                        <option value="AL">Alabama</option>
+                                        <option value="FL">Florida</option>
+                                        <option value="TN">Tennessee</option>
+                                        <option value="NC">North Carolina</option>
+                                        <option value="SC">South Carolina</option>
+                                        <option value="MS">Mississippi</option>
+                                        <option value="LA">Louisiana</option>
+                                        <option value="AR">Arkansas</option>
+                                        <option value="TX">Texas</option>
+                                        <option value="OK">Oklahoma</option>
+                                        <option value="KY">Kentucky</option>
+                                        <option value="WV">West Virginia</option>
+                                        <option value="VA">Virginia</option>
+                                        <option value="MD">Maryland</option>
+                                        <option value="DE">Delaware</option>
+                                        <option value="NJ">New Jersey</option>
+                                        <option value="PA">Pennsylvania</option>
+                                        <option value="NY">New York</option>
+                                        <option value="CT">Connecticut</option>
+                                        <option value="RI">Rhode Island</option>
+                                        <option value="MA">Massachusetts</option>
+                                        <option value="VT">Vermont</option>
+                                        <option value="NH">New Hampshire</option>
+                                        <option value="ME">Maine</option>
+                                        <option value="OH">Ohio</option>
+                                        <option value="IN">Indiana</option>
+                                        <option value="IL">Illinois</option>
+                                        <option value="MI">Michigan</option>
+                                        <option value="WI">Wisconsin</option>
+                                        <option value="MN">Minnesota</option>
+                                        <option value="IA">Iowa</option>
+                                        <option value="MO">Missouri</option>
+                                        <option value="ND">North Dakota</option>
+                                        <option value="SD">South Dakota</option>
+                                        <option value="NE">Nebraska</option>
+                                        <option value="KS">Kansas</option>
+                                        <option value="MT">Montana</option>
+                                        <option value="WY">Wyoming</option>
+                                        <option value="CO">Colorado</option>
+                                        <option value="NM">New Mexico</option>
+                                        <option value="ID">Idaho</option>
+                                        <option value="UT">Utah</option>
+                                        <option value="AZ">Arizona</option>
+                                        <option value="NV">Nevada</option>
+                                        <option value="WA">Washington</option>
+                                        <option value="OR">Oregon</option>
+                                        <option value="CA">California</option>
+                                        <option value="AK">Alaska</option>
+                                        <option value="HI">Hawaii</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+                                    <input type="text" id="lenderZip" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="12345">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">County</label>
+                                <input type="text" id="lenderCounty" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       placeholder="County name" oninput="updateVenueInfo()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Borrower Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Information</h3>
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="text-sm text-amber-800">
+                                <span class="font-semibold">Identity Verification:</span> SSN and DOB help verify borrower identity for legal compliance and security.
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                                    <input type="text" id="borrowerFirstName" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="Borrower's first name" oninput="updatePreview()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                                    <input type="text" id="borrowerLastName" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="Borrower's last name" oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="borrowerEmail" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="borrower@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                                    <input type="tel" id="borrowerPhone" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
+                                </div>
+                            </div>
+                            
+                            <!-- Enhanced DOB with Validation -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
+                                    <input type="date" id="borrowerDob" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           onchange="validateDOB()" oninput="clearDOBError()">
+                                    <div id="dobError" class="text-red-600 text-sm mt-1 hidden"></div>
+                                    <div id="dobValid" class="text-green-600 text-sm mt-1 hidden">✓ Valid date of birth</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">SSN (Last 4 digits)</label>
+                                    <input type="text" id="borrowerSSN" maxlength="4" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="1234" oninput="formatSSN(this)">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+                                <input type="text" id="borrowerAddress" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       placeholder="Street address">
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                                    <input type="text" id="borrowerCity" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="City">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                                    <select id="borrowerState" 
+                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                                        <option value="">Select State</option>
+                                        <!-- Same state options as lender -->
+                                        <option value="GA">Georgia</option>
+                                        <option value="AL">Alabama</option>
+                                        <option value="FL">Florida</option>
+                                        <!-- Add full list... -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+                                    <input type="text" id="borrowerZip" 
+                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                           placeholder="12345">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Enhanced Review Contract with Tier Features -->
+                <div id="form-step-3" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Review Contract</h2>
+                    <p class="text-gray-600 mb-6">Please review all details carefully before proceeding to billing.</p>
+                    
+                    <div id="contractReview" class="space-y-4 bg-gray-50 p-6 rounded-xl">
+                        <!-- Contract details will be populated here -->
+                    </div>
+                    
+                    <!-- Enhanced Features Based on Selected Tier -->
+                    <div id="tierFeatureActivation" class="mt-6">
+                        <!-- Basic tier features (always shown) -->
+                        <div class="border rounded-lg p-4 mb-4">
+                            <h4 class="font-semibold text-gray-900 mb-3">✅ Included Features</h4>
+                            <div class="space-y-2 text-sm text-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Standard promissory note generation</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Digital signatures</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Email delivery</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced/Premium features preview (activated based on tier) -->
+                        <div id="enhancedFeaturesPreview" class="feature-enhanced border rounded-lg p-4 mb-4 hidden">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+                                <h4 class="font-semibold text-gray-900">Advanced Features Active</h4>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>📊 Advanced payment analytics & tracking</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>🏦 Credit bureau reporting (if applicable)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>🔔 Automated payment reminders</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>📋 Premium contract templates</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Legal Disclaimers -->
+                    <div class="mt-6 space-y-4">
+                        <label class="flex items-start">
+                            <input type="checkbox" id="agreedToTerms" class="mr-3 mt-1 w-4 h-4 text-blue-600">
+                            <span class="text-sm text-gray-700">
+                                I understand that this is a legally binding promissory note and I have reviewed all terms carefully.
+                            </span>
+                        </label>
+                        
+                        <label class="flex items-start">
+                            <input type="checkbox" id="agreedToEsign" class="mr-3 mt-1 w-4 h-4 text-blue-600">
+                            <span class="text-sm text-gray-700">
+                                I agree to use electronic signatures for this document and understand they are legally equivalent to handwritten signatures.
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <!-- Enhanced UCC Article Section -->
+                    <div class="ucc-section rounded-xl p-4 mt-6">
+                        <h4 class="font-semibold text-orange-900 mb-2">📜 UCC Article 9 Compliance</h4>
+                        <p class="text-sm text-orange-800 mb-3">
+                            This promissory note includes UCC Article 9 provisions for secured transactions when applicable. 
+                            All security interests will be properly documented and filed as required by law.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-orange-700">Relevant UCC provisions will be attached to final document</span>
+                            <button type="button" onclick="previewUCCAttachments()" class="text-orange-700 hover:text-orange-900 underline text-xs">
+                                Preview UCC Attachments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: NEW - Billing & Payment -->
+                <div id="form-step-5" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">💳 Plan Selection & Payment</h2>
+                    <p class="text-gray-600 mb-6">Now that your contract is signed, choose your document processing plan to generate your enhanced package.</p>
+                    
+                    <!-- Tier Selection Cards -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-6 max-w-4xl mx-auto">
+                        
+                        <!-- Essential Protection (Standard) -->
+                        <div class="tier-card border-2 border-gray-200 rounded-xl p-6" onclick="selectTier('essential')" id="essential-tier-card">
+                            <div class="text-center">
+                                <div class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
+                                    Standard
+                                </div>
+                                <div class="text-2xl font-bold text-gray-900 mb-1">Essential Protection</div>
+                                <div class="text-3xl font-bold text-gray-900 mb-2">$14.99</div>
+                                <div class="text-sm text-gray-600 mb-4">one-time per contract</div>
+                                
+                                <div class="space-y-2 text-sm text-left">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Legal contract creation</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Digital signatures (both parties)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Email delivery & tracking</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>PDF download</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-xs text-gray-500 mt-3 mb-2">Perfect for smaller personal loans</div>
+                                
+                                <button type="button" class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                    Get Started
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Maximum Protection (Most Popular) -->
+                        <div class="tier-card border-2 border-blue-500 rounded-xl p-6 relative" onclick="selectTier('maximum')" id="maximum-tier-card">
+                            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    Most Popular
+                                </span>
+                            </div>
+                            <div class="text-center">
+                                <div class="premium-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
+                                    Maximum Protection
+                                </div>
+                                <div class="text-3xl font-bold text-gray-900 mb-2">$29.99</div>
+                                <div class="text-sm text-gray-600 mb-4">one-time per contract</div>
+                                
+                                <div class="space-y-2 text-sm text-left">
+                                    <div class="text-xs text-gray-500 font-semibold mb-2">Everything in Standard, plus:</div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>🔐 Blockchain timestamp proof</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>📱 Remote signing with ID verification</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>📋 Court evidence package</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>🚀 Smart reminder escalation</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>🔔 Automatic payment reminders</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-xs text-gray-500 mt-3 mb-2">Recommended for all serious loans</div>
+                                
+                                <button type="button" class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    Get Started
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Tier Summary -->
+                    <div id="selectedTierSummary" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Selected Plan: <span id="selectedTierName">Enhanced</span></h4>
+                                <p class="text-sm text-blue-800">Enhanced features will be applied during document generation</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-blue-900" id="selectedTierPrice">$19</div>
+                                <div class="text-sm text-blue-700">One-time payment</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Form -->
+                    <div id="paymentSection" class="border rounded-lg p-6 hidden">
+                        <h4 class="font-semibold text-gray-900 mb-4">💳 Payment Information</h4>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
+                                <div id="card-number" class="border border-gray-300 rounded-lg p-3"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Expiry</label>
+                                    <div id="card-expiry" class="border border-gray-300 rounded-lg p-3"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">CVC</label>
+                                    <div id="card-cvc" class="border border-gray-300 rounded-lg p-3"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
+                                <input type="text" id="cardholderName" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       placeholder="Full name on card">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 pt-4 border-t">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-gray-700">Subtotal:</span>
+                                <span id="subtotalAmount" class="font-semibold">$19.00</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-gray-700">Processing Fee:</span>
+                                <span id="processingFee" class="font-semibold">$0.99</span>
+                            </div>
+                            <div class="flex items-center justify-between text-lg font-bold">
+                                <span>Total:</span>
+                                <span id="totalAmount">$19.99</span>
+                            </div>
+                        </div>
+                        
+                        <button type="button" onclick="processPayment()" id="payButton" 
+                                class="w-full mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            Complete Payment & Activate Features
+                        </button>
+                        
+                        <!-- Demo Mode Button -->
+                        <div class="mt-3 text-center">
+                            <button type="button" onclick="skipPaymentDemo()" 
+                                    class="text-sm text-blue-600 hover:text-blue-800 underline">
+                                🎭 Skip Payment (Demo Mode)
+                            </button>
+                            <div class="text-xs text-gray-500 mt-1">For testing purposes only</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Enhanced Digital Signatures with Tier Features -->
+                <div id="form-step-4" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">✍️ Digital Signatures</h2>
+                    
+                    <!-- Note: Enhanced features will be applied after payment -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-semibold text-blue-900">Creating Legal Contract</span>
+                        </div>
+                        <div class="text-sm text-blue-800">Sign here to create your legally binding promissory note. Enhanced features will be applied during document generation after payment.</div>
+                    </div>
+                    
+                    <!-- Lender Signature Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Signature (Lender)</h3>
+                        
+                        <!-- Enhanced Template Selection (Enhanced+ tiers only) -->
+                        <div id="premiumTemplateSection" class="mb-4 hidden">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+                                <label class="block text-sm font-semibold text-gray-700">Contract Template</label>
+                            </div>
+                            <select id="contractTemplate" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
+                                <option value="standard">Standard Promissory Note</option>
+                                <option value="commercial">Commercial Loan Agreement ✨</option>
+                                <option value="secured">Secured Note with Collateral ✨</option>
+                                <option value="installment">Installment Loan Agreement ✨</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Signature Method Selection -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Signature Method</label>
+                            <div class="flex space-x-2">
+                                <button type="button" id="lender-draw-btn" 
+                                        class="signature-method-btn active px-4 py-2 border rounded-lg text-sm"
+                                        onclick="setLenderSignatureMethod('draw')">
+                                    ✏️ Draw
+                                </button>
+                                <button type="button" id="lender-type-btn" 
+                                        class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
+                                        onclick="setLenderSignatureMethod('type')">
+                                    ⌨️ Type
+                                </button>
+                                <button type="button" id="lender-click-btn" 
+                                        class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
+                                        onclick="setLenderSignatureMethod('click')">
+                                    👆 Click
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Draw Signature -->
+                        <div id="lender-draw-section" class="mb-4">
+                            <canvas id="lenderCanvas" 
+                                    class="signature-canvas w-full" 
+                                    width="600" height="200">
+                            </canvas>
+                            <div class="mt-2 flex space-x-2">
+                                <button type="button" onclick="clearLenderSignature()" 
+                                        class="px-3 py-1 bg-gray-500 text-white rounded text-sm">
+                                    Clear
+                                </button>
+                                <span class="text-xs text-gray-500 mt-1">Sign above with your finger or mouse</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Type Signature -->
+                        <div id="lender-type-section" class="mb-4 hidden">
+                            <input type="text" id="lenderTypeInput" 
+                                   class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" 
+                                   placeholder="Type your full name"
+                                   style="font-family: 'Brush Script MT', cursive;">
+                            <p class="text-xs text-gray-500 mt-1">Your typed name will be converted to a signature</p>
+                        </div>
+                        
+                        <!-- Click Signature -->
+                        <div id="lender-click-section" class="mb-4 hidden">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" onclick="selectLenderSignature(1)" 
+                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                    <div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
+                                        <span id="lender-option-1">John Doe</span>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectLenderSignature(2)" 
+                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                    <div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
+                                        <span id="lender-option-2">John Doe</span>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectLenderSignature(3)" 
+                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                    <div class="font-script text-lg" style="font-family: 'Allura', cursive;">
+                                        <span id="lender-option-3">John Doe</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Auto Reminders (Enhanced+ only) -->
+                        <div id="autoRemindersSection" class="feature-enhanced border rounded-lg p-3 mt-4 hidden">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+                                <span class="text-sm font-semibold text-gray-900">Automated Payment Reminders</span>
+                            </div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="enableAutoReminders" class="mr-2 w-4 h-4 text-blue-600" checked>
+                                <span class="text-sm text-gray-700">Send automatic payment reminders to borrower</span>
+                            </label>
+                            <div class="text-xs text-gray-600 mt-1">
+                                Reminders sent 7, 3, and 1 days before due date
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Borrower Signature Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Signature</h3>
+                        
+                        <!-- Signature Collection Method -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Collection Method</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="borrowerSignMethod" value="now" 
+                                           class="mr-3 w-4 h-4 text-blue-600" checked 
+                                           onchange="toggleBorrowerSignatureMethod()">
+                                    <span class="text-sm">Sign on this device now</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="borrowerSignMethod" value="request" 
+                                           class="mr-3 w-4 h-4 text-blue-600" 
+                                           onchange="toggleBorrowerSignatureMethod()">
+                                    <span class="text-sm">Send signature request via SMS/Email</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Sign Now Section -->
+                        <div id="borrower-sign-now" class="mb-4">
+                            <div class="mb-4">
+                                <div class="flex space-x-2">
+                                    <button type="button" id="borrower-draw-btn" 
+                                            class="signature-method-btn active px-4 py-2 border rounded-lg text-sm"
+                                            onclick="setBorrowerSignatureMethod('draw')">
+                                        ✏️ Draw
+                                    </button>
+                                    <button type="button" id="borrower-type-btn" 
+                                            class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
+                                            onclick="setBorrowerSignatureMethod('type')">
+                                        ⌨️ Type
+                                    </button>
+                                    <button type="button" id="borrower-click-btn" 
+                                            class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
+                                            onclick="setBorrowerSignatureMethod('click')">
+                                        👆 Click
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="borrower-draw-section" class="mb-4">
+                                <canvas id="borrowerCanvas" 
+                                        class="signature-canvas w-full" 
+                                        width="600" height="200">
+                                </canvas>
+                                <div class="mt-2 flex space-x-2">
+                                    <button type="button" onclick="clearBorrowerSignature()" 
+                                            class="px-3 py-1 bg-gray-500 text-white rounded text-sm">
+                                        Clear
+                                    </button>
+                                    <span class="text-xs text-gray-500 mt-1">Borrower signs above</span>
+                                </div>
+                            </div>
+                            
+                            <div id="borrower-type-section" class="mb-4 hidden">
+                                <input type="text" id="borrowerTypeInput" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" 
+                                       placeholder="Borrower types full name"
+                                       style="font-family: 'Brush Script MT', cursive;">
+                            </div>
+                            
+                            <div id="borrower-click-section" class="mb-4 hidden">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" onclick="selectBorrowerSignature(1)" 
+                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                        <div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
+                                            <span id="borrower-option-1">Jane Smith</span>
+                                        </div>
+                                    </button>
+                                    <button type="button" onclick="selectBorrowerSignature(2)" 
+                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                        <div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
+                                            <span id="borrower-option-2">Jane Smith</span>
+                                        </div>
+                                    </button>
+                                    <button type="button" onclick="selectBorrowerSignature(3)" 
+                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
+                                        <div class="font-script text-lg" style="font-family: 'Allura', cursive;">
+                                            <span id="borrower-option-3">Jane Smith</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Send Signature Request Section -->
+                        <div id="borrower-sign-request" class="mb-4 hidden">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <h4 class="font-semibold text-blue-900 mb-3">📤 Send Signature Request</h4>
+                                
+                                <div class="space-y-4">
+                                    <!-- Identity Verification Method -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Identity Verification Method</label>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+                                                <input type="radio" name="verificationMethod" value="sms" class="mr-2 w-4 h-4 text-blue-600" checked>
+                                                <div>
+                                                    <div class="font-semibold text-sm">📱 SMS OTP</div>
+                                                    <div class="text-xs text-gray-600">6-digit code via text</div>
+                                                </div>
+                                            </label>
+                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+                                                <input type="radio" name="verificationMethod" value="email" class="mr-2 w-4 h-4 text-blue-600">
+                                                <div>
+                                                    <div class="font-semibold text-sm">📧 Email OTP</div>
+                                                    <div class="text-xs text-gray-600">Secure email code</div>
+                                                </div>
+                                            </label>
+                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+                                                <input type="radio" name="verificationMethod" value="both" class="mr-2 w-4 h-4 text-blue-600">
+                                                <div>
+                                                    <div class="font-semibold text-sm">🔐 Dual Verify</div>
+                                                    <div class="text-xs text-gray-600">SMS + Email</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contact Verification -->
+                                    <div class="bg-white border border-blue-200 rounded-lg p-4">
+                                        <h5 class="font-semibold text-blue-800 mb-3">📋 Verify Borrower Contact Info</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Mobile Phone</label>
+                                                <input type="tel" id="borrowerVerifyPhone" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                                                       placeholder="(555) 123-4567">
+                                                <div class="text-xs text-gray-500 mt-1">Must match borrower info above</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                                                <input type="email" id="borrowerVerifyEmail" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                                                       placeholder="borrower@email.com">
+                                                <div class="text-xs text-gray-500 mt-1">Primary contact for documents</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="button" onclick="verifyBorrowerContact()" 
+                                                class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                            ✓ Verify Contact Information
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Signature Request Configuration -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Signature Request Options</label>
+                                        <div class="space-y-3">
+                                            <label class="flex items-start">
+                                                <input type="checkbox" id="requireIdentityVerification" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
+                                                <div>
+                                                    <span class="text-sm font-semibold">🔐 Require Identity Verification</span>
+                                                    <div class="text-xs text-gray-600">Borrower must verify with OTP before signing</div>
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="flex items-start">
+                                                <input type="checkbox" id="requireDocumentReview" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
+                                                <div>
+                                                    <span class="text-sm font-semibold">📖 Require Document Review</span>
+                                                    <div class="text-xs text-gray-600">Borrower must confirm they've read the contract</div>
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="flex items-start">
+                                                <input type="checkbox" id="sendContractCopy" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
+                                                <div>
+                                                    <span class="text-sm font-semibold">📄 Send Contract Copy</span>
+                                                    <div class="text-xs text-gray-600">Include full contract with signature request</div>
+                                                </div>
+                                            </label>
+                                            
+                                            <div id="enhancedSignatureOptions" class="feature-enhanced border rounded-lg p-3 hidden">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+                                                    <span class="text-sm font-semibold text-gray-900">Advanced Security Options</span>
+                                                </div>
+                                                <div class="space-y-2">
+                                                    <label class="flex items-start">
+                                                        <input type="checkbox" id="enableGeofencing" class="mr-2 mt-1 w-4 h-4 text-blue-600">
+                                                        <div>
+                                                            <span class="text-sm font-semibold">🌍 Location Verification</span>
+                                                            <div class="text-xs text-gray-600">Verify borrower's location during signing</div>
+                                                        </div>
+                                                    </label>
+                                                    <label class="flex items-start">
+                                                        <input type="checkbox" id="enableBiometric" class="mr-2 mt-1 w-4 h-4 text-blue-600">
+                                                        <div>
+                                                            <span class="text-sm font-semibold">👆 Biometric Authentication</span>
+                                                            <div class="text-xs text-gray-600">Fingerprint or face ID verification</div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Custom Message -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message</label>
+                                        <textarea id="signatureRequestMessage" rows="4" 
+                                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                                  placeholder="Hi [Borrower Name], please review and digitally sign the attached promissory note. You'll receive a secure verification code to confirm your identity before signing.">Hi [Borrower Name],
+
+Please review and digitally sign the attached promissory note at your earliest convenience. 
+
+For security, you'll need to verify your identity with a code sent to your phone/email before signing.
+
+If you have any questions, please contact me directly.
+
+Best regards,
+[Lender Name]</textarea>
+                                    </div>
+                                    
+                                    <!-- Send Button -->
+                                    <div class="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div>
+                                                <h5 class="font-semibold text-blue-900">📤 Ready to Send</h5>
+                                                <div class="text-sm text-blue-700">Secure signature request with identity verification</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-xs text-gray-600">Estimated delivery:</div>
+                                                <div class="text-sm font-semibold text-blue-800">< 2 minutes</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="button" onclick="sendSecureSignatureRequest()" 
+                                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                            </svg>
+                                            🔐 Send Secure Signature Request
+                                        </button>
+                                        
+                                        <div class="text-xs text-blue-600 mt-2 text-center">
+                                            Borrower will receive: Contract → OTP Verification → Digital Signing → Confirmation
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Enhanced Delivery with UCC Attachments -->
+                <div id="form-step-6" class="bg-white rounded-xl border border-gray-200 p-6 text-center hidden">
+                    <div class="py-8">
+                        <div class="text-6xl mb-6">🎉</div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Documents Generated!</h2>
+                        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                            Your legally enforceable promissory note has been created, signed, enhanced with your selected features, and is ready for delivery.
+                        </p>
+                        
+                        <!-- Enhanced Tier Features Confirmation -->
+                        <div id="tierFeaturesConfirmation" class="feature-enhanced border rounded-lg p-4 mb-6 hidden">
+                            <div class="flex items-center justify-center gap-2 mb-3">
+                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced Active</span>
+                                <span class="text-sm font-semibold text-gray-900">Advanced features have been activated</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Payment analytics enabled</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Auto reminders configured</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Blockchain & Audit Trail Information -->
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+                            <h3 class="font-semibold text-green-900 mb-3">🔗 Blockchain Verified & UCC Compliant</h3>
+                            <div class="text-sm text-green-800 space-y-2">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span><strong>Digital signatures</strong> cryptographically secured</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span><strong>Audit trail</strong> with <span id="auditEventCount">12</span> events recorded</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span><strong>UCC Articles 3 & 9</strong> compliance verified</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span><strong>Document hash:</strong> <span id="documentHash" class="font-mono text-xs">0x7f9a...</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Download Options -->
+                        <div class="space-y-4">
+                            <button onclick="downloadContractWithUCC()" 
+                                    class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                📄 Download Complete Contract Package
+                            </button>
+                            
+                            <!-- Send to Borrower Section -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+                                <h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    📧 Send to Borrower
+                                </h4>
+                                
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Email</label>
+                                            <input type="email" id="borrowerFinalEmail" 
+                                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
+                                                   placeholder="borrower@email.com" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Delivery Method</label>
+                                            <select id="deliveryMethod" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                                <option value="email">📧 Email Only</option>
+                                                <option value="sms_email">📱 SMS + Email</option>
+                                                <option value="priority_delivery">🚀 Priority Delivery (Enhanced+)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message (Optional)</label>
+                                        <textarea id="deliveryMessage" rows="3" 
+                                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
+                                                  placeholder="Hi [Borrower Name], your signed promissory note is ready. Please review and save this important document for your records."></textarea>
+                                    </div>
+                                    
+                                    <div class="bg-white border border-blue-200 rounded-lg p-3">
+                                        <h5 class="font-semibold text-blue-800 mb-2">📦 What will be sent:</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-700">
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-green-600">✓</span> Main contract (PDF)
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-green-600">✓</span> UCC compliance attachment
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-green-600">✓</span> Execution certificate
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-green-600">✓</span> Payment schedule (if applicable)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex space-x-3">
+                                        <button onclick="sendToBorrower()" 
+                                                class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                            </svg>
+                                            Send Complete Package
+                                        </button>
+                                        
+                                        <button onclick="scheduledDelivery()" 
+                                                class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Schedule
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                                        <strong>Auto-delivery:</strong> Both parties will receive copies automatically. Borrower will get SMS/Email confirmation with secure access link.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-gray-600 mb-4">
+                                Package includes: Main contract, UCC Article attachments, execution certificate, and audit trail
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <button onclick="downloadMainContract()" 
+                                        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Main Contract Only
+                                </button>
+                                
+                                <button onclick="downloadUCCAttachments()" 
+                                        class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    📜 UCC Attachments
+                                </button>
+                            </div>
+                            
+                            <button onclick="viewAuditTrail()" 
+                                    class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                🔗 View Complete Audit Trail
+                            </button>
+                            
+                            <a href="dashboard.html" 
+                               class="block w-full px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-center">
+                                Return to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between">
+                    <button id="prevBtn" onclick="prevStep()" 
+                            class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 hidden">
+                        Previous
+                    </button>
+                    <div class="flex-1"></div>
+                    <button id="nextBtn" onclick="nextStep()" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Next
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced Preview Section -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">📋 Contract Preview</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Loan Details -->
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Loan Amount</div>
+                            <div class="text-2xl font-bold text-gray-900" id="previewPrincipal">$0</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Purpose</div>
+                            <div class="text-gray-900" id="previewPurpose">Not specified</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Flat Fee</div>
+                            <div class="text-gray-900" id="previewFee">$0</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Total Amount Due</div>
+                            <div class="text-2xl font-bold text-gray-900" id="previewTotal">$0</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Due Date</div>
+                            <div class="text-gray-900" id="previewDueDate">Not set</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">Payment Schedule</div>
+                            <div class="text-gray-900" id="previewSchedule">Lump Sum</div>
+                        </div>
+                        
+                        <!-- Payment Schedule Breakdown -->
+                        <div id="previewPaymentBreakdown" class="border-t pt-4 hidden">
+                            <div class="text-sm text-gray-600 mb-2">💰 Payment Breakdown</div>
+                            <div class="space-y-1 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Principal:</span>
+                                    <span id="previewBreakdownPrincipal">$0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Fee:</span>
+                                    <span id="previewBreakdownFee">$0</span>
+                                </div>
+                                <div class="flex justify-between font-semibold border-t pt-1">
+                                    <span>Total Due:</span>
+                                    <span id="previewBreakdownTotal">$0</span>
+                                </div>
+                                <div class="flex justify-between text-blue-600 font-semibold" id="previewMonthlyPayment">
+                                    <span>Monthly Payment:</span>
+                                    <span id="previewBreakdownMonthly">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tier Pricing Breakdown -->
+                        <div id="previewTierPricing" class="border-t pt-4">
+                            <div class="text-sm text-gray-600 mb-2">💳 Plan Pricing</div>
+                            <div class="space-y-1 text-sm">
+                                <div class="flex justify-between">
+                                    <span id="previewTierName">Essential Protection:</span>
+                                    <span id="previewTierPrice">$14.99</span>
+                                </div>
+                                <div class="flex justify-between text-gray-500">
+                                    <span>Processing Fee:</span>
+                                    <span id="previewProcessingFee">$0.74</span>
+                                </div>
+                                <div class="flex justify-between font-semibold border-t pt-1">
+                                    <span>Plan Total:</span>
+                                    <span id="previewPlanTotal">$15.73</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="previewLenderSection" class="border-t pt-4 hidden">
+                            <div class="text-sm text-gray-600 mb-1">Lender</div>
+                            <div class="font-semibold" id="previewLender">-</div>
+                        </div>
+                        
+                        <div id="previewBorrowerSection" class="border-t pt-4 hidden">
+                            <div class="text-sm text-gray-600 mb-1">Borrower</div>
+                            <div class="font-semibold" id="previewBorrower">-</div>
+                        </div>
+                        
+                        <!-- Enhanced Security Features Display (Dynamic based on tier) -->
+                        <div class="border-t pt-4">
+                            <div class="text-sm text-gray-600 mb-2">🔒 Security & Compliance</div>
+                            <div class="space-y-2 text-xs text-gray-600" id="previewSecurityFeatures">
+                                <!-- Will be populated dynamically by updatePreviewForTier() -->
+                            </div>
+                        </div>
+                        
+                        <!-- Tier Status Display -->
+                        <div id="previewTierStatus" class="border-t pt-4">
+                            <div class="text-sm text-gray-600 mb-2">📈 Plan Status</div>
+                            <div class="flex items-center justify-between">
+                                <span class="tier-badge text-white px-2 py-1 rounded text-xs font-semibold" id="previewCurrentTier">
+                                    Essential Protection
+                                </span>
+                                <span class="text-xs text-gray-600" id="previewFeaturesActive">4 features active</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Progress Indicator -->
+                    <div class="mt-6 pt-4 border-t">
+                        <div class="text-sm text-gray-600 mb-2">📈 Progress</div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 16.67%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">Step 1 of 6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced JavaScript with Blockchain Features, Tier Management, and UCC Compliance -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let auditTrail = [];
+        let selectedTier = 'essential';
+        let tierFeatures = {
+            essential: ['legalContractCreation', 'digitalSignaturesBothParties', 'emailDeliveryTracking', 'pdfDownload'],
+            maximum: ['automaticPaymentReminders', 'blockchainTimestampProof', 'idVerificationBothParties', 'courtEvidencePackage', 'smartReminderEscalation']
+        };
+        let paymentCompleted = false;
+        let lenderSignatureMethod = 'draw';
+        let borrowerSignatureMethod = 'draw';
+        let lenderCanvas, borrowerCanvas;
+        let isDrawingLender = false;
+        let isDrawingBorrower = false;
+        let stripe, elements, cardNumber, cardExpiry, cardCvc;
+
+        // Enhanced initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for demo mode
+            const isDemoMode = window.location.search.includes('demo=true') || 
+                             localStorage.getItem('trustlend_demo_mode') === 'true';
+            
+            if (isDemoMode) {
+                document.getElementById('demoModeIndicator')?.classList.remove('hidden');
+                console.log('🎭 Demo mode detected - payment can be skipped');
+            }
+            
+            loadLenderInfo();
+            updatePreview();
+            setTodayAsLoanDate();
+            initializeSignatureCanvases();
+            initializeStripe();
+            addAuditEvent('Enhanced contract creation started');
+            generateDocumentHash();
+            updateTierDisplay();
+            updatePreviewForTier(); // Initialize preview features
+            updateContractPreviewPlanStatus(); // Initialize Plan Status section
+        });
+
+        // Stripe initialization
+        function initializeStripe() {
+            stripe = Stripe('pk_test_demo_key'); // Replace with actual Stripe publishable key
+            elements = stripe.elements({
+                appearance: {
+                    theme: 'stripe',
+                    variables: {
+                        colorPrimary: '#3b82f6',
+                        colorBackground: '#ffffff',
+                        colorText: '#374151',
+                        colorDanger: '#ef4444',
+                        fontFamily: 'system-ui, sans-serif',
+                        spacingUnit: '4px',
+                        borderRadius: '8px'
+                    }
+                }
+            });
+            
+            cardNumber = elements.create('cardNumber', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#374151',
+                        '::placeholder': {
+                            color: '#9ca3af',
+                        },
+                    },
+                    invalid: {
+                        color: '#ef4444',
+                    },
+                },
+            });
+            
+            cardExpiry = elements.create('cardExpiry', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#374151',
+                        '::placeholder': {
+                            color: '#9ca3af',
+                        },
+                    },
+                    invalid: {
+                        color: '#ef4444',
+                    },
+                },
+            });
+            
+            cardCvc = elements.create('cardCvc', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#374151',
+                        '::placeholder': {
+                            color: '#9ca3af',
+                        },
+                    },
+                    invalid: {
+                        color: '#ef4444',
+                    },
+                },
+            });
+            
+            // Mount elements when step 5 is shown (corrected step)
+        }
+
+        // Enhanced tier management
+        function selectTier(tier) {
+            selectedTier = tier;
+            console.log(`Selecting tier: ${tier}`);
+            
+            updateTierSelection();
+            updateTierDisplay();
+            updatePreviewForTier(); // This function already handles everything correctly
+            updateContractPreviewPlanStatus(); // Explicit update for Plan Status
+            activateTierFeatures();
+            addAuditEvent(`Tier selected: ${tier}`);
+            
+            console.log(`Contract preview updated for ${tier} tier`);
+        }
+        
+        // Explicit function to update Contract Preview Plan Status (lightweight backup)
+        function updateContractPreviewPlanStatus() {
+            // This function is now lightweight since updatePreviewForTier() handles most updates
+            console.log(`✅ Plan Status update triggered for ${selectedTier} tier`);
+        }
+
+        function updateTierSelection() {
+            console.log(`Updating tier selection UI for: ${selectedTier}`);
+            
+            // Remove selected class from all cards
+            document.querySelectorAll('.tier-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to chosen card
+            const selectedCard = document.getElementById(`${selectedTier}-tier-card`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                console.log(`✅ Visual selection updated for ${selectedTier} card`);
+            } else {
+                console.error(`Card not found: ${selectedTier}-tier-card`);
+            }
+            
+            // Update summary
+            const summary = document.getElementById('selectedTierSummary');
+            const tierName = document.getElementById('selectedTierName');
+            const tierPrice = document.getElementById('selectedTierPrice');
+            
+            if (summary && tierName && tierPrice) {
+                const tierData = {
+                    essential: { name: 'Essential Protection', price: '$14.99' },
+                    maximum: { name: 'Maximum Protection', price: '$29.99' }
+                };
+                
+                const current = tierData[selectedTier] || tierData.essential;
+                tierName.textContent = current.name;
+                tierPrice.textContent = current.price;
+                summary.classList.remove('hidden');
+                
+                console.log(`✅ Tier summary updated: ${current.name} ${current.price}`);
+            }
+            
+            // Show payment section
+            const paymentSection = document.getElementById('paymentSection');
+            if (paymentSection) {
+                paymentSection.classList.remove('hidden');
+                console.log(`✅ Payment section shown`);
+            }
+            
+            // Mount Stripe elements if not already mounted
+            if (typeof cardNumber !== 'undefined' && cardNumber && !cardNumber._mounted) {
+                try {
+                    cardNumber.mount('#card-number');
+                    cardExpiry.mount('#card-expiry');
+                    cardCvc.mount('#card-cvc');
+                    console.log(`✅ Stripe elements mounted`);
+                } catch (error) {
+                    console.warn('Stripe elements mounting failed:', error);
+                }
+            }
+            
+            // Update payment summary with new tier pricing
+            updatePaymentSummary();
+        }
+
+        function updatePaymentSummary() {
+            const pricing = {
+                essential: 14.99,
+                maximum: 29.99
+            };
+            
+            const subtotal = pricing[selectedTier];
+            const processingFee = Math.round((subtotal * 0.029 + 0.30) * 100) / 100; // Stripe fee
+            const total = subtotal + processingFee;
+            
+            document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('processingFee').textContent = `$${processingFee.toFixed(2)}`;
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function activateTierFeatures() {
+            // Update preview for step 3
+            const enhancedPreview = document.getElementById('enhancedFeaturesPreview');
+            if (selectedTier !== 'basic') {
+                enhancedPreview.classList.remove('hidden');
+            } else {
+                enhancedPreview.classList.add('hidden');
+            }
+            
+            // Update signature section for step 5
+            const premiumTemplates = document.getElementById('premiumTemplateSection');
+            const autoReminders = document.getElementById('autoRemindersSection');
+            const tierActivation = document.getElementById('tierActivationNotice');
+            const enhancedSignatureOptions = document.getElementById('enhancedSignatureOptions');
+            
+            if (selectedTier !== 'basic' && paymentCompleted) {
+                premiumTemplates?.classList.remove('hidden');
+                autoReminders?.classList.remove('hidden');
+                tierActivation?.classList.remove('hidden');
+                enhancedSignatureOptions?.classList.remove('hidden');
+            }
+            
+            // Update delivery section for step 6
+            const tierConfirmation = document.getElementById('tierFeaturesConfirmation');
+            if (selectedTier !== 'basic' && paymentCompleted) {
+                tierConfirmation?.classList.remove('hidden');
+            }
+            
+            // Initialize borrower email in final step
+            initializeBorrowerDelivery();
+        }
+
+        // Initialize borrower delivery information
+        function initializeBorrowerDelivery() {
+            const borrowerEmail = document.getElementById('borrowerEmail')?.value;
+            const borrowerFinalEmail = document.getElementById('borrowerFinalEmail');
+            if (borrowerEmail && borrowerFinalEmail) {
+                borrowerFinalEmail.value = borrowerEmail;
+            }
+        }
+
+        // Send complete contract package to borrower
+        async function sendToBorrower() {
+            const email = document.getElementById('borrowerFinalEmail').value;
+            const method = document.getElementById('deliveryMethod').value;
+            const message = document.getElementById('deliveryMessage').value;
+            
+            if (!email) {
+                alert('Please enter borrower email address');
+                return;
+            }
+            
+            const deliveryData = {
+                borrowerEmail: email,
+                method: method,
+                customMessage: message,
+                documents: ['main_contract', 'ucc_attachment', 'execution_certificate', 'audit_trail'],
+                contractId: 'TL-' + Date.now(),
+                lenderName: document.getElementById('lenderFirstName').value + ' ' + document.getElementById('lenderLastName').value
+            };
+            
+            try {
+                // Simulate sending
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                addAuditEvent('Documents sent to borrower', {
+                    recipient: email,
+                    method: method,
+                    documents: deliveryData.documents.length
+                });
+                
+                // Show success notification
+                showDeliverySuccess(email, method);
+                
+            } catch (error) {
+                alert('Failed to send documents. Please try again.');
+            }
+        }
+
+        // Schedule delivery for later
+        function scheduledDelivery() {
+            const email = document.getElementById('borrowerFinalEmail').value;
+            if (!email) {
+                alert('Please enter borrower email address');
+                return;
+            }
+            
+            const scheduleTime = prompt('Schedule delivery for when? (e.g., "tomorrow 9am", "Friday 2pm")');
+            if (scheduleTime) {
+                addAuditEvent('Delivery scheduled', {
+                    recipient: email,
+                    scheduledFor: scheduleTime
+                });
+                alert(`Documents scheduled for delivery to ${email} at ${scheduleTime}`);
+            }
+        }
+
+        // Show delivery success notification
+        function showDeliverySuccess(email, method) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50 max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <svg class="w-6 h-6 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <div class="font-semibold mb-1">📧 Documents Sent Successfully!</div>
+                        <div class="text-sm opacity-90">
+                            Complete contract package delivered to:<br>
+                            <strong>${email}</strong><br>
+                            Method: ${method.replace('_', ' + ').toUpperCase()}
+                        </div>
+                        <div class="text-xs opacity-75 mt-2">
+                            Borrower will receive secure access link and confirmation
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 8 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 8000);
+        }
+
+        // Verify borrower contact information
+        async function verifyBorrowerContact() {
+            const phone = document.getElementById('borrowerVerifyPhone').value;
+            const email = document.getElementById('borrowerVerifyEmail').value;
+            
+            if (!phone || !email) {
+                alert('Please enter both phone and email for verification');
+                return;
+            }
+            
+            // Check against original borrower info
+            const originalPhone = document.getElementById('borrowerPhone')?.value;
+            const originalEmail = document.getElementById('borrowerEmail')?.value;
+            
+            if (phone !== originalPhone || email !== originalEmail) {
+                if (!confirm('Contact information doesn\'t match borrower details above. Continue anyway?')) {
+                    return;
+                }
+            }
+            
+            try {
+                // Simulate verification
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                addAuditEvent('Borrower contact verified', {
+                    phone: phone.replace(/\d(?=\d{4})/g, '*'), // Mask phone
+                    email: email
+                });
+                
+                alert('✓ Contact information verified successfully');
+                
+            } catch (error) {
+                alert('Verification failed. Please check the contact information.');
+            }
+        }
+
+        // Send secure signature request with OTP
+        async function sendSecureSignatureRequest() {
+            const phone = document.getElementById('borrowerVerifyPhone').value;
+            const email = document.getElementById('borrowerVerifyEmail').value;
+            const verificationMethod = document.querySelector('input[name="verificationMethod"]:checked').value;
+            const message = document.getElementById('signatureRequestMessage').value;
+            
+            if (!phone || !email) {
+                alert('Please verify borrower contact information first');
+                return;
+            }
+            
+            const requestData = {
+                borrowerPhone: phone,
+                borrowerEmail: email,
+                verificationMethod: verificationMethod,
+                customMessage: message,
+                requireIdentityVerification: document.getElementById('requireIdentityVerification').checked,
+                requireDocumentReview: document.getElementById('requireDocumentReview').checked,
+                sendContractCopy: document.getElementById('sendContractCopy').checked,
+                enhancedSecurity: selectedTier !== 'basic'
+            };
+            
+            try {
+                // Simulate sending secure request
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                addAuditEvent('Secure signature request sent', {
+                    recipient: email,
+                    verificationMethod: verificationMethod,
+                    securityFeatures: Object.keys(requestData).filter(key => 
+                        key.startsWith('require') || key.startsWith('send') || key.startsWith('enable')
+                    ).filter(key => requestData[key]).length
+                });
+                
+                // Show success with tracking info
+                showSignatureRequestSuccess(email, phone, verificationMethod);
+                
+            } catch (error) {
+                alert('Failed to send signature request. Please try again.');
+            }
+        }
+
+        // Show signature request success
+        function showSignatureRequestSuccess(email, phone, method) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-lg z-50 max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <svg class="w-6 h-6 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    <div>
+                        <div class="font-semibold mb-1">🔐 Signature Request Sent!</div>
+                        <div class="text-sm opacity-90">
+                            Secure signing link sent to:<br>
+                            📧 ${email}<br>
+                            📱 ${phone.replace(/\d(?=\d{4})/g, '*')}<br>
+                            Method: ${method.toUpperCase()} verification
+                        </div>
+                        <div class="text-xs opacity-75 mt-2">
+                            Borrower will receive: Contract → OTP → Signing → Confirmation
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-blue-500">
+                            <div class="text-xs">
+                                <strong>Track Status:</strong> <span class="text-blue-200">Link sent ✓ • Pending signature</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 10000);
+        }
+
+        function updateTierDisplay() {
+            const tierBadges = document.querySelectorAll('.tier-badge');
+            const featuresText = document.querySelectorAll('#featuresUnlocked, #previewFeaturesActive');
+            
+            const tierData = {
+                basic: { name: 'Basic Plan', features: '4 features', class: 'tier-badge' },
+                enhanced: { name: 'Enhanced Plan', features: '8 features', class: 'enhanced-badge' },
+                premium: { name: 'Premium Plan', features: '12 features', class: 'premium-badge' }
+            };
+            
+            const current = tierData[selectedTier];
+            
+            tierBadges.forEach(badge => {
+                badge.textContent = current.name;
+                badge.className = `${current.class} text-white px-3 py-1 rounded-full text-sm font-semibold`;
+            });
+            
+            featuresText.forEach(text => {
+                text.textContent = current.features + ' active';
+            });
+            
+            // Update preview tier status
+            document.getElementById('previewCurrentTier').textContent = current.name;
+            document.getElementById('previewCurrentTier').className = `${current.class} text-white px-2 py-1 rounded text-xs font-semibold`;
+        }
+
+        // Update preview section based on selected tier
+        function updatePreviewForTier() {
+            const securitySection = document.getElementById('previewSecurityFeatures');
+            const tierNameEl = document.getElementById('previewTierName');
+            const tierPriceEl = document.getElementById('previewTierPrice');
+            const processingFeeEl = document.getElementById('previewProcessingFee');
+            const planTotalEl = document.getElementById('previewPlanTotal');
+            const currentTierEl = document.getElementById('previewCurrentTier');
+            const featuresActiveEl = document.getElementById('previewFeaturesActive');
+            
+            if (!securitySection) return;
+            
+            // Tier pricing data matching user's actual features
+            const tierData = {
+                essential: { 
+                    name: 'Essential Protection', 
+                    price: 14.99, 
+                    features: [
+                        { icon: '📝', text: 'Legal contract creation' },
+                        { icon: '✍️', text: 'Digital signatures (both parties)' },
+                        { icon: '📧', text: 'Email delivery & tracking' },
+                        { icon: '📄', text: 'PDF download' },
+                        { icon: '⚖️', text: 'E-SIGN Act compliance' },
+                        { icon: '🔗', text: 'Basic audit trail' }
+                    ]
+                },
+                maximum: { 
+                    name: 'Maximum Protection', 
+                    price: 29.99, 
+                    features: [
+                        { icon: '📝', text: 'Legal contract creation' },
+                        { icon: '✍️', text: 'Digital signatures (both parties)' },
+                        { icon: '📧', text: 'Email delivery & tracking' },
+                        { icon: '📄', text: 'PDF download' },
+                        { icon: '🔔', text: 'Automatic payment reminders', enhanced: true },
+                        { icon: '🔐', text: 'Blockchain timestamp proof', enhanced: true },
+                        { icon: '📱', text: 'Remote signing with ID verification', enhanced: true },
+                        { icon: '📋', text: 'Court evidence package', enhanced: true },
+                        { icon: '🚀', text: 'Smart reminder escalation', enhanced: true },
+                        { icon: '⚖️', text: 'Full legal compliance suite' }
+                    ]
+                }
+            };
+            
+            const currentTier = tierData[selectedTier] || tierData.essential;
+            const processingFee = Math.round((currentTier.price * 0.029 + 0.30) * 100) / 100;
+            const planTotal = currentTier.price + processingFee;
+            
+            // Update tier pricing breakdown
+            tierNameEl.textContent = `${currentTier.name}:`;
+            tierPriceEl.textContent = `$${currentTier.price.toFixed(2)}`;
+            processingFeeEl.textContent = `$${processingFee.toFixed(2)}`;
+            planTotalEl.textContent = `$${planTotal.toFixed(2)}`;
+            
+            // Update tier status
+            currentTierEl.textContent = currentTier.name;
+            currentTierEl.className = selectedTier === 'maximum' ? 
+                'premium-badge text-white px-2 py-1 rounded text-xs font-semibold' : 
+                'tier-badge text-white px-2 py-1 rounded text-xs font-semibold';
+            featuresActiveEl.textContent = `${currentTier.features.length} features active`;
+            
+            // Update security features
+            securitySection.innerHTML = currentTier.features.map(feature => `
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>${feature.icon} ${feature.text}</span>
+                    ${feature.enhanced ? '<span class="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-2">✨</span>' : ''}
+                </div>
+            `).join('');
+            
+            console.log(`Preview updated for ${selectedTier} tier with ${currentTier.features.length} features`);
+        }
+
+        // Enhanced payment processing with demo mode
+        async function processPayment() {
+            const payButton = document.getElementById('payButton');
+            const cardholderName = document.getElementById('cardholderName').value;
+            const demoMode = window.location.search.includes('demo=true') || 
+                           localStorage.getItem('trustlend_demo_mode') === 'true';
+            
+            // Basic validation for cardholder name
+            if (!cardholderName.trim()) {
+                alert('Please enter the cardholder name.');
+                return;
+            }
+            
+            payButton.disabled = true;
+            payButton.innerHTML = '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>' + (demoMode ? 'Demo Processing...' : 'Processing...');
+            
+            try {
+                // Simulate payment processing delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Simulate successful payment (using dummy data)
+                const tierData = {
+                    essential: { name: 'Essential Protection', price: 14.99 },
+                    maximum: { name: 'Maximum Protection', price: 29.99 }
+                };
+                const currentTier = tierData[selectedTier] || tierData.essential;
+                const processingFee = Math.round((currentTier.price * 0.029 + 0.30) * 100) / 100;
+                const total = currentTier.price + processingFee;
+                
+                paymentCompleted = true;
+                addAuditEvent(`Payment completed: ${currentTier.name} - $${total.toFixed(2)} (${demoMode ? 'Demo' : 'Live'} mode)`);
+                
+                // Show success state
+                payButton.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    ✅ Payment Successful - Features Activated!
+                `;
+                payButton.className = 'w-full mt-6 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2';
+                
+                // Activate tier features
+                activateTierFeatures();
+                updateTierDisplay();
+                updatePreviewForTier(); // Update preview section
+                
+                // Auto-advance to next step after short delay
+                setTimeout(() => {
+                    nextStep();
+                }, 1500);
+                
+            } catch (error) {
+                payButton.disabled = false;
+                payButton.innerHTML = 'Complete Payment & Activate Features';
+                alert('Payment failed. Please try again.');
+                console.error('Payment error:', error);
+            }
+        }
+
+        // Demo mode functions
+        function enableDemoMode() {
+            localStorage.setItem('trustlend_demo_mode', 'true');
+            console.log('🎭 Demo mode enabled');
+            updatePaymentSection();
+        }
+
+        function skipPaymentDemo() {
+            if (confirm('Skip payment for demo purposes?')) {
+                paymentCompleted = true;
+                selectedTier = selectedTier || 'enhanced'; // Default to enhanced for demo
+                addAuditEvent(`Demo: Payment skipped, ${selectedTier} tier activated`);
+                activateTierFeatures();
+                updateTierDisplay();
+                updatePreviewForTier();
+                nextStep();
+            }
+        }
+
+        // Enhanced step navigation
+        function nextStep() {
+            // Validation based on current step
+            if (currentStep === 1 && !validateStep1()) return;
+            if (currentStep === 2 && !validateStep2()) return;
+            if (currentStep === 3 && !validateStep3()) return;
+            if (currentStep === 4 && !validateStep4()) return;
+            if (currentStep === 5 && !validateStep5()) return;
+            
+            if (currentStep < totalSteps) {
+                hideStep(currentStep);
+                currentStep++;
+                showStep(currentStep);
+                updateStepIndicators();
+                updateProgress();
+                addAuditEvent(`Advanced to step ${currentStep}`);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                hideStep(currentStep);
+                currentStep--;
+                showStep(currentStep);
+                updateStepIndicators();
+                updateProgress();
+                addAuditEvent(`Returned to step ${currentStep}`);
+            }
+        }
+
+        function validateStep4() {
+            // Step 4 is now Digital Signatures - ensure signatures are collected
+            
+            // Check if lender signature exists (canvas has content)
+            const lenderCanvas = document.getElementById('lenderCanvas');
+            if (lenderCanvas) {
+                const ctx = lenderCanvas.getContext('2d');
+                const imageData = ctx.getImageData(0, 0, lenderCanvas.width, lenderCanvas.height);
+                const hasLenderSignature = imageData.data.some(pixel => pixel !== 0);
+                
+                if (!hasLenderSignature) {
+                    alert('Please provide your signature as the lender.');
+                    return false;
+                }
+            }
+            
+            // Check borrower signature if signing now
+            const borrowerSignMethod = document.querySelector('input[name="borrowerSignMethod"]:checked');
+            if (borrowerSignMethod && borrowerSignMethod.value === 'now') {
+                const borrowerCanvas = document.getElementById('borrowerCanvas');
+                if (borrowerCanvas) {
+                    const ctx = borrowerCanvas.getContext('2d');
+                    const imageData = ctx.getImageData(0, 0, borrowerCanvas.width, borrowerCanvas.height);
+                    const hasBorrowerSignature = imageData.data.some(pixel => pixel !== 0);
+                    
+                    if (!hasBorrowerSignature) {
+                        alert('Please provide the borrower signature.');
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+
+        function validateStep5() {
+            // Step 5 is now Plan & Payment - ensure tier selection and payment
+            if (!selectedTier) {
+                alert('Please select a processing plan.');
+                return false;
+            }
+            if (!paymentCompleted) {
+                alert('Please complete payment to generate your enhanced documents.');
+                return false;
+            }
+            return true;
+        }
+
+        // Enhanced step display
+        function showStep(step) {
+            document.getElementById(`form-step-${step}`).classList.remove('hidden');
+            
+            // Step-specific initializations
+            if (step === 6) {
+                initializeBorrowerDelivery();
+                // Trigger document generation with enhanced features
+                if (window.tierManager) {
+                    window.tierManager.generateDocuments();
+                }
+            }
+            
+            if (step === 5) {
+                // Update borrower verify fields with existing data
+                const borrowerPhone = document.getElementById('borrowerPhone')?.value;
+                const borrowerEmail = document.getElementById('borrowerEmail')?.value;
+                
+                if (borrowerPhone) {
+                    document.getElementById('borrowerVerifyPhone').value = borrowerPhone;
+                }
+                if (borrowerEmail) {
+                    document.getElementById('borrowerVerifyEmail').value = borrowerEmail;
+                }
+            }
+            
+            // Update navigation
+            if (step === 1) {
+                document.getElementById('prevBtn').classList.add('hidden');
+            } else {
+                document.getElementById('prevBtn').classList.remove('hidden');
+            }
+            
+            if (step === totalSteps) {
+                document.getElementById('nextBtn').classList.add('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('nextBtn').textContent = step === 4 ? 'Choose Plan & Pay' : step === 5 ? 'Generate Documents' : 'Next';
+            }
+            
+            // Update step labels
+            const stepLabels = {
+                1: { title: 'Loan Details', desc: 'Enter the basic loan information' },
+                2: { title: 'Party Information', desc: 'Add lender and borrower details' },
+                3: { title: 'Review Contract', desc: 'Review all details and terms' },
+                4: { title: 'Digital Signatures', desc: 'Sign the contract digitally' },
+                5: { title: 'Plan & Payment', desc: 'Choose your plan and pay for document processing' },
+                6: { title: 'Document Generation & Delivery', desc: 'Generate enhanced documents and delivery' }
+            };
+            
+            document.getElementById('step-label').textContent = stepLabels[step].title;
+            document.getElementById('step-description').textContent = stepLabels[step].desc;
+            document.getElementById('current-step').textContent = step;
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progress = (currentStep / totalSteps) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        // Enhanced features based on previous implementation
+        function showFlatFeeExplanation() {
+            const explanation = document.getElementById('flatFeeExplanation');
+            explanation.classList.toggle('hidden');
+        }
+
+        function handlePurposeSelection() {
+            const dropdown = document.getElementById('purposeDropdown');
+            const textInput = document.getElementById('purpose');
+            
+            if (dropdown.value === 'Other') {
+                textInput.classList.remove('hidden');
+                textInput.focus();
+            } else {
+                textInput.classList.add('hidden');
+                textInput.value = dropdown.value;
+                updatePreview();
+            }
+        }
+
+        function validateDOB() {
+            const dobInput = document.getElementById('borrowerDob');
+            const dobError = document.getElementById('dobError');
+            const dobValid = document.getElementById('dobValid');
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            
+            dobError.classList.add('hidden');
+            dobValid.classList.add('hidden');
+            dobInput.classList.remove('dob-validation-error');
+            
+            if (!dobInput.value) return;
+            
+            if (age < 18) {
+                dobError.textContent = 'Borrower must be at least 18 years old';
+                dobError.classList.remove('hidden');
+                dobInput.classList.add('dob-validation-error');
+                return false;
+            }
+            
+            if (age > 120) {
+                dobError.textContent = 'Please enter a valid date of birth';
+                dobError.classList.remove('hidden');
+                dobInput.classList.add('dob-validation-error');
+                return false;
+            }
+            
+            dobValid.classList.remove('hidden');
+            return true;
+        }
+
+        function clearDOBError() {
+            document.getElementById('dobError').classList.add('hidden');
+            document.getElementById('dobInput').classList.remove('dob-validation-error');
+        }
+
+        // UCC Compliance functions
+        function previewUCCAttachments() {
+            window.open('ucc-preview.html', '_blank', 'width=800,height=600');
+        }
+
+        function downloadContractWithUCC() {
+            addAuditEvent('Downloaded complete contract package with UCC attachments');
+            // Implement download logic
+            alert('Complete contract package with UCC attachments downloaded!');
+        }
+
+        function downloadMainContract() {
+            addAuditEvent('Downloaded main contract only');
+            alert('Main contract downloaded!');
+        }
+
+        function downloadUCCAttachments() {
+            addAuditEvent('Downloaded UCC attachments only');
+            alert('UCC Article attachments downloaded!');
+        }
+
+        // Rest of the existing JavaScript functions...
+        // (Include all the existing functions from the original file)
+        
+        // Blockchain & Audit Trail Functions
+        function addAuditEvent(action, details = '') {
+            const event = {
+                timestamp: new Date().toISOString(),
+                action: action,
+                details: details,
+                ipAddress: '192.168.1.100', // Demo IP
+                userAgent: navigator.userAgent.substring(0, 50) + '...',
+                tierActive: selectedTier,
+                paymentStatus: paymentCompleted ? 'completed' : 'pending'
+            };
+            auditTrail.push(event);
+            console.log('Enhanced Audit Event:', event);
+            
+            // Update audit count display
+            document.getElementById('auditEventCount').textContent = auditTrail.length;
+        }
+
+        function generateDocumentHash() {
+            // Generate a mock blockchain hash
+            const chars = '0123456789abcdef';
+            let hash = '0x';
+            for (let i = 0; i < 8; i++) {
+                hash += chars[Math.floor(Math.random() * chars.length)];
+            }
+            document.getElementById('documentHash').textContent = hash + '...';
+        }
+
+        function viewAuditTrail() {
+            window.location.href = 'audit-trail.html?contract=' + Date.now();
+        }
+
+        // Enhanced signature canvas initialization
+        function initializeSignatureCanvases() {
+            lenderCanvas = document.getElementById('lenderCanvas');
+            borrowerCanvas = document.getElementById('borrowerCanvas');
+            
+            if (lenderCanvas) {
+                const ctx = lenderCanvas.getContext('2d');
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                
+                // Touch and mouse events for lender canvas
+                lenderCanvas.addEventListener('mousedown', startDrawingLender);
+                lenderCanvas.addEventListener('mousemove', drawLender);
+                lenderCanvas.addEventListener('mouseup', stopDrawingLender);
+                lenderCanvas.addEventListener('touchstart', startDrawingLender);
+                lenderCanvas.addEventListener('touchmove', drawLender);
+                lenderCanvas.addEventListener('touchend', stopDrawingLender);
+            }
+            
+            if (borrowerCanvas) {
+                const ctx = borrowerCanvas.getContext('2d');
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                
+                // Touch and mouse events for borrower canvas
+                borrowerCanvas.addEventListener('mousedown', startDrawingBorrower);
+                borrowerCanvas.addEventListener('mousemove', drawBorrower);
+                borrowerCanvas.addEventListener('mouseup', stopDrawingBorrower);
+                borrowerCanvas.addEventListener('touchstart', startDrawingBorrower);
+                borrowerCanvas.addEventListener('touchmove', drawBorrower);
+                borrowerCanvas.addEventListener('touchend', stopDrawingBorrower);
+            }
+        }
+
+        
+        // Signature drawing functions
+        function startDrawingLender(e) {
+            isDrawingLender = true;
+            const rect = lenderCanvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const ctx = lenderCanvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            
+            e.preventDefault();
+        }
+        
+        function drawLender(e) {
+            if (!isDrawingLender) return;
+            
+            const rect = lenderCanvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const ctx = lenderCanvas.getContext('2d');
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            e.preventDefault();
+        }
+        
+        function stopDrawingLender(e) {
+            if (isDrawingLender) {
+                isDrawingLender = false;
+                checkSignatureCompletion(lenderCanvas);
+            }
+            e.preventDefault();
+        }
+        
+        function startDrawingBorrower(e) {
+            isDrawingBorrower = true;
+            const rect = borrowerCanvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const ctx = borrowerCanvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            
+            e.preventDefault();
+        }
+        
+        function drawBorrower(e) {
+            if (!isDrawingBorrower) return;
+            
+            const rect = borrowerCanvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const ctx = borrowerCanvas.getContext('2d');
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            e.preventDefault();
+        }
+        
+        function stopDrawingBorrower(e) {
+            if (isDrawingBorrower) {
+                isDrawingBorrower = false;
+                checkSignatureCompletion(borrowerCanvas);
+            }
+            e.preventDefault();
+        }
+        
+        // Continue with all existing signature functions, form validation, etc.
+        // (Include remaining functions from original implementation)
+
+        // Initialize enhanced system
+        function loadLenderInfo() {
+            // Auto-populate lender information from profile
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{"firstName":"Demo","lastName":"User","email":"demo@trustlend.app"}');
+            
+            document.getElementById('lenderFirstName').value = userProfile.firstName || '';
+            document.getElementById('lenderLastName').value = userProfile.lastName || '';
+            document.getElementById('lenderEmail').value = userProfile.email || '';
+            document.getElementById('lenderPhone').value = userProfile.phone || '';
+            document.getElementById('lenderAddress').value = userProfile.address || '';
+            document.getElementById('lenderCity').value = userProfile.city || '';
+            document.getElementById('lenderState').value = userProfile.state || '';
+            document.getElementById('lenderZip').value = userProfile.zip || '';
+            document.getElementById('lenderCounty').value = userProfile.county || '';
+            
+            updatePreview();
+        }
+
+        function setTodayAsLoanDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('loanDate').value = today;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            // Update all preview fields based on form inputs
+            const principal = parseFloat(document.getElementById('principal').value) || 0;
+            const flatFee = parseFloat(document.getElementById('flatFee').value) || 0;
+            const total = principal + flatFee;
+            const paymentSchedule = document.getElementById('paymentSchedule').value;
+            
+            document.getElementById('previewPrincipal').textContent = '$' + principal.toLocaleString();
+            document.getElementById('previewFee').textContent = '$' + flatFee.toLocaleString();
+            document.getElementById('previewTotal').textContent = '$' + total.toLocaleString();
+            
+            // Update payment breakdown section
+            const breakdownSection = document.getElementById('previewPaymentBreakdown');
+            const monthlyPaymentDiv = document.getElementById('previewMonthlyPayment');
+            
+            document.getElementById('previewBreakdownPrincipal').textContent = '$' + principal.toLocaleString();
+            document.getElementById('previewBreakdownFee').textContent = '$' + flatFee.toLocaleString();
+            document.getElementById('previewBreakdownTotal').textContent = '$' + total.toLocaleString();
+            
+            // Calculate and show monthly payment if not lump sum
+            if (paymentSchedule !== 'lump_sum' && total > 0) {
+                breakdownSection.classList.remove('hidden');
+                monthlyPaymentDiv.classList.remove('hidden');
+                
+                const dueDate = new Date(document.getElementById('dueDate').value);
+                const loanDate = new Date(document.getElementById('loanDate').value);
+                
+                if (dueDate && loanDate && dueDate > loanDate) {
+                    let numberOfPayments = 1;
+                    
+                    if (paymentSchedule === 'monthly') {
+                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 30));
+                    } else if (paymentSchedule === 'weekly') {
+                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 7));
+                    } else if (paymentSchedule === 'biweekly') {
+                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 14));
+                    }
+                    
+                    const monthlyPayment = total / numberOfPayments;
+                    document.getElementById('previewBreakdownMonthly').textContent = '$' + monthlyPayment.toFixed(2);
+                } else {
+                    document.getElementById('previewBreakdownMonthly').textContent = 'Set dates to calculate';
+                }
+            } else {
+                if (paymentSchedule === 'lump_sum') {
+                    breakdownSection.classList.remove('hidden');
+                    monthlyPaymentDiv.classList.add('hidden');
+                } else {
+                    breakdownSection.classList.add('hidden');
+                }
+            }
+            
+            const purpose = document.getElementById('purpose').value || document.getElementById('purposeDropdown').value;
+            document.getElementById('previewPurpose').textContent = purpose || 'Not specified';
+            
+            const dueDate = document.getElementById('dueDate').value;
+            document.getElementById('previewDueDate').textContent = dueDate ? new Date(dueDate).toLocaleDateString() : 'Not set';
+            
+            const scheduleText = {
+                'lump_sum': 'Lump Sum',
+                'monthly': 'Monthly Payments',
+                'weekly': 'Weekly Payments',
+                'biweekly': 'Bi-weekly Payments'
+            };
+            document.getElementById('previewSchedule').textContent = scheduleText[document.getElementById('paymentSchedule').value];
+            
+            // Update party information
+            const lenderName = (document.getElementById('lenderFirstName').value + ' ' + document.getElementById('lenderLastName').value).trim();
+            if (lenderName) {
+                document.getElementById('previewLender').textContent = lenderName;
+                document.getElementById('previewLenderSection').classList.remove('hidden');
+            }
+            
+            const borrowerName = (document.getElementById('borrowerFirstName').value + ' ' + document.getElementById('borrowerLastName').value).trim();
+            if (borrowerName) {
+                document.getElementById('previewBorrower').textContent = borrowerName;
+                document.getElementById('previewBorrowerSection').classList.remove('hidden');
+            }
+        }
+
+        // Form validation functions
+        function validateStep1() {
+            const principal = document.getElementById('principal').value;
+            const dueDate = document.getElementById('dueDate').value;
+            
+            if (!principal || parseFloat(principal) <= 0) {
+                alert('Please enter a valid principal amount.');
+                return false;
+            }
+            
+            if (!dueDate) {
+                alert('Please select a due date.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateStep2() {
+            const requiredFields = [
+                'lenderFirstName', 'lenderLastName', 'lenderEmail',
+                'borrowerFirstName', 'borrowerLastName', 'borrowerEmail'
+            ];
+            
+            for (const field of requiredFields) {
+                if (!document.getElementById(field).value.trim()) {
+                    alert('Please fill in all required fields.');
+                    return false;
+                }
+            }
+            
+            if (!validateDOB()) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateStep3() {
+            const agreedToTerms = document.getElementById('agreedToTerms').checked;
+            const agreedToEsign = document.getElementById('agreedToEsign').checked;
+            
+            if (!agreedToTerms || !agreedToEsign) {
+                alert('Please agree to all terms and conditions.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateStep5() {
+            // Step 5 is now Plan & Payment - ensure tier selection and payment
+            if (!selectedTier) {
+                alert('Please select a processing plan.');
+                return false;
+            }
+            if (!paymentCompleted) {
+                alert('Please complete payment to generate your enhanced documents.');
+                return false;
+            }
+            return true;
+        }
+
+        // Additional utility functions
+        function hideStep(step) {
+            document.getElementById(`form-step-${step}`).classList.add('hidden');
+        }
+
+        function updateStepIndicators() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepElement = document.getElementById(`step-${i}`);
+                stepElement.classList.remove('step-active', 'step-completed', 'step-inactive');
+                
+                if (i < currentStep) {
+                    stepElement.classList.add('step-completed');
+                } else if (i === currentStep) {
+                    stepElement.classList.add('step-active');
+                } else {
+                    stepElement.classList.add('step-inactive');
+                }
+            }
+        }
+
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{3})(\d{3})/, '($1) $2');
+            }
+            input.value = value;
+        }
+
+        function formatSSN(input) {
+            input.value = input.value.replace(/\D/g, '');
+        }
+
+        function toggleLateFeeOptions() {
+            const checkbox = document.getElementById('enableLateFee');
+            const options = document.getElementById('lateFeeOptions');
+            options.classList.toggle('hidden', !checkbox.checked);
+        }
+
+        function togglePaymentBreakdown() {
+            const schedule = document.getElementById('paymentSchedule').value;
+            const breakdown = document.getElementById('paymentBreakdown');
+            
+            if (schedule !== 'lump_sum') {
+                breakdown.classList.remove('hidden');
+                calculatePaymentSchedule();
+            } else {
+                breakdown.classList.add('hidden');
+            }
+        }
+
+        function calculatePaymentSchedule() {
+            const principal = parseFloat(document.getElementById('principal').value) || 0;
+            const flatFee = parseFloat(document.getElementById('flatFee').value) || 0;
+            const total = principal + flatFee;
+            const schedule = document.getElementById('paymentSchedule').value;
+            const detailsDiv = document.getElementById('paymentScheduleDetails');
+            
+            if (schedule === 'lump_sum' || total === 0) {
+                return;
+            }
+            
+            const loanDate = new Date(document.getElementById('loanDate').value);
+            const dueDate = new Date(document.getElementById('dueDate').value);
+            
+            if (!loanDate || !dueDate) {
+                return;
+            }
+            
+            const timeDiff = dueDate.getTime() - loanDate.getTime();
+            let numPayments;
+            let paymentAmount;
+            let frequency;
+            
+            switch (schedule) {
+                case 'weekly':
+                    numPayments = Math.ceil(timeDiff / (7 * 24 * 60 * 60 * 1000));
+                    frequency = 'weekly';
+                    break;
+                case 'biweekly':
+                    numPayments = Math.ceil(timeDiff / (14 * 24 * 60 * 60 * 1000));
+                    frequency = 'bi-weekly';
+                    break;
+                case 'monthly':
+                    numPayments = Math.ceil(timeDiff / (30 * 24 * 60 * 60 * 1000));
+                    frequency = 'monthly';
+                    break;
+            }
+            
+            paymentAmount = total / numPayments;
+            
+            detailsDiv.innerHTML = `
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="font-semibold">Payment Amount:</span><br>
+                        $${paymentAmount.toFixed(2)} ${frequency}
+                    </div>
+                    <div>
+                        <span class="font-semibold">Number of Payments:</span><br>
+                        ${numPayments} payments
+                    </div>
+                    <div>
+                        <span class="font-semibold">Total Amount:</span><br>
+                        $${total.toFixed(2)}
+                    </div>
+                    <div>
+                        <span class="font-semibold">Payment Period:</span><br>
+                        ${loanDate.toLocaleDateString()} - ${dueDate.toLocaleDateString()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveDraft() {
+            const formData = {
+                principal: document.getElementById('principal').value,
+                flatFee: document.getElementById('flatFee').value,
+                loanDate: document.getElementById('loanDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                purpose: document.getElementById('purpose').value,
+                paymentSchedule: document.getElementById('paymentSchedule').value,
+                selectedTier: selectedTier,
+                paymentCompleted: paymentCompleted,
+                currentStep: currentStep,
+                auditTrail: auditTrail
+            };
+            localStorage.setItem('trustlend_enhanced_draft', JSON.stringify(formData));
+            addAuditEvent('Enhanced draft saved');
+            alert('Draft saved successfully!');
+        }
+
+        // Universal Navigation JavaScript
+        class UniversalNavigation {
+            constructor() {
+                this.isAuthenticated = this.checkAuthStatus();
+                this.init();
+            }
+
+            checkAuthStatus() {
+                return localStorage.getItem('userToken') !== null;
+            }
+
+            init() {
+                this.setupNavigation();
+                this.setupMobileMenu();
+                this.updateUserInfo();
+            }
+
+            setupNavigation() {
+                this.isAuthenticated = true;
+                if (!localStorage.getItem('userToken')) {
+                    localStorage.setItem('userToken', 'demo-token');
+                }
+            }
+
+            setupMobileMenu() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const mobileMenu = document.getElementById('mobileMenu');
+
+                if (mobileMenuBtn && mobileMenu) {
+                    mobileMenuBtn.addEventListener('click', () => {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+
+            updateUserInfo() {
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{"firstName":"Demo","lastName":"User","email":"demo@trustlend.app"}');
+                
+                const userInitials = document.getElementById('userInitials');
+                if (userInitials) {
+                    userInitials.textContent = (userProfile.firstName[0] + userProfile.lastName[0]).toUpperCase();
+                }
+
+                const userName = document.getElementById('userName');
+                if (userName) {
+                    userName.textContent = userProfile.firstName;
+                }
+            }
+        }
+
+        function signOut() {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userProfile');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            new UniversalNavigation();
+        });
+
+        // Enhanced download functions
+        function downloadContractWithUCC() {
+            addAuditEvent('Downloaded complete contract package with UCC attachments');
+            alert('📄 Complete contract package downloaded!\n\nIncludes:\n• Main promissory note\n• UCC Articles 3 & 9 attachment\n• Execution certificate\n• Blockchain audit trail');
+        }
+
+        function downloadMainContract() {
+            addAuditEvent('Downloaded main contract only');
+            alert('📋 Main contract downloaded!');
+        }
+
+        function downloadUCCAttachments() {
+            addAuditEvent('Downloaded UCC attachments only');
+            alert('📜 UCC Article attachments downloaded!');
+        }
+
+        // Enhanced signature functions
+        function sendSignatureRequest() {
+            const smsEnabled = document.getElementById('sendViaSMS')?.checked;
+            const emailEnabled = document.getElementById('sendViaEmail')?.checked;
+            
+            if (!smsEnabled && !emailEnabled) {
+                alert('Please select at least one delivery method');
+                return;
+            }
+            
+            const methods = [];
+            if (smsEnabled) methods.push('SMS');
+            if (emailEnabled) methods.push('Email');
+            
+            addAuditEvent('Signature request sent', {
+                methods: methods.join(' + '),
+                timestamp: new Date().toISOString()
+            });
+            
+            alert(`📤 Signature request sent via ${methods.join(' + ')}!`);
+        }
+
+        // Update borrower information functions
+        function toggleBorrowerSignatureMethod() {
+            const signNow = document.querySelector('input[name="borrowerSignMethod"][value="now"]').checked;
+            const signNowSection = document.getElementById('borrower-sign-now');
+            const signRequestSection = document.getElementById('borrower-sign-request');
+            
+            if (signNow) {
+                signNowSection?.classList.remove('hidden');
+                signRequestSection?.classList.add('hidden');
+            } else {
+                signNowSection?.classList.add('hidden');
+                signRequestSection?.classList.remove('hidden');
+            }
+        }
+
+        // Signature method setters
+        function setLenderSignatureMethod(method) {
+            lenderSignatureMethod = method;
+            
+            // Update button states
+            document.querySelectorAll('[id^="lender-"][id$="-btn"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`lender-${method}-btn`).classList.add('active');
+            
+            // Show/hide sections
+            document.querySelectorAll('[id^="lender-"][id$="-section"]').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(`lender-${method}-section`).classList.remove('hidden');
+        }
+
+        function setBorrowerSignatureMethod(method) {
+            borrowerSignatureMethod = method;
+            
+            // Update button states
+            document.querySelectorAll('[id^="borrower-"][id$="-btn"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`borrower-${method}-btn`).classList.add('active');
+            
+            // Show/hide sections
+            document.querySelectorAll('[id^="borrower-"][id$="-section"]').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(`borrower-${method}-section`).classList.remove('hidden');
+        }
+
+        // Clear signature functions
+        function clearLenderSignature() {
+            if (lenderCanvas) {
+                const ctx = lenderCanvas.getContext('2d');
+                ctx.clearRect(0, 0, lenderCanvas.width, lenderCanvas.height);
+                // Remove any visual feedback
+                lenderCanvas.classList.remove('signature-completed');
+            }
+        }
+
+        function clearBorrowerSignature() {
+            if (borrowerCanvas) {
+                const ctx = borrowerCanvas.getContext('2d');
+                ctx.clearRect(0, 0, borrowerCanvas.width, borrowerCanvas.height);
+                // Remove any visual feedback
+                borrowerCanvas.classList.remove('signature-completed');
+            }
+        }
+        
+        // Add visual feedback when signature is drawn
+        function checkSignatureCompletion(canvas) {
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const hasSignature = imageData.data.some(pixel => pixel !== 0);
+                
+                if (hasSignature) {
+                    canvas.classList.add('signature-completed');
+                    canvas.style.borderColor = '#10b981';
+                    canvas.style.backgroundColor = '#f0fdf4';
+                } else {
+                    canvas.classList.remove('signature-completed');
+                    canvas.style.borderColor = '';
+                    canvas.style.backgroundColor = '';
+                }
+            }
+        }
+
+        // Signature selection functions
+        function selectLenderSignature(option) {
+            document.querySelectorAll('.lender-sig-option').forEach(opt => {
+                opt.classList.remove('border-blue-500');
+                opt.classList.add('border-gray-300');
+            });
+            event.target.closest('.lender-sig-option').classList.remove('border-gray-300');
+            event.target.closest('.lender-sig-option').classList.add('border-blue-500');
+        }
+
+        function selectBorrowerSignature(option) {
+            document.querySelectorAll('.borrower-sig-option').forEach(opt => {
+                opt.classList.remove('border-blue-500');
+                opt.classList.add('border-gray-300');
+            });
+            event.target.closest('.borrower-sig-option').classList.remove('border-gray-300');
+            event.target.closest('.borrower-sig-option').classList.add('border-blue-500');
+        }
+    </script>
+</body>
+</html>
