@@ -1729,129 +1729,18 @@ Best regards,
             
             updateTierSelection();
             updateTierDisplay();
-            updatePreviewForTier(); // Update preview immediately
+            updatePreviewForTier(); // This function already handles everything correctly
             updateContractPreviewPlanStatus(); // Explicit update for Plan Status
-            updateSecurityComplianceSection(); // NEW: Dedicated security features update
             activateTierFeatures();
             addAuditEvent(`Tier selected: ${tier}`);
             
             console.log(`Contract preview updated for ${tier} tier`);
         }
         
-        // NEW: Dedicated function to update Security & Compliance section
-        function updateSecurityComplianceSection() {
-            const securitySection = document.getElementById('previewSecurityFeatures');
-            if (!securitySection) {
-                console.error('Security features section not found');
-                return;
-            }
-            
-            const tierFeatures = {
-                essential: [
-                    { icon: '📝', text: 'Legal contract creation' },
-                    { icon: '✍️', text: 'Digital signatures (both parties)' },
-                    { icon: '📧', text: 'Email delivery & tracking' },
-                    { icon: '📄', text: 'PDF download' },
-                    { icon: '⚖️', text: 'E-SIGN Act compliance' },
-                    { icon: '🔗', text: 'Basic audit trail' }
-                ],
-                maximum: [
-                    { icon: '📝', text: 'Legal contract creation' },
-                    { icon: '✍️', text: 'Digital signatures (both parties)' },
-                    { icon: '📧', text: 'Email delivery & tracking' },
-                    { icon: '📄', text: 'PDF download' },
-                    { icon: '🔔', text: 'Automatic payment reminders', enhanced: true },
-                    { icon: '🔐', text: 'Blockchain timestamp proof', enhanced: true },
-                    { icon: '📱', text: 'Remote signing with ID verification', enhanced: true },
-                    { icon: '📋', text: 'Court evidence package', enhanced: true },
-                    { icon: '🚀', text: 'Smart reminder escalation', enhanced: true },
-                    { icon: '⚖️', text: 'Full legal compliance suite', enhanced: true }
-                ]
-            };
-            
-            const currentFeatures = tierFeatures[selectedTier] || tierFeatures.essential;
-            
-            securitySection.innerHTML = currentFeatures.map(feature => `
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>${feature.icon} ${feature.text}</span>
-                    ${feature.enhanced ? '<span class="text-xs bg-purple-100 text-purple-800 px-1 py-0.5 rounded ml-2">✨ Enhanced</span>' : ''}
-                </div>
-            `).join('');
-            
-            console.log(`Security & Compliance updated with ${currentFeatures.length} features for ${selectedTier} tier`);
-        }
-        
-        // Explicit function to update Contract Preview Plan Status
+        // Explicit function to update Contract Preview Plan Status (lightweight backup)
         function updateContractPreviewPlanStatus() {
-            const currentTierEl = document.getElementById('previewCurrentTier');
-            const featuresActiveEl = document.getElementById('previewFeaturesActive');
-            
-            if (!currentTierEl || !featuresActiveEl) {
-                console.error('Plan Status elements not found:', {
-                    currentTierEl: !!currentTierEl,
-                    featuresActiveEl: !!featuresActiveEl
-                });
-                return;
-            }
-            
-            const tierData = {
-                essential: { 
-                    name: 'Essential Protection', 
-                    class: 'tier-badge bg-blue-600',
-                    featureCount: 6
-                },
-                maximum: { 
-                    name: 'Maximum Protection', 
-                    class: 'premium-badge bg-purple-600',
-                    featureCount: 10
-                }
-            };
-            
-            const current = tierData[selectedTier] || tierData.essential;
-            
-            // Update tier name and styling with full class specification
-            currentTierEl.textContent = current.name;
-            currentTierEl.className = `${current.class} text-white px-2 py-1 rounded text-xs font-semibold`;
-            
-            // Update feature count
-            featuresActiveEl.textContent = `${current.featureCount} features active`;
-            
-            // Also update the tier pricing section
-            updateTierPricingSection();
-            
-            console.log(`✅ Plan Status updated: ${current.name} (${current.featureCount} features)`);
-        }
-        
-        // NEW: Update the tier pricing breakdown section
-        function updateTierPricingSection() {
-            const tierNameEl = document.getElementById('previewTierName');
-            const tierPriceEl = document.getElementById('previewTierPrice');
-            const processingFeeEl = document.getElementById('previewProcessingFee');
-            const planTotalEl = document.getElementById('previewPlanTotal');
-            
-            if (!tierNameEl || !tierPriceEl || !processingFeeEl || !planTotalEl) {
-                console.warn('Some tier pricing elements not found');
-                return;
-            }
-            
-            const tierPricing = {
-                essential: { name: 'Essential Protection', price: 14.99 },
-                maximum: { name: 'Maximum Protection', price: 29.99 }
-            };
-            
-            const current = tierPricing[selectedTier] || tierPricing.essential;
-            const processingFee = Math.round((current.price * 0.029 + 0.30) * 100) / 100;
-            const planTotal = current.price + processingFee;
-            
-            tierNameEl.textContent = `${current.name}:`;
-            tierPriceEl.textContent = `$${current.price.toFixed(2)}`;
-            processingFeeEl.textContent = `$${processingFee.toFixed(2)}`;
-            planTotalEl.textContent = `$${planTotal.toFixed(2)}`;
-            
-            console.log(`✅ Tier Pricing updated: ${current.name} - $${planTotal.toFixed(2)}`);
+            // This function is now lightweight since updatePreviewForTier() handles most updates
+            console.log(`✅ Plan Status update triggered for ${selectedTier} tier`);
         }
 
         function updateTierSelection() {
