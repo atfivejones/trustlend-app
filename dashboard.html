@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TrustLend</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
     
     <style>
         .card-hover {
@@ -28,12 +30,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <div class="text-2xl font-bold text-blue-600">TrustLend</div>
+                    <a href="dashboard.html" class="text-2xl font-bold text-blue-600 hover:opacity-80 transition">TrustLend</a>
                     <nav class="hidden md:ml-8 md:flex md:space-x-6">
                         <a href="dashboard.html" class="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">Dashboard</a>
                         <a href="create-note.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Create Note</a>
                         <a href="contracts.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">My Contracts</a>
-                        <a href="settings.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Settings</a>
+                        <a href="profile.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Profile</a>
                     </nav>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -193,5 +195,9 @@
             </svg>
         </a>
     </div>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/contracts.js"></script>
+    <script src="assets/js/forms.js"></script>
 </body>
 </html>
