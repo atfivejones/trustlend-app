@@ -2884,5 +2884,57 @@ Best regards,
             event.target.closest('.borrower-sig-option').classList.add('border-blue-500');
         }
     </script>
+<!-- Contract Preview section (auto-inserted) --><div class="contract-preview-content"><span id="previewTierName">Essential Protection:</span><span id="previewTierPrice">$14.99</span> <br/><div class="security-features-list" id="securityFeaturesList"><!-- Features will be populated by JavaScript --></div></div>
+<script>
+(function(){
+  function ready(fn){ if(document.readyState !== 'loading'){ fn(); } else { document.addEventListener('DOMContentLoaded', fn); } }
+  ready(function(){
+    var app = window.TrustLendContracts || null;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.tier-card[data-tier]'));
+    if (!cards.length) return;
+
+    function setTier(tier){
+      // normalize
+      tier = (tier === 'maximum') ? 'maximum' : 'essential';
+
+      // update app state if available
+      if (app && app.state) app.state.currentTier = tier;
+
+      // toggle selected class + border colors
+      cards.forEach(function(c){
+        var isActive = (c.dataset.tier === tier);
+        c.classList.toggle('selected', isActive);
+        c.classList.toggle('border-blue-500', isActive);
+        c.classList.toggle('border-gray-200', !isActive);
+        c.setAttribute('aria-pressed', String(isActive));
+      });
+
+      // refresh dependent UI (safe-guards included)
+      if (app && typeof app.updateContractPreview === 'function') app.updateContractPreview();
+      if (app && typeof app.updateSecurityFeatures === 'function') app.updateSecurityFeatures();
+      if (app && typeof app.updatePricingCalculation === 'function') app.updatePricingCalculation();
+    }
+
+    // hook events
+    cards.forEach(function(card){
+      card.setAttribute('role','button');
+      card.setAttribute('tabindex','0');
+      card.addEventListener('click', function(){ setTier(card.dataset.tier); });
+      card.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTier(card.dataset.tier); }
+      });
+    });
+
+    // initial: if any has border-blue-500, treat as selected; else default to essential
+    var initial = (cards.find && cards.find(function(c){ return c.classList.contains('border-blue-500'); }))
+                  || null;
+    var initialTier = initial ? initial.dataset.tier : 'essential';
+    setTier(initialTier);
+
+    // Legacy bridge for older code paths
+    window.selectTier = function(tier){ setTier(tier); };
+  });
+})();
+</script>
 </body>
 </html>
