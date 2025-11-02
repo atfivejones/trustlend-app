@@ -3108,6 +3108,223 @@ Best regards,
             event.target.closest('.borrower-sig-option').classList.remove('border-gray-300');
             event.target.closest('.borrower-sig-option').classList.add('border-blue-500');
         }
+
+        // 🎯 CONTRACT PREVIEW FIX - Makes Plan Pricing, Security & Compliance, and Plan Status update properly
+        (function() {
+            console.log('🎯 Contract Preview Fix loaded');
+
+            // Tier definitions matching your interface
+            const tierData = {
+                'essential': {
+                    name: 'Essential Protection',
+                    price: 14.99,
+                    processingFee: 0.74,
+                    features: [
+                        '✓ Blockchain timestamps',
+                        '✓ Digital signatures with proof',
+                        '✓ Email delivery & tracking',
+                        '✓ 30-day archived'
+                    ],
+                    featureCount: 4,
+                    badgeClass: 'tier-badge'
+                },
+                'maximum': {
+                    name: 'Maximum Protection',
+                    price: 29.99,
+                    processingFee: 1.17,
+                    features: [
+                        '✓ Blockchain timestamps proof',
+                        '✓ Advanced signing with IP verification',
+                        '✓ Court evidence package',
+                        '✓ Smart reminder notifications',
+                        '⚠️ Automatic payment reminders'
+                    ],
+                    featureCount: 5,
+                    badgeClass: 'enhanced-badge'
+                },
+                'premium': {
+                    name: 'Premium Protection',
+                    price: 49.99,
+                    processingFee: 1.99,
+                    features: [
+                        '✓ All Maximum features',
+                        '✓ Priority legal support',
+                        '✓ White-label customization',
+                        '✓ API access',
+                        '✓ Custom integrations'
+                    ],
+                    featureCount: 8,
+                    badgeClass: 'premium-badge'
+                }
+            };
+
+            // Update Contract Preview Function
+            function updateContractPreview(selectedTier) {
+                console.log('🔄 Updating Contract Preview for:', selectedTier);
+                
+                const tier = tierData[selectedTier];
+                if (!tier) {
+                    console.log('⚠️ Unknown tier:', selectedTier);
+                    return;
+                }
+
+                // Update Plan Pricing section
+                const elements = {
+                    previewTierName: document.getElementById('previewTierName'),
+                    previewTierPrice: document.getElementById('previewTierPrice'),
+                    previewProcessingFee: document.getElementById('previewProcessingFee'),
+                    previewPlanTotal: document.getElementById('previewPlanTotal'),
+                    previewSecurityFeatures: document.getElementById('previewSecurityFeatures'),
+                    previewCurrentTier: document.getElementById('previewCurrentTier'),
+                    previewFeaturesActive: document.getElementById('previewFeaturesActive')
+                };
+
+                // Update Plan Pricing
+                if (elements.previewTierName) elements.previewTierName.textContent = tier.name + ':';
+                if (elements.previewTierPrice) elements.previewTierPrice.textContent = '$' + tier.price.toFixed(2);
+                if (elements.previewProcessingFee) elements.previewProcessingFee.textContent = '$' + tier.processingFee.toFixed(2);
+                if (elements.previewPlanTotal) elements.previewPlanTotal.textContent = '$' + (tier.price + tier.processingFee).toFixed(2);
+
+                // Update Security & Compliance
+                if (elements.previewSecurityFeatures) {
+                    elements.previewSecurityFeatures.innerHTML = tier.features
+                        .map(feature => `<div class="flex items-center gap-2">${feature}</div>`)
+                        .join('');
+                }
+
+                // Update Plan Status
+                if (elements.previewCurrentTier) {
+                    elements.previewCurrentTier.textContent = tier.name;
+                    elements.previewCurrentTier.className = `${tier.badgeClass} text-white px-2 py-1 rounded text-xs font-semibold`;
+                }
+                
+                if (elements.previewFeaturesActive) {
+                    elements.previewFeaturesActive.textContent = `${tier.featureCount} features active`;
+                }
+
+                // Update header tier display
+                const headerTierBadge = document.querySelector('.tier-badge');
+                if (headerTierBadge) {
+                    headerTierBadge.textContent = tier.name;
+                    headerTierBadge.className = `${tier.badgeClass} text-white px-3 py-1 rounded-full text-sm font-semibold`;
+                }
+
+                console.log('✅ Contract Preview updated successfully');
+            }
+
+            // Handle tier selection
+            function handleTierSelection(selectedTier) {
+                console.log('🎯 Tier selected:', selectedTier);
+                
+                // Update visual selection
+                document.querySelectorAll('.tier-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // Find and select the tier card
+                const selectedCard = document.querySelector(`[data-tier="${selectedTier}"]`) || 
+                                    findTierCardByText(selectedTier);
+                
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                }
+
+                // Update contract preview
+                updateContractPreview(selectedTier);
+            }
+
+            // Helper function to find tier card by text content
+            function findTierCardByText(tierKey) {
+                const tierCards = document.querySelectorAll('.tier-card');
+                for (let card of tierCards) {
+                    const text = card.textContent.toLowerCase();
+                    if ((tierKey === 'essential' && text.includes('essential')) ||
+                        (tierKey === 'maximum' && text.includes('maximum')) ||
+                        (tierKey === 'premium' && text.includes('premium'))) {
+                        return card;
+                    }
+                }
+                return null;
+            }
+
+            // Set up event listeners
+            function setupEventListeners() {
+                console.log('🔧 Setting up tier selection listeners...');
+                
+                // Listen for any clicks on tier-related elements
+                document.addEventListener('click', function(e) {
+                    const element = e.target;
+                    
+                    // Check if clicked element is tier-related
+                    if (element.classList.contains('tier-card') || 
+                        element.closest('.tier-card') ||
+                        element.textContent.includes('Essential') ||
+                        element.textContent.includes('Maximum') ||
+                        element.textContent.includes('Premium')) {
+                        
+                        const tierCard = element.closest('.tier-card') || element;
+                        const text = tierCard.textContent.toLowerCase();
+                        
+                        let tierKey = 'essential'; // default
+                        if (text.includes('maximum')) tierKey = 'maximum';
+                        else if (text.includes('premium')) tierKey = 'premium';
+                        
+                        handleTierSelection(tierKey);
+                    }
+                });
+
+                // Also listen for specific button clicks
+                const getStartedButtons = document.querySelectorAll('button');
+                getStartedButtons.forEach(button => {
+                    if (button.textContent.includes('Get Started') || button.textContent.includes('Select')) {
+                        button.addEventListener('click', function() {
+                            const tierCard = this.closest('.tier-card');
+                            if (tierCard) {
+                                const text = tierCard.textContent.toLowerCase();
+                                let tierKey = 'essential';
+                                if (text.includes('maximum')) tierKey = 'maximum';
+                                else if (text.includes('premium')) tierKey = 'premium';
+                                
+                                handleTierSelection(tierKey);
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Initialize when page loads
+            function initialize() {
+                console.log('🚀 Initializing Contract Preview Fix...');
+                
+                setupEventListeners();
+                
+                // Set default tier or detect current selection
+                setTimeout(() => {
+                    const selectedCard = document.querySelector('.tier-card.selected');
+                    if (selectedCard) {
+                        const text = selectedCard.textContent.toLowerCase();
+                        let tierKey = 'essential';
+                        if (text.includes('maximum')) tierKey = 'maximum';
+                        else if (text.includes('premium')) tierKey = 'premium';
+                        handleTierSelection(tierKey);
+                    } else {
+                        // Default to essential
+                        handleTierSelection('essential');
+                    }
+                }, 500);
+                
+                console.log('✅ Contract Preview Fix initialized');
+            }
+
+            // Start when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initialize);
+            } else {
+                initialize();
+            }
+
+        })();
+        // END CONTRACT PREVIEW FIX
     </script>
 </body>
 </html>
