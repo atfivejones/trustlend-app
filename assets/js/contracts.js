@@ -253,7 +253,11 @@ class TrustLendContracts {
             interestRate: '[name="interestRate"]',
             loanTerm: '[name="loanTerm"]',
             paymentFrequency: '[name="paymentFrequency"]',
-            collateralDescription: '[name="collateralDescription"]'
+            collateralDescription: '[name="collateralDescription"]',
+            // Add smart date fields
+            firstPaymentDue: '#firstPaymentDue',
+            lumpSumDueDate: '#lumpSumDueDate',
+            paymentSchedule: '#paymentSchedule'
         };
 
         const data = {};
@@ -272,6 +276,43 @@ class TrustLendContracts {
         const loanAmount = parseFloat(data.loanAmount?.replace(/[,$]/g, '')) || 0;
         const interestRate = parseFloat(data.interestRate) || 0;
         const loanTerm = parseInt(data.loanTerm) || 0;
+        
+        // Payment schedule information
+        const paymentSchedule = data.paymentSchedule || 'lump_sum';
+        const scheduleNames = {
+            'lump_sum': 'Lump Sum Payment',
+            'weekly': 'Weekly Payments',
+            'biweekly': 'Bi-weekly Payments', 
+            'monthly': 'Monthly Payments'
+        };
+        
+        let paymentScheduleText = '';
+        if (paymentSchedule === 'lump_sum') {
+            const dueDate = data.lumpSumDueDate ? new Date(data.lumpSumDueDate).toLocaleDateString() : '[Due Date]';
+            paymentScheduleText = `
+                <p><strong>Payment Terms:</strong> Full amount due on ${dueDate}</p>
+            `;
+        } else {
+            const firstPayment = data.firstPaymentDue ? new Date(data.firstPaymentDue).toLocaleDateString() : '[First Payment Date]';
+            const scheduleType = scheduleNames[paymentSchedule] || 'Monthly Payments';
+            
+            // Calculate number of payments and payment amount
+            let numPayments = 12; // Default
+            switch (paymentSchedule) {
+                case 'weekly': numPayments = Math.min(52, Math.ceil(loanAmount / 50)); break;
+                case 'biweekly': numPayments = Math.min(26, Math.ceil(loanAmount / 100)); break;
+                case 'monthly': numPayments = Math.min(24, Math.ceil(loanAmount / 200)); break;
+            }
+            
+            const paymentAmount = loanAmount / numPayments;
+            
+            paymentScheduleText = `
+                <p><strong>Payment Terms:</strong> ${scheduleType}</p>
+                <p><strong>Payment Amount:</strong> $${paymentAmount.toFixed(2)} per payment</p>
+                <p><strong>First Payment Due:</strong> ${firstPayment}</p>
+                <p><strong>Number of Payments:</strong> ${numPayments}</p>
+            `;
+        }
 
         return `
             <h5>PROMISSORY NOTE</h5>
@@ -284,9 +325,11 @@ class TrustLendContracts {
             <ul>
                 <li>Interest Rate: ${interestRate}% per annum</li>
                 <li>Term: ${loanTerm} months</li>
-                <li>Payment Frequency: ${data.paymentFrequency || 'Monthly'}</li>
                 ${data.collateralDescription ? `<li>Collateral: ${data.collateralDescription}</li>` : ''}
             </ul>
+            
+            <h6>Payment Schedule:</h6>
+            ${paymentScheduleText}
             
             ${tier ? `<p class="tier-info"><small>Generated using TrustLend ${tier.name}</small></p>` : ''}
             
