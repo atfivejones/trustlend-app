@@ -127,27 +127,33 @@
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
-                <a href="index.html" class="flex items-center space-x-2">
+                <!-- Logo - Smart linking based on auth state -->
+                <a href="#" id="logoLink" class="flex items-center space-x-2 hover:opacity-80 transition">
                     <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <span class="text-white text-sm">💙</span>
                     </div>
                     <span class="text-xl font-bold text-gray-900">TrustLend</span>
                 </a>
                 
-                <!-- Current Tier Display -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <div id="currentTierDisplay" class="flex items-center space-x-2">
+                <!-- PUBLIC Navigation (default for non-signed-in users) -->
+                <div id="publicNav" class="flex items-center space-x-4">
+                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 hidden md:inline">Features</a>
+                    <a href="index.html#legal" class="text-gray-600 hover:text-gray-900 hidden md:inline">Legal Protection</a>
+                    <a href="index.html#pricing" class="text-gray-600 hover:text-gray-900 hidden md:inline">Pricing</a>
+                    <button id="signInBtn" class="text-gray-600 hover:text-gray-900 hidden md:inline">Sign In</button>
+                    <button id="needAccountBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Save My Contract
+                    </button>
+                </div>
+
+                <!-- PRIVATE Navigation (for signed-in users) -->
+                <div id="privateNav" class="hidden items-center space-x-4">
+                    <!-- Current Tier Display -->
+                    <div id="currentTierDisplay" class="hidden md:flex items-center space-x-2">
                         <span class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            Basic Plan
+                            Essential Plan
                         </span>
-                        <span id="featuresUnlocked" class="text-sm text-gray-600">3 features active</span>
-                    </div>
-                    
-                    <!-- Demo Mode Indicator -->
-                    <div id="demoModeIndicator" class="bg-yellow-100 border border-yellow-300 px-2 py-1 rounded text-xs text-yellow-800 font-medium hidden">
-                        🎭 Demo Mode
+                        <span id="featuresUnlocked" class="text-sm text-gray-600">6 features active</span>
                     </div>
                     
                     <button onclick="saveDraft()" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
@@ -166,17 +172,26 @@
                         Dashboard
                     </a>
 
-                    <div class="relative group">
-                        <button class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="relative">
+                        <button class="user-dropdown-trigger flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                             <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                                <span id="userInitials" class="text-sm font-semibold text-blue-600">TU</span>
+                                <span id="userInitials" class="text-sm font-semibold text-blue-600">JD</span>
                             </div>
-                            <span class="hidden lg:inline" id="userName">Account</span>
-                            <div class="w-2 h-2 bg-green-500 rounded-full ml-1" title="Blockchain Verified"></div>
+                            <span class="hidden lg:inline" id="userName">John Doe</span>
                             <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
                         </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="user-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help Center</a>
+                            <hr class="my-1">
+                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
                         
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block">
                             <div class="py-1">
@@ -3104,6 +3119,164 @@ Best regards,
             event.target.closest('.borrower-sig-option').classList.remove('border-gray-300');
             event.target.closest('.borrower-sig-option').classList.add('border-blue-500');
         }
+
+        // === Authentication & Navigation Logic ===
+        
+        // Check authentication state and show appropriate navigation
+        function checkAuthenticationState() {
+            // Check if user is signed in (localStorage for demo purposes)
+            const isSignedIn = localStorage.getItem('trustlend_auth') === 'true';
+            const publicNav = document.getElementById('publicNav');
+            const privateNav = document.getElementById('privateNav');
+            const logoLink = document.getElementById('logoLink');
+            
+            if (isSignedIn) {
+                // Show private navigation
+                publicNav.classList.add('hidden');
+                privateNav.classList.remove('hidden');
+                privateNav.classList.add('flex');
+                logoLink.href = 'dashboard.html';
+            } else {
+                // Show public navigation
+                publicNav.classList.remove('hidden');
+                publicNav.classList.add('flex');
+                privateNav.classList.add('hidden');
+                logoLink.href = 'index.html';
+            }
+        }
+
+        // Sign in flow
+        function showSignInModal() {
+            // Create sign-in modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In to Save Your Contract</h2>
+                    <p class="text-gray-600 mb-6 text-center">Create a free account to save, manage, and track your loan agreements.</p>
+                    
+                    <form id="signInForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            Sign In & Save Contract
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-600">Don't have an account?</p>
+                        <button onclick="showSignUpModal()" class="text-blue-600 hover:text-blue-700 font-medium">Create Free Account</button>
+                    </div>
+                    
+                    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle sign-in form submission
+            document.getElementById('signInForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Demo: Simulate successful sign-in
+                localStorage.setItem('trustlend_auth', 'true');
+                closeModal();
+                checkAuthenticationState();
+                alert('Successfully signed in! You can now save your contract.');
+            });
+        }
+
+        function showSignUpModal() {
+            closeModal(); // Close sign-in modal
+            
+            // Create sign-up modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Create Your Free Account</h2>
+                    <p class="text-gray-600 mb-6 text-center">Join thousands protecting their money and relationships.</p>
+                    
+                    <form id="signUpForm" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                <input type="text" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="John">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                <input type="text" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Doe">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            Create Account & Save Contract
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-600">Already have an account?</p>
+                        <button onclick="showSignInModal()" class="text-blue-600 hover:text-blue-700 font-medium">Sign In</button>
+                    </div>
+                    
+                    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle sign-up form submission
+            document.getElementById('signUpForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Demo: Simulate successful sign-up
+                localStorage.setItem('trustlend_auth', 'true');
+                closeModal();
+                checkAuthenticationState();
+                alert('Account created successfully! Welcome to TrustLend.');
+            });
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.fixed.inset-0');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Initialize authentication state when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthenticationState();
+            
+            // Sign In button
+            document.getElementById('signInBtn')?.addEventListener('click', showSignInModal);
+            
+            // Save My Contract button (for non-signed-in users)
+            document.getElementById('needAccountBtn')?.addEventListener('click', function() {
+                showSignInModal();
+            });
+        });
     </script>
 
     <script src="assets/js/app.js"></script>
