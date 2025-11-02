@@ -1,667 +1,563 @@
-/**
- * TrustLend Forms & Validation
- * Handles form enhancements, validation, and user interactions
- */
+// forms-updated.js - Consolidated form handling and validation functionality
+class TrustLendForms {
+    constructor() {
+        this.validators = {};
+        this.formatters = {};
+        this.init();
+    }
 
-const TrustLendForms = {
-    // Form state and configuration
-    state: {
-        validationRules: {},
-        formData: {},
-        isSubmitting: false
-    },
-
-    // Validation patterns
-    patterns: {
-        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        phone: /^\+?[\d\s\-\(\)]{10,}$/,
-        currency: /^\d+(\.\d{1,2})?$/,
-        name: /^[a-zA-Z\s]{2,50}$/
-    },
-
-    // Initialize forms functionality
     init() {
-        console.log('Initializing TrustLend Forms...');
-        this.setupFormEnhancements();
-        this.setupValidation();
-        this.setupFormSubmission();
-        this.setupFieldInteractions();
-        this.setupTabsAndToggles();
-    },
+        this.setupValidators();
+        this.setupFormatters();
+        this.setupEventListeners();
+        this.initializeFormEnhancements();
+    }
 
-    // ===== FORM ENHANCEMENTS =====
-    setupFormEnhancements() {
-        // Add floating labels
-        this.setupFloatingLabels();
-        
-        // Format currency inputs
-        this.setupCurrencyInputs();
-        
-        // Format phone inputs
-        this.setupPhoneInputs();
-        
-        // Setup password toggles
-        this.setupPasswordToggles();
-        
-        // Setup character counters
-        this.setupCharacterCounters();
-        
-        // Setup input masks
-        this.setupInputMasks();
-    },
-
-    setupFloatingLabels() {
-        const inputs = document.querySelectorAll('.form-input');
-        inputs.forEach(input => {
-            // Add focus/blur handlers for floating labels
-            input.addEventListener('focus', () => {
-                input.parentNode.classList.add('focused');
-            });
+    setupValidators() {
+        this.validators = {
+            required: (value) => {
+                return value && value.trim() !== '';
+            },
             
-            input.addEventListener('blur', () => {
-                if (!input.value.trim()) {
-                    input.parentNode.classList.remove('focused');
+            email: (value) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value);
+            },
+            
+            currency: (value) => {
+                const numValue = parseFloat(value.replace(/[,$]/g, ''));
+                return !isNaN(numValue) && numValue > 0;
+            },
+            
+            percentage: (value) => {
+                const numValue = parseFloat(value);
+                return !isNaN(numValue) && numValue >= 0 && numValue <= 100;
+            },
+            
+            positiveInteger: (value) => {
+                const numValue = parseInt(value);
+                return !isNaN(numValue) && numValue > 0;
+            },
+            
+            ssn: (value) => {
+                const ssnRegex = /^\d{3}-?\d{2}-?\d{4}$/;
+                return ssnRegex.test(value.replace(/\s/g, ''));
+            },
+            
+            phone: (value) => {
+                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                const cleaned = value.replace(/[\s\-\(\)\.]/g, '');
+                return phoneRegex.test(cleaned) && cleaned.length >= 10;
+            }
+        };
+    }
+
+    setupFormatters() {
+        this.formatters = {
+            currency: (value) => {
+                // Remove all non-numeric characters except decimal point
+                let numValue = value.replace(/[^\d.]/g, '');
+                
+                // Ensure only one decimal point
+                const decimalIndex = numValue.indexOf('.');
+                if (decimalIndex !== -1) {
+                    numValue = numValue.substring(0, decimalIndex + 1) + 
+                              numValue.substring(decimalIndex + 1).replace(/\./g, '');
                 }
-            });
+                
+                // Parse and format
+                const num = parseFloat(numValue);
+                if (isNaN(num)) return '';
+                
+                return num.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            },
             
-            // Check initial state
-            if (input.value.trim()) {
-                input.parentNode.classList.add('focused');
+            percentage: (value) => {
+                const numValue = value.replace(/[^\d.]/g, '');
+                const num = parseFloat(numValue);
+                return isNaN(num) ? '' : num.toString();
+            },
+            
+            phone: (value) => {
+                const cleaned = value.replace(/\D/g, '');
+                if (cleaned.length >= 10) {
+                    return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                }
+                return cleaned;
+            },
+            
+            ssn: (value) => {
+                const cleaned = value.replace(/\D/g, '');
+                if (cleaned.length >= 9) {
+                    return cleaned.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3');
+                }
+                return cleaned;
+            }
+        };
+    }
+
+    setupEventListeners() {
+        // Form submission handling
+        document.addEventListener('submit', (e) => {
+            if (e.target.classList.contains('validate-form')) {
+                e.preventDefault();
+                this.handleFormSubmission(e.target);
             }
         });
-    },
 
-    setupCurrencyInputs() {
-        const currencyInputs = document.querySelectorAll('input[type="number"][data-currency]');
-        currencyInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                this.formatCurrencyInput(e.target);
-            });
-            
-            input.addEventListener('blur', (e) => {
-                this.validateCurrencyInput(e.target);
-            });
-        });
-    },
-
-    formatCurrencyInput(input) {
-        let value = input.value.replace(/[^0-9.]/g, '');
-        
-        // Ensure only one decimal point
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-        
-        // Limit to 2 decimal places
-        if (parts[1] && parts[1].length > 2) {
-            value = parts[0] + '.' + parts[1].substring(0, 2);
-        }
-        
-        input.value = value;
-    },
-
-    validateCurrencyInput(input) {
-        const value = parseFloat(input.value);
-        const min = parseFloat(input.dataset.min || 0);
-        const max = parseFloat(input.dataset.max || Infinity);
-        
-        if (value < min) {
-            this.showFieldError(input, `Minimum amount is ${this.formatCurrency(min)}`);
-        } else if (value > max) {
-            this.showFieldError(input, `Maximum amount is ${this.formatCurrency(max)}`);
-        } else {
-            this.clearFieldError(input);
-        }
-    },
-
-    setupPhoneInputs() {
-        const phoneInputs = document.querySelectorAll('input[type="tel"]');
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                this.formatPhoneInput(e.target);
-            });
-        });
-    },
-
-    formatPhoneInput(input) {
-        let value = input.value.replace(/[^0-9]/g, '');
-        
-        if (value.length >= 6) {
-            if (value.length <= 10) {
-                value = value.replace(/(\d{3})(\d{3})(\d+)/, '($1) $2-$3');
-            } else {
-                value = value.replace(/(\d{1})(\d{3})(\d{3})(\d+)/, '+$1 ($2) $3-$4');
-            }
-        }
-        
-        input.value = value;
-    },
-
-    setupPasswordToggles() {
-        const passwordToggles = document.querySelectorAll('.password-toggle');
-        passwordToggles.forEach(toggle => {
-            toggle.addEventListener('click', (e) => {
-                const input = e.target.closest('.form-group').querySelector('input');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    e.target.textContent = '👁️';
-                } else {
-                    input.type = 'password';
-                    e.target.textContent = '👁️‍🗨️';
-                }
-            });
-        });
-    },
-
-    setupCharacterCounters() {
-        const textareas = document.querySelectorAll('textarea[data-max-length]');
-        textareas.forEach(textarea => {
-            const maxLength = parseInt(textarea.dataset.maxLength);
-            const counter = document.createElement('div');
-            counter.className = 'character-counter text-sm text-gray-500 mt-1';
-            textarea.parentNode.appendChild(counter);
-            
-            const updateCounter = () => {
-                const remaining = maxLength - textarea.value.length;
-                counter.textContent = `${remaining} characters remaining`;
-                counter.className = remaining < 20 ? 
-                    'character-counter text-sm text-red-500 mt-1' : 
-                    'character-counter text-sm text-gray-500 mt-1';
-            };
-            
-            textarea.addEventListener('input', updateCounter);
-            updateCounter(); // Initial count
-        });
-    },
-
-    setupInputMasks() {
-        // Social Security Number mask
-        const ssnInputs = document.querySelectorAll('input[data-mask="ssn"]');
-        ssnInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                value = value.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3');
-                e.target.value = value.substring(0, 11);
-            });
-        });
-        
-        // Date mask
-        const dateInputs = document.querySelectorAll('input[data-mask="date"]');
-        dateInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                value = value.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
-                e.target.value = value.substring(0, 10);
-            });
-        });
-    },
-
-    // ===== FORM VALIDATION =====
-    setupValidation() {
         // Real-time validation
-        const inputs = document.querySelectorAll('.form-input[required]');
-        inputs.forEach(input => {
-            input.addEventListener('blur', () => {
-                this.validateField(input);
+        document.addEventListener('blur', (e) => {
+            if (e.target.hasAttribute('data-validate')) {
+                this.validateField(e.target);
+            }
+        });
+
+        // Real-time formatting
+        document.addEventListener('input', (e) => {
+            const formatType = e.target.getAttribute('data-format');
+            if (formatType && this.formatters[formatType]) {
+                this.formatField(e.target, formatType);
+            }
+        });
+
+        // Currency formatting specifically for loan amount
+        const loanAmountField = document.querySelector('[name="loanAmount"]');
+        if (loanAmountField) {
+            loanAmountField.addEventListener('input', (e) => {
+                this.formatCurrencyField(e.target);
             });
             
-            input.addEventListener('input', () => {
-                // Clear errors on input if field was previously invalid
-                if (input.classList.contains('error')) {
-                    this.clearFieldError(input);
-                }
+            loanAmountField.addEventListener('blur', (e) => {
+                this.validateField(e.target);
+            });
+        }
+
+        // Interest rate formatting
+        const interestRateField = document.querySelector('[name="interestRate"]');
+        if (interestRateField) {
+            interestRateField.addEventListener('input', (e) => {
+                this.formatPercentageField(e.target);
+            });
+        }
+
+        // Phone formatting
+        document.querySelectorAll('[data-format="phone"]').forEach(field => {
+            field.addEventListener('input', (e) => {
+                this.formatPhoneField(e.target);
             });
         });
-    },
+
+        // Form reset handling
+        document.addEventListener('reset', (e) => {
+            setTimeout(() => this.clearValidationMessages(e.target), 0);
+        });
+    }
+
+    formatCurrencyField(field) {
+        const cursorPosition = field.selectionStart;
+        const oldValue = field.value;
+        const newValue = this.formatters.currency(oldValue);
+        
+        if (newValue !== oldValue) {
+            field.value = newValue;
+            
+            // Restore cursor position (roughly)
+            const newCursorPosition = cursorPosition + (newValue.length - oldValue.length);
+            field.setSelectionRange(newCursorPosition, newCursorPosition);
+        }
+    }
+
+    formatPercentageField(field) {
+        let value = field.value.replace(/[^\d.]/g, '');
+        const num = parseFloat(value);
+        
+        if (!isNaN(num) && num > 100) {
+            field.value = '100';
+        } else {
+            field.value = value;
+        }
+    }
+
+    formatPhoneField(field) {
+        const formatted = this.formatters.phone(field.value);
+        field.value = formatted;
+    }
+
+    formatField(field, formatType) {
+        const formatter = this.formatters[formatType];
+        if (formatter) {
+            const cursorPosition = field.selectionStart;
+            const oldValue = field.value;
+            const newValue = formatter(oldValue);
+            
+            if (newValue !== oldValue) {
+                field.value = newValue;
+                
+                // Try to maintain cursor position
+                const newCursorPosition = Math.min(cursorPosition, newValue.length);
+                field.setSelectionRange(newCursorPosition, newCursorPosition);
+            }
+        }
+    }
 
     validateField(field) {
-        const value = field.value.trim();
-        const fieldType = field.type;
-        const fieldName = field.name;
-        
-        // Required field check
-        if (field.hasAttribute('required') && !value) {
-            this.showFieldError(field, `${this.getFieldLabel(field)} is required`);
-            return false;
-        }
-        
-        // Type-specific validation
-        switch (fieldType) {
-            case 'email':
-                return this.validateEmail(field, value);
-            case 'tel':
-                return this.validatePhone(field, value);
-            case 'number':
-                return this.validateNumber(field, value);
-            default:
-                return this.validateText(field, value);
-        }
-    },
+        const validationRules = field.getAttribute('data-validate');
+        if (!validationRules) return true;
 
-    validateEmail(field, value) {
-        if (value && !this.patterns.email.test(value)) {
-            this.showFieldError(field, 'Please enter a valid email address');
-            return false;
-        }
-        this.clearFieldError(field);
-        return true;
-    },
-
-    validatePhone(field, value) {
-        if (value && !this.patterns.phone.test(value.replace(/[^0-9]/g, ''))) {
-            this.showFieldError(field, 'Please enter a valid phone number');
-            return false;
-        }
-        this.clearFieldError(field);
-        return true;
-    },
-
-    validateNumber(field, value) {
-        const numValue = parseFloat(value);
-        const min = field.getAttribute('min');
-        const max = field.getAttribute('max');
-        
-        if (value && isNaN(numValue)) {
-            this.showFieldError(field, 'Please enter a valid number');
-            return false;
-        }
-        
-        if (min && numValue < parseFloat(min)) {
-            this.showFieldError(field, `Minimum value is ${min}`);
-            return false;
-        }
-        
-        if (max && numValue > parseFloat(max)) {
-            this.showFieldError(field, `Maximum value is ${max}`);
-            return false;
-        }
-        
-        this.clearFieldError(field);
-        return true;
-    },
-
-    validateText(field, value) {
-        const minLength = field.getAttribute('minlength');
-        const maxLength = field.getAttribute('maxlength');
-        
-        if (minLength && value.length < parseInt(minLength)) {
-            this.showFieldError(field, `Minimum length is ${minLength} characters`);
-            return false;
-        }
-        
-        if (maxLength && value.length > parseInt(maxLength)) {
-            this.showFieldError(field, `Maximum length is ${maxLength} characters`);
-            return false;
-        }
-        
-        // Name validation
-        if (field.dataset.type === 'name' && value && !this.patterns.name.test(value)) {
-            this.showFieldError(field, 'Please enter a valid name (letters and spaces only)');
-            return false;
-        }
-        
-        this.clearFieldError(field);
-        return true;
-    },
-
-    validateForm(form) {
-        const inputs = form.querySelectorAll('.form-input');
+        const rules = validationRules.split(' ');
+        const value = field.value;
         let isValid = true;
-        
-        inputs.forEach(input => {
-            if (!this.validateField(input)) {
+        let errorMessage = '';
+
+        for (const rule of rules) {
+            const validator = this.validators[rule];
+            if (validator && !validator(value)) {
                 isValid = false;
+                errorMessage = this.getErrorMessage(rule, field);
+                break;
             }
-        });
-        
-        // Custom form validation
-        if (form.id === 'create-note-form') {
-            isValid = this.validateCreateNoteForm(form) && isValid;
         }
-        
+
+        this.showValidationResult(field, isValid, errorMessage);
         return isValid;
-    },
+    }
 
-    validateCreateNoteForm(form) {
-        let isValid = true;
-        
-        // Check that borrower is different from lender
-        const lenderEmail = form.querySelector('input[name="lender_email"]')?.value;
-        const borrowerEmail = form.querySelector('input[name="borrower_email"]')?.value;
-        
-        if (lenderEmail && borrowerEmail && lenderEmail === borrowerEmail) {
-            this.showFormError(form, 'Lender and borrower cannot have the same email address');
-            isValid = false;
-        }
-        
-        // Validate loan amount vs optional fee ratio
-        const loanAmount = parseFloat(form.querySelector('input[name="loanAmount"]')?.value || 0);
-        const optionalFee = parseFloat(form.querySelector('input[name="optionalFee"]')?.value || 0);
-        
-        if (optionalFee > loanAmount * 0.5) {
-            this.showFormError(form, 'Optional fee cannot exceed 50% of loan amount');
-            isValid = false;
-        }
-        
-        return isValid;
-    },
+    getErrorMessage(rule, field) {
+        const fieldName = field.getAttribute('data-field-name') || 
+                         field.getAttribute('placeholder') || 
+                         field.name || 'This field';
 
-    // ===== ERROR HANDLING =====
-    showFieldError(field, message) {
-        field.classList.add('error');
-        
-        // Remove existing error
-        this.clearFieldError(field, false);
-        
-        // Add new error
-        const errorElement = document.createElement('div');
-        errorElement.className = 'form-error';
-        errorElement.textContent = message;
-        
-        field.parentNode.appendChild(errorElement);
-    },
+        const messages = {
+            required: `${fieldName} is required.`,
+            email: 'Please enter a valid email address.',
+            currency: 'Please enter a valid dollar amount.',
+            percentage: 'Please enter a valid percentage (0-100).',
+            positiveInteger: 'Please enter a positive number.',
+            ssn: 'Please enter a valid Social Security Number.',
+            phone: 'Please enter a valid phone number.'
+        };
 
-    clearFieldError(field, removeClass = true) {
-        if (removeClass) {
-            field.classList.remove('error');
-        }
+        return messages[rule] || `${fieldName} is invalid.`;
+    }
+
+    showValidationResult(field, isValid, errorMessage) {
+        // Remove existing validation classes and messages
+        field.classList.remove('is-valid', 'is-invalid');
         
-        const existingError = field.parentNode.querySelector('.form-error');
+        const existingError = field.parentNode.querySelector('.invalid-feedback');
         if (existingError) {
             existingError.remove();
         }
-    },
 
-    showFormError(form, message) {
-        let errorContainer = form.querySelector('.form-errors');
-        if (!errorContainer) {
-            errorContainer = document.createElement('div');
-            errorContainer.className = 'form-errors alert alert-error mb-4';
-            form.insertBefore(errorContainer, form.firstChild);
-        }
-        
-        errorContainer.innerHTML = `
-            <div class="flex items-center">
-                <span>⚠️</span>
-                <span class="ml-2">${message}</span>
-                <button type="button" class="ml-auto" onclick="this.parentElement.parentElement.remove()">×</button>
-            </div>
-        `;
-    },
-
-    clearFormErrors(form) {
-        const errorContainer = form.querySelector('.form-errors');
-        if (errorContainer) {
-            errorContainer.remove();
-        }
-    },
-
-    // ===== FORM SUBMISSION =====
-    setupFormSubmission() {
-        document.addEventListener('submit', (e) => {
-            this.handleFormSubmit(e);
-        });
-    },
-
-    handleFormSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        
-        if (this.state.isSubmitting) {
-            console.log('Form already submitting...');
+        if (field.value.trim() === '') {
+            // Don't show validation for empty fields unless they're required
             return;
         }
-        
-        this.clearFormErrors(form);
-        
-        if (this.validateForm(form)) {
-            this.submitForm(form);
-        } else {
-            this.showFormError(form, 'Please correct the errors above and try again.');
+
+        // Add appropriate class
+        field.classList.add(isValid ? 'is-valid' : 'is-invalid');
+
+        // Show error message if invalid
+        if (!isValid && errorMessage) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'invalid-feedback';
+            errorDiv.textContent = errorMessage;
+            field.parentNode.appendChild(errorDiv);
         }
-    },
+    }
 
-    async submitForm(form) {
-        this.state.isSubmitting = true;
-        const submitButton = form.querySelector('button[type="submit"]');
+    handleFormSubmission(form) {
+        const isFormValid = this.validateForm(form);
         
-        // Show loading state
-        this.setButtonLoading(submitButton, true);
-        
-        try {
-            // Collect form data
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            console.log('Submitting form data:', data);
-            
-            // Simulate API call (replace with actual API call)
-            await this.simulateApiCall(form.id, data);
-            
-            // Handle success
-            this.handleFormSuccess(form, data);
-            
-        } catch (error) {
-            console.error('Form submission error:', error);
-            this.handleFormError(form, error.message);
-        } finally {
-            this.state.isSubmitting = false;
-            this.setButtonLoading(submitButton, false);
+        if (!isFormValid) {
+            this.showFormError('Please correct the errors below before submitting.');
+            return false;
         }
-    },
 
-    async simulateApiCall(formId, data) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Simulate occasional errors for testing
-        if (Math.random() < 0.1) {
-            throw new Error('Network error occurred. Please try again.');
+        // Check if tier is selected (for contract forms)
+        if (form.classList.contains('note-creation-form')) {
+            const contracts = window.trustLendContracts;
+            if (contracts && !contracts.getCurrentTier()) {
+                this.showFormError('Please select a subscription tier before generating the contract.');
+                return false;
+            }
         }
-        
-        return { success: true, data };
-    },
 
-    handleFormSuccess(form, data) {
-        console.log('Form submitted successfully:', data);
-        
-        // Show success message
-        TrustLend.showNotification('Form submitted successfully!', 'success');
-        
-        // Form-specific success handling
-        switch (form.id) {
-            case 'create-note-form':
-                // Redirect to next step
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-                break;
-            case 'profile-form':
-                TrustLend.showNotification('Profile updated successfully!', 'success');
-                break;
-            default:
-                console.log('Form submitted:', form.id);
-        }
-    },
+        // Submit the form
+        this.submitForm(form);
+        return true;
+    }
 
-    handleFormError(form, errorMessage) {
-        this.showFormError(form, errorMessage || 'An error occurred. Please try again.');
-    },
+    validateForm(form) {
+        const fieldsToValidate = form.querySelectorAll('[data-validate]');
+        let isFormValid = true;
 
-    setButtonLoading(button, isLoading) {
-        if (!button) return;
-        
-        if (isLoading) {
-            button.disabled = true;
-            button.classList.add('loading');
-            const originalText = button.textContent;
-            button.dataset.originalText = originalText;
-            button.innerHTML = `<span class="spinner"></span> ${originalText}`;
-        } else {
-            button.disabled = false;
-            button.classList.remove('loading');
-            button.textContent = button.dataset.originalText || button.textContent;
-        }
-    },
-
-    // ===== FIELD INTERACTIONS =====
-    setupFieldInteractions() {
-        // Auto-advance on input completion
-        this.setupAutoAdvance();
-        
-        // Copy lender address to borrower
-        this.setupAddressCopy();
-        
-        // Relationship suggestions
-        this.setupRelationshipSuggestions();
-    },
-
-    setupAutoAdvance() {
-        // Auto-advance from phone number fields
-        const phoneInputs = document.querySelectorAll('input[type="tel"]');
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.replace(/[^0-9]/g, '').length >= 10) {
-                    const nextField = this.getNextField(e.target);
-                    if (nextField) {
-                        nextField.focus();
-                    }
-                }
-            });
-        });
-    },
-
-    setupAddressCopy() {
-        const copyButton = document.querySelector('#copy-lender-address');
-        if (copyButton) {
-            copyButton.addEventListener('click', () => {
-                this.copyLenderAddressToBorrower();
-            });
-        }
-    },
-
-    copyLenderAddressToBorrower() {
-        const lenderFields = ['address', 'city', 'state', 'zip'];
-        lenderFields.forEach(field => {
-            const lenderInput = document.querySelector(`input[name="lender_${field}"]`);
-            const borrowerInput = document.querySelector(`input[name="borrower_${field}"]`);
-            if (lenderInput && borrowerInput) {
-                borrowerInput.value = lenderInput.value;
-                this.validateField(borrowerInput);
+        fieldsToValidate.forEach(field => {
+            const isFieldValid = this.validateField(field);
+            if (!isFieldValid) {
+                isFormValid = false;
             }
         });
-        
-        TrustLend.showNotification('Address copied to borrower', 'info');
-    },
 
-    setupRelationshipSuggestions() {
-        const relationshipInput = document.querySelector('select[name="relationship"]');
-        if (relationshipInput) {
-            relationshipInput.addEventListener('change', (e) => {
-                this.updateRelationshipSuggestions(e.target.value);
+        return isFormValid;
+    }
+
+    async submitForm(form) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn?.textContent;
+
+        try {
+            // Show loading state
+            if (submitBtn) {
+                submitBtn.textContent = 'Processing...';
+                submitBtn.disabled = true;
+            }
+
+            // Gather form data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Simulate form submission (replace with actual API call)
+            const result = await this.simulateFormSubmission(data);
+
+            if (result.success) {
+                this.showFormSuccess('Form submitted successfully!');
+                form.reset();
+                this.clearValidationMessages(form);
+            } else {
+                this.showFormError(result.message || 'Submission failed. Please try again.');
+            }
+
+        } catch (error) {
+            console.error('Form submission error:', error);
+            this.showFormError('An error occurred. Please try again.');
+        } finally {
+            // Reset button state
+            if (submitBtn) {
+                submitBtn.textContent = originalText || 'Submit';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    async simulateFormSubmission(data) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        console.log('Form data submitted:', data);
+        
+        // Simulate success (replace with actual API logic)
+        return {
+            success: true,
+            message: 'Form submitted successfully!'
+        };
+    }
+
+    showFormError(message) {
+        this.showFormMessage(message, 'danger');
+    }
+
+    showFormSuccess(message) {
+        this.showFormMessage(message, 'success');
+    }
+
+    showFormMessage(message, type) {
+        // Remove existing messages
+        document.querySelectorAll('.form-message').forEach(msg => msg.remove());
+
+        // Create new message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `alert alert-${type} form-message`;
+        messageDiv.textContent = message;
+
+        // Insert at top of form or page
+        const targetForm = document.querySelector('.note-creation-form') || 
+                          document.querySelector('form') ||
+                          document.body;
+        
+        if (targetForm.tagName === 'FORM') {
+            targetForm.insertBefore(messageDiv, targetForm.firstChild);
+        } else {
+            targetForm.appendChild(messageDiv);
+        }
+
+        // Auto-remove success messages
+        if (type === 'success') {
+            setTimeout(() => messageDiv.remove(), 5000);
+        }
+    }
+
+    clearValidationMessages(form) {
+        form.querySelectorAll('.is-valid, .is-invalid').forEach(field => {
+            field.classList.remove('is-valid', 'is-invalid');
+        });
+        
+        form.querySelectorAll('.invalid-feedback').forEach(msg => {
+            msg.remove();
+        });
+    }
+
+    initializeFormEnhancements() {
+        // Add tooltips for help text
+        this.addTooltips();
+        
+        // Initialize character counters
+        this.addCharacterCounters();
+        
+        // Add form progress indicators
+        this.addProgressIndicators();
+        
+        // Initialize dependent field logic
+        this.setupDependentFields();
+    }
+
+    addTooltips() {
+        const fieldsWithHelp = document.querySelectorAll('[data-help]');
+        fieldsWithHelp.forEach(field => {
+            const helpText = field.getAttribute('data-help');
+            const tooltip = document.createElement('small');
+            tooltip.className = 'form-text text-muted';
+            tooltip.textContent = helpText;
+            field.parentNode.appendChild(tooltip);
+        });
+    }
+
+    addCharacterCounters() {
+        const fieldsWithLimits = document.querySelectorAll('[maxlength]');
+        fieldsWithLimits.forEach(field => {
+            const maxLength = field.getAttribute('maxlength');
+            const counter = document.createElement('small');
+            counter.className = 'form-text text-muted character-counter';
+            
+            const updateCounter = () => {
+                const remaining = maxLength - field.value.length;
+                counter.textContent = `${remaining} characters remaining`;
+                counter.style.color = remaining < 10 ? '#dc3545' : '#6c757d';
+            };
+            
+            field.addEventListener('input', updateCounter);
+            updateCounter();
+            
+            field.parentNode.appendChild(counter);
+        });
+    }
+
+    addProgressIndicators() {
+        const forms = document.querySelectorAll('.multi-step-form');
+        forms.forEach(form => {
+            const steps = form.querySelectorAll('.form-step');
+            if (steps.length > 1) {
+                this.createProgressBar(form, steps.length);
+            }
+        });
+    }
+
+    createProgressBar(form, stepCount) {
+        const progressBar = document.createElement('div');
+        progressBar.className = 'form-progress mb-4';
+        progressBar.innerHTML = `
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: ${100/stepCount}%"></div>
+            </div>
+            <div class="step-labels">
+                ${Array.from({length: stepCount}, (_, i) => 
+                    `<span class="step-label ${i === 0 ? 'active' : ''}">${i + 1}</span>`
+                ).join('')}
+            </div>
+        `;
+        
+        form.insertBefore(progressBar, form.firstChild);
+    }
+
+    setupDependentFields() {
+        // Collateral fields based on loan type
+        const loanTypeField = document.querySelector('[name="loanType"]');
+        if (loanTypeField) {
+            loanTypeField.addEventListener('change', (e) => {
+                this.toggleCollateralFields(e.target.value);
             });
         }
-    },
 
-    updateRelationshipSuggestions(relationship) {
-        const purposeField = document.querySelector('textarea[name="purpose"]');
-        if (!purposeField || purposeField.value.trim()) return;
-        
-        const suggestions = {
-            'family': 'Family financial assistance',
-            'friend': 'Personal loan between friends',
-            'colleague': 'Professional/business loan',
-            'other': 'Personal loan agreement'
-        };
-        
-        purposeField.placeholder = suggestions[relationship] || 'Loan purpose...';
-    },
-
-    // ===== TABS AND TOGGLES =====
-    setupTabsAndToggles() {
-        // Profile tabs
-        this.setupProfileTabs();
-        
-        // Payment schedule toggles
-        this.setupPaymentScheduleToggle();
-        
-        // Advanced options toggles
-        this.setupAdvancedOptionsToggle();
-    },
-
-    setupProfileTabs() {
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        tabButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                // Remove active class from all
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.add('hidden'));
-                
-                // Add active class to current
-                button.classList.add('active');
-                if (tabContents[index]) {
-                    tabContents[index].classList.remove('hidden');
-                }
+        // Payment frequency calculations
+        const paymentFields = document.querySelectorAll('[name="loanAmount"], [name="interestRate"], [name="loanTerm"], [name="paymentFrequency"]');
+        paymentFields.forEach(field => {
+            field.addEventListener('change', () => {
+                this.calculatePayments();
             });
         });
-    },
+    }
 
-    setupPaymentScheduleToggle() {
-        const scheduleSelect = document.querySelector('select[name="paymentSchedule"]');
-        const customSchedule = document.querySelector('.custom-schedule-options');
-        
-        if (scheduleSelect && customSchedule) {
-            scheduleSelect.addEventListener('change', (e) => {
-                if (e.target.value === 'custom') {
-                    customSchedule.classList.remove('hidden');
+    toggleCollateralFields(loanType) {
+        const collateralSection = document.querySelector('.collateral-section');
+        if (collateralSection) {
+            const showCollateral = ['secured', 'auto', 'real-estate'].includes(loanType);
+            collateralSection.style.display = showCollateral ? 'block' : 'none';
+            
+            // Update required status
+            const collateralFields = collateralSection.querySelectorAll('[data-validate*="required"]');
+            collateralFields.forEach(field => {
+                if (showCollateral) {
+                    field.setAttribute('data-validate', field.getAttribute('data-validate') + ' required');
                 } else {
-                    customSchedule.classList.add('hidden');
+                    field.setAttribute('data-validate', field.getAttribute('data-validate').replace('required', '').trim());
                 }
             });
         }
-    },
-
-    setupAdvancedOptionsToggle() {
-        const toggleButton = document.querySelector('.advanced-options-toggle');
-        const advancedOptions = document.querySelector('.advanced-options');
-        
-        if (toggleButton && advancedOptions) {
-            toggleButton.addEventListener('click', () => {
-                advancedOptions.classList.toggle('hidden');
-                const isHidden = advancedOptions.classList.contains('hidden');
-                toggleButton.textContent = isHidden ? 'Show Advanced Options' : 'Hide Advanced Options';
-            });
-        }
-    },
-
-    // ===== UTILITY FUNCTIONS =====
-    getFieldLabel(field) {
-        const label = field.closest('.form-group')?.querySelector('label');
-        return label ? label.textContent.replace('*', '').trim() : field.name;
-    },
-
-    getNextField(currentField) {
-        const form = currentField.closest('form');
-        const fields = Array.from(form.querySelectorAll('.form-input'));
-        const currentIndex = fields.indexOf(currentField);
-        return fields[currentIndex + 1] || null;
-    },
-
-    formatCurrency(amount) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(amount);
     }
-};
 
-// Initialize when DOM is ready
+    calculatePayments() {
+        const loanAmount = parseFloat(document.querySelector('[name="loanAmount"]')?.value.replace(/[,$]/g, '')) || 0;
+        const interestRate = parseFloat(document.querySelector('[name="interestRate"]')?.value) || 0;
+        const loanTerm = parseInt(document.querySelector('[name="loanTerm"]')?.value) || 0;
+        const paymentFrequency = document.querySelector('[name="paymentFrequency"]')?.value || 'monthly';
+
+        if (loanAmount > 0 && interestRate > 0 && loanTerm > 0) {
+            const monthlyRate = (interestRate / 100) / 12;
+            const totalPayments = loanTerm;
+            
+            const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
+                                  (Math.pow(1 + monthlyRate, totalPayments) - 1);
+
+            const paymentDisplay = document.querySelector('.payment-calculation');
+            if (paymentDisplay) {
+                paymentDisplay.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>Estimated Monthly Payment:</strong> $${monthlyPayment.toFixed(2)}
+                        <br><small>Total Interest: $${((monthlyPayment * totalPayments) - loanAmount).toFixed(2)}</small>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Public utility methods
+    validateSingleField(fieldSelector) {
+        const field = document.querySelector(fieldSelector);
+        return field ? this.validateField(field) : false;
+    }
+
+    formatCurrency(value) {
+        return this.formatters.currency(value);
+    }
+
+    clearForm(formSelector) {
+        const form = document.querySelector(formSelector);
+        if (form) {
+            form.reset();
+            this.clearValidationMessages(form);
+        }
+    }
+}
+
+// Initialize forms manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    TrustLendForms.init();
+    window.trustLendForms = new TrustLendForms();
 });
 
-// Expose to global scope
-window.TrustLendForms = TrustLendForms;
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = TrustLendForms;
+}
