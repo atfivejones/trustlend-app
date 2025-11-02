@@ -30,7 +30,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="dashboard.html" class="text-2xl font-bold text-blue-600 hover:opacity-80 transition">TrustLend</a>
+                    <a href="dashboard.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white text-sm">💙</span>
+                        </div>
+                        <span class="text-2xl font-bold text-blue-600">TrustLend</span>
+                    </a>
                     <nav class="hidden md:ml-8 md:flex md:space-x-6">
                         <a href="dashboard.html" class="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">Dashboard</a>
                         <a href="create-note.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Create Note</a>
@@ -39,18 +44,24 @@
                     </nav>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-gray-900">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM15 17H9a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </button>
                     <div class="relative">
-                        <button class="flex items-center text-gray-600 hover:text-gray-900">
-                            <span class="text-sm font-medium mr-2">Demo User</span>
+                        <button class="user-dropdown-trigger flex items-center text-gray-600 hover:text-gray-900">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+                                <span class="text-sm font-semibold text-blue-600">JD</span>
+                            </div>
+                            <span class="text-sm font-medium mr-2">John Doe</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="user-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help Center</a>
+                            <hr class="my-1">
+                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+                        </div>
                     </div>
                 </div>
             </div>
