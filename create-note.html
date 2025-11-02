@@ -3113,47 +3113,53 @@ Best regards,
         (function() {
             console.log('🎯 Contract Preview Fix loaded');
 
-            // Tier definitions matching your interface
+            // Tier definitions matching your interface exactly
             const tierData = {
                 'essential': {
                     name: 'Essential Protection',
+                    badgeText: 'Standard',
                     price: 14.99,
                     processingFee: 0.74,
                     features: [
-                        '✓ Blockchain timestamps',
-                        '✓ Digital signatures with proof',
+                        '✓ Legal contract creation',
+                        '✓ Digital signatures (both parties)',
                         '✓ Email delivery & tracking',
-                        '✓ 30-day archived'
+                        '✓ Automatic payment reminders',
+                        '✓ PDF download'
                     ],
-                    featureCount: 4,
+                    featureCount: 5,
                     badgeClass: 'tier-badge'
                 },
                 'maximum': {
                     name: 'Maximum Protection',
+                    badgeText: 'Most Popular',
                     price: 29.99,
                     processingFee: 1.17,
                     features: [
-                        '✓ Blockchain timestamps proof',
-                        '✓ Advanced signing with IP verification',
+                        '<div class="font-semibold text-blue-600 mb-2">Everything in Standard, plus:</div>',
+                        '✓ Blockchain timestamp proof',
+                        '✓ ID verification (both parties)',
                         '✓ Court evidence package',
-                        '✓ Smart reminder notifications',
-                        '⚠️ Automatic payment reminders'
+                        '✓ Smart reminder escalation',
+                        '✓ Priority customer support'
                     ],
-                    featureCount: 5,
+                    featureCount: 11, // 5 standard + 6 additional
                     badgeClass: 'enhanced-badge'
                 },
                 'premium': {
                     name: 'Premium Protection',
+                    badgeText: 'Enterprise',
                     price: 49.99,
                     processingFee: 1.99,
                     features: [
-                        '✓ All Maximum features',
-                        '✓ Priority legal support',
+                        '<div class="font-semibold text-purple-600 mb-2">Everything in Maximum, plus:</div>',
                         '✓ White-label customization',
-                        '✓ API access',
-                        '✓ Custom integrations'
+                        '✓ API access & integrations',
+                        '✓ Dedicated account manager',
+                        '✓ Custom legal templates',
+                        '✓ Bulk processing'
                     ],
-                    featureCount: 8,
+                    featureCount: 16, // 11 maximum + 5 additional
                     badgeClass: 'premium-badge'
                 }
             };
@@ -3205,7 +3211,7 @@ Best regards,
                 // Update header tier display
                 const headerTierBadge = document.querySelector('.tier-badge');
                 if (headerTierBadge) {
-                    headerTierBadge.textContent = tier.name;
+                    headerTierBadge.textContent = tier.badgeText || tier.name;
                     headerTierBadge.className = `${tier.badgeClass} text-white px-3 py-1 rounded-full text-sm font-semibold`;
                 }
 
