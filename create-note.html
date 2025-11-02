@@ -1,15 +1,22 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Promissory Note - TrustLend</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
-    
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Promissory Note - TrustLend</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<!-- TrustLend Assets -->
+<link href="css/styles.css" rel="stylesheet"/>
+<link href="css/tier-features.css" rel="stylesheet"/>
+<script src="js/form-enhancements.js"></script>
+<script src="js/tier-management.js"></script>
+<script src="js/compliance.js"></script>
+<script src="js/blockchain.js"></script>
+<script src="js/note-generator.js"></script>
+<style>
         .input-focus:focus {
             outline: none;
             border-color: #3b82f6;
@@ -59,16 +66,9 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         .tier-card.selected {
-        border-color: #3b82f6 !important;
-        background: linear-gradient(135deg, #eff6ff, #dbeafe);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-
-        .tier-card:not(.selected) {
-        border-color: #d1d5db !important;
-        background: white;
-        }
-
         .tier-badge {
             background: linear-gradient(135deg, #3b82f6, #6366f1);
         }
@@ -130,1142 +130,948 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- TrustLend Universal Navigation -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo - Smart linking based on auth state -->
-                <a href="#" id="logoLink" class="flex items-center space-x-2 hover:opacity-80 transition">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white text-sm">💙</span>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
-                </a>
-                
-                <!-- PUBLIC Navigation (default for non-signed-in users) -->
-                <div id="publicNav" class="flex items-center space-x-4">
-                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 hidden md:inline">Features</a>
-                    <a href="index.html#legal" class="text-gray-600 hover:text-gray-900 hidden md:inline">Legal Protection</a>
-                    <a href="index.html#pricing" class="text-gray-600 hover:text-gray-900 hidden md:inline">Pricing</a>
-                    <button id="signInBtn" class="text-gray-600 hover:text-gray-900 hidden md:inline">Sign In</button>
-                    <button id="needAccountBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        Save My Contract
-                    </button>
-                </div>
-
-                <!-- PRIVATE Navigation (for signed-in users) -->
-                <div id="privateNav" class="hidden items-center space-x-4">
-                    <!-- Current Tier Display -->
-                    <div id="currentTierDisplay" class="hidden md:flex items-center space-x-2">
-                        <span class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            Essential Plan
+<!-- TrustLend Universal Navigation -->
+<header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center py-4">
+<a class="flex items-center space-x-2" href="index.html">
+<div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+<svg class="w-5 h-5 text-white" fill="currentColor" viewbox="0 0 20 20">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+</svg>
+</div>
+<span class="text-xl font-bold text-gray-900">TrustLend</span>
+</a>
+<!-- Current Tier Display -->
+<div class="hidden md:flex items-center space-x-4">
+<div class="flex items-center space-x-2" id="currentTierDisplay">
+<span class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Basic Plan
                         </span>
-                        <span id="featuresUnlocked" class="text-sm text-gray-600">6 features active</span>
+<span class="text-sm text-gray-600" id="featuresUnlocked">3 features active</span>
+</div>
+<!-- Demo Mode Indicator -->
+<div class="bg-yellow-100 border border-yellow-300 px-2 py-1 rounded text-xs text-yellow-800 font-medium hidden" id="demoModeIndicator">
+                        🎭 Demo Mode
                     </div>
-                    
-                    <button onclick="saveDraft()" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
+<button class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="saveDraft()">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                         Save Draft
                     </button>
-                    
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v4"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5v4"></path>
-                        </svg>
+<a class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors" href="dashboard.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M8 5v4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M16 5v4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                         Dashboard
                     </a>
-
-                    <div class="relative">
-                        <button class="user-dropdown-trigger flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                                <span id="userInitials" class="text-sm font-semibold text-blue-600">JD</span>
-                            </div>
-                            <span class="hidden lg:inline" id="userName">John Doe</span>
-                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div class="user-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
-                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help Center</a>
-                            <hr class="my-1">
-                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
-                        </div>
-                    </div>
-                </div>
-                        
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block">
-                            <div class="py-1">
-                                <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
-                                <a href="billing.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Billing & Plans</a>
-                                <a href="audit-trail.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔗 Audit Trail & Verification</a>
-                                <a href="support.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help & Support</a>
-                                <hr class="my-1">
-                                <button onclick="signOut()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
-            <div class="px-4 py-3 space-y-1">
-                <div id="mobileTierDisplay" class="mb-3 p-2 bg-blue-50 rounded-lg">
-                    <div class="tier-badge text-white px-2 py-1 rounded text-sm inline-block">Basic Plan</div>
-                    <div class="text-xs text-gray-600 mt-1">3 features active</div>
-                </div>
-                <button onclick="saveDraft()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Save Draft</button>
-                <a href="dashboard.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Dashboard</a>
-                <hr class="my-2">
-                <a href="profile.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Profile Settings</a>
-                <a href="billing.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Billing & Plans</a>
-                <a href="audit-trail.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                    🔗 Audit Trail & Verification
+<div class="relative group">
+<button class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+<span class="text-sm font-semibold text-blue-600" id="userInitials">TU</span>
+</div>
+<span class="hidden lg:inline" id="userName">Account</span>
+<div class="w-2 h-2 bg-green-500 rounded-full ml-1" title="Blockchain Verified"></div>
+<svg class="w-4 h-4 ml-1" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill-rule="evenodd"></path>
+</svg>
+</button>
+<div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block">
+<div class="py-1">
+<a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="profile.html">Profile Settings</a>
+<a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="billing.html">Billing &amp; Plans</a>
+<a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="audit-trail.html">🔗 Audit Trail &amp; Verification</a>
+<a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="support.html">Help &amp; Support</a>
+<hr class="my-1"/>
+<button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="signOut()">Sign Out</button>
+</div>
+</div>
+</div>
+</div>
+<button class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100" id="mobileMenuBtn">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Mobile Menu -->
+<div class="hidden md:hidden bg-white border-t border-gray-200" id="mobileMenu">
+<div class="px-4 py-3 space-y-1">
+<div class="mb-3 p-2 bg-blue-50 rounded-lg" id="mobileTierDisplay">
+<div class="tier-badge text-white px-2 py-1 rounded text-sm inline-block">Basic Plan</div>
+<div class="text-xs text-gray-600 mt-1">3 features active</div>
+</div>
+<button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" onclick="saveDraft()">Save Draft</button>
+<a class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" href="dashboard.html">Dashboard</a>
+<hr class="my-2"/>
+<a class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" href="profile.html">Profile Settings</a>
+<a class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" href="billing.html">Billing &amp; Plans</a>
+<a class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" href="audit-trail.html">
+                    🔗 Audit Trail &amp; Verification
                 </a>
-                <a href="support.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Help & Support</a>
-                <button onclick="signOut()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Sign Out</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Enhanced Progress Steps (6 Steps) -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2 md:space-x-4 overflow-x-auto">
-                    <div id="step-1" class="step-active flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">1</div>
-                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
-                    <div id="step-2" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">2</div>
-                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
-                    <div id="step-3" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">3</div>
-                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
-                    <div id="step-4" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">4</div>
-                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
-                    <div id="step-5" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">5</div>
-                    <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
-                    <div id="step-6" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">6</div>
-                </div>
-                <div class="text-sm text-gray-600 ml-4">Step <span id="current-step">1</span> of 6</div>
-            </div>
-            <div class="mt-4">
-                <div id="step-label" class="text-lg font-semibold text-gray-900">Loan Details</div>
-                <div id="step-description" class="text-sm text-gray-600">Enter the basic loan information</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid lg:grid-cols-2 gap-8">
-            <!-- Form Section -->
-            <div class="space-y-6">
-                <!-- Step 1: Enhanced Loan Details -->
-                <div id="form-step-1" class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Loan Information</h2>
-                    <div class="space-y-5">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Principal Amount</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                                    <input type="number" id="principal" step="0.01" min="1" 
-                                           class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="5,000.00" oninput="updatePreview(); calculatePaymentSchedule()">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+<a class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" href="support.html">Help &amp; Support</a>
+<button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg" onclick="signOut()">Sign Out</button>
+</div>
+</div>
+</header>
+<!-- Enhanced Progress Steps (6 Steps) -->
+<div class="bg-white border-b border-gray-200">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2 md:space-x-4 overflow-x-auto">
+<div class="step-active flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-1">1</div>
+<div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+<div class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-2">2</div>
+<div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+<div class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-3">3</div>
+<div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+<div class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-4">4</div>
+<div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+<div class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-5">5</div>
+<div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+<div class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0" id="step-6">6</div>
+</div>
+<div class="text-sm text-gray-600 ml-4">Step <span id="current-step">1</span> of 6</div>
+</div>
+<div class="mt-4">
+<div class="text-lg font-semibold text-gray-900" id="step-label">Loan Details</div>
+<div class="text-sm text-gray-600" id="step-description">Enter the basic loan information</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="grid lg:grid-cols-2 gap-8">
+<!-- Form Section -->
+<div class="space-y-6">
+<!-- Step 1: Enhanced Loan Details -->
+<div class="bg-white rounded-xl border border-gray-200 p-6" id="form-step-1">
+<h2 class="text-xl font-bold text-gray-900 mb-6">Loan Information</h2>
+<div class="space-y-5">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Principal Amount</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+<input class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" id="principal" min="1" oninput="updatePreview(); calculatePaymentSchedule()" placeholder="5,000.00" step="0.01" type="number"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Flat Fee (Optional)
-                                    <button type="button" onclick="showFlatFeeExplanation()" class="ml-1 text-blue-600 hover:text-blue-800">
-                                        <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                </label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                                    <input type="number" id="flatFee" step="0.01" min="0" 
-                                           class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="0.00" oninput="updatePreview(); calculatePaymentSchedule()">
-                                </div>
-                                
-                                <!-- Enhanced Flat Fee Explanation -->
-                                <div id="flatFeeExplanation" class="flat-fee-explanation rounded-lg p-3 mt-2 hidden">
-                                    <h5 class="font-semibold text-blue-900 text-sm mb-1">Flat Fee Explanation</h5>
-                                    <p class="text-xs text-blue-800 mb-2">A flat fee is a one-time charge added to the loan amount, different from interest:</p>
-                                    <ul class="text-xs text-blue-800 space-y-1">
-                                        <li>• <strong>Flat Fee:</strong> Fixed amount added once (e.g., $100 processing fee)</li>
-                                        <li>• <strong>Interest:</strong> Percentage charged over time (e.g., 5% annually)</li>
-                                        <li>• <strong>Total Due:</strong> Principal + Flat Fee (no compound interest)</li>
-                                    </ul>
-                                    <p class="text-xs text-blue-700 mt-2 font-medium">
+                                    <button class="ml-1 text-blue-600 hover:text-blue-800" onclick="showFlatFeeExplanation()" type="button">
+<svg class="w-4 h-4 inline" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+<input class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" id="flatFee" min="0" oninput="updatePreview(); calculatePaymentSchedule()" placeholder="0.00" step="0.01" type="number"/>
+</div>
+<!-- Enhanced Flat Fee Explanation -->
+<div class="flat-fee-explanation rounded-lg p-3 mt-2 hidden" id="flatFeeExplanation">
+<h5 class="font-semibold text-blue-900 text-sm mb-1">Flat Fee Explanation</h5>
+<p class="text-xs text-blue-800 mb-2">A flat fee is a one-time charge added to the loan amount, different from interest:</p>
+<ul class="text-xs text-blue-800 space-y-1">
+<li>• <strong>Flat Fee:</strong> Fixed amount added once (e.g., $100 processing fee)</li>
+<li>• <strong>Interest:</strong> Percentage charged over time (e.g., 5% annually)</li>
+<li>• <strong>Total Due:</strong> Principal + Flat Fee (no compound interest)</li>
+</ul>
+<p class="text-xs text-blue-700 mt-2 font-medium">
                                         Example: $1,000 loan + $50 flat fee = $1,050 total due
                                     </p>
-                                </div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Loan Date</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="loanDate" oninput="updatePreview()" type="date"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="dueDate" oninput="updatePreview(); calculatePaymentSchedule()" type="date"/>
+</div>
+</div>
+<!-- Enhanced Loan Purpose with Dropdown -->
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Loan Purpose</label>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="purposeDropdown" onchange="handlePurposeSelection()" oninput="updatePreview()">
+<option value="">Select a purpose</option>
+<option value="Personal expenses">Personal expenses</option>
+<option value="Education/tuition">Education/tuition</option>
+<option value="Vehicle repair">Vehicle repair</option>
+<option value="Home improvement">Home improvement</option>
+<option value="Medical expenses">Medical expenses</option>
+<option value="Business startup">Business startup</option>
+<option value="Debt consolidation">Debt consolidation</option>
+<option value="Emergency fund">Emergency fund</option>
+<option value="Investment opportunity">Investment opportunity</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl mt-2 hidden" id="purpose" oninput="updatePreview()" placeholder="Please specify the loan purpose" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Payment Schedule</label>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="paymentSchedule" onchange="togglePaymentBreakdown(); updatePreview()">
+<option value="lump_sum">Lump Sum Payment</option>
+<option value="monthly">Monthly Payments</option>
+<option value="weekly">Weekly Payments</option>
+<option value="biweekly">Bi-weekly Payments</option>
+</select>
+</div>
+<!-- Enhanced Payment Breakdown -->
+<div class="payment-breakdown rounded-xl p-4 hidden" id="paymentBreakdown">
+<h4 class="font-semibold text-blue-900 mb-3">💰 Payment Schedule Breakdown</h4>
+<div class="text-sm text-blue-800" id="paymentScheduleDetails"></div>
+<div class="mt-3" id="paymentScheduleChart">
+<!-- Payment visualization will be inserted here -->
+</div>
+</div>
+<!-- Late Fee Options -->
+<div class="border-t pt-4 mt-6">
+<label class="flex items-center mb-4">
+<input class="mr-3 w-4 h-4 text-blue-600" id="enableLateFee" onchange="toggleLateFeeOptions()" type="checkbox"/>
+<span class="text-sm font-semibold text-gray-700">Enable Late Fees</span>
+</label>
+<div class="hidden space-y-4" id="lateFeeOptions">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Late Fee Type</label>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lateFeeType">
+<option value="flat">Flat Amount</option>
+<option value="percentage">Percentage</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Amount/Percentage</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lateFeeAmount" min="0" placeholder="25.00" step="0.01" type="number"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Grace Period (Days)</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="graceDays" max="30" min="0" placeholder="15" type="number" value="15"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Enhanced Party Information -->
+<div class="bg-white rounded-xl border border-gray-200 p-6 hidden" id="form-step-2">
+<h2 class="text-xl font-bold text-gray-900 mb-6">Party Information</h2>
+<!-- Lender Information -->
+<div class="mb-8">
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Lender Information (You)</h3>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+<svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path>
+</svg>
+<div class="text-sm text-blue-800">
+<span class="font-semibold">Auto-filled:</span> Information below is automatically populated from your profile. 
+                                <a class="underline hover:no-underline ml-1" href="profile.html">Update profile</a> to change defaults.
                             </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Date</label>
-                                <input type="date" id="loanDate" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       oninput="updatePreview()">
+</div>
+<div class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderFirstName" oninput="updatePreview()" placeholder="Your first name" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderLastName" oninput="updatePreview()" placeholder="Your last name" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderEmail" placeholder="your@email.com" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderPhone" oninput="formatPhoneNumber(this)" placeholder="(555) 123-4567" type="tel"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderAddress" placeholder="Street address" type="text"/>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderCity" oninput="updateVenueInfo()" placeholder="City" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderState" onchange="updateVenueInfo()">
+<option value="">Select State</option>
+<option value="GA">Georgia</option>
+<option value="AL">Alabama</option>
+<option value="FL">Florida</option>
+<option value="TN">Tennessee</option>
+<option value="NC">North Carolina</option>
+<option value="SC">South Carolina</option>
+<option value="MS">Mississippi</option>
+<option value="LA">Louisiana</option>
+<option value="AR">Arkansas</option>
+<option value="TX">Texas</option>
+<option value="OK">Oklahoma</option>
+<option value="KY">Kentucky</option>
+<option value="WV">West Virginia</option>
+<option value="VA">Virginia</option>
+<option value="MD">Maryland</option>
+<option value="DE">Delaware</option>
+<option value="NJ">New Jersey</option>
+<option value="PA">Pennsylvania</option>
+<option value="NY">New York</option>
+<option value="CT">Connecticut</option>
+<option value="RI">Rhode Island</option>
+<option value="MA">Massachusetts</option>
+<option value="VT">Vermont</option>
+<option value="NH">New Hampshire</option>
+<option value="ME">Maine</option>
+<option value="OH">Ohio</option>
+<option value="IN">Indiana</option>
+<option value="IL">Illinois</option>
+<option value="MI">Michigan</option>
+<option value="WI">Wisconsin</option>
+<option value="MN">Minnesota</option>
+<option value="IA">Iowa</option>
+<option value="MO">Missouri</option>
+<option value="ND">North Dakota</option>
+<option value="SD">South Dakota</option>
+<option value="NE">Nebraska</option>
+<option value="KS">Kansas</option>
+<option value="MT">Montana</option>
+<option value="WY">Wyoming</option>
+<option value="CO">Colorado</option>
+<option value="NM">New Mexico</option>
+<option value="ID">Idaho</option>
+<option value="UT">Utah</option>
+<option value="AZ">Arizona</option>
+<option value="NV">Nevada</option>
+<option value="WA">Washington</option>
+<option value="OR">Oregon</option>
+<option value="CA">California</option>
+<option value="AK">Alaska</option>
+<option value="HI">Hawaii</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderZip" placeholder="12345" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">County</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="lenderCounty" oninput="updateVenueInfo()" placeholder="County name" type="text"/>
+</div>
+</div>
+</div>
+<!-- Borrower Information -->
+<div>
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Information</h3>
+<div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+<svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" fill-rule="evenodd"></path>
+</svg>
+<div class="text-sm text-amber-800">
+<span class="font-semibold">Identity Verification:</span> SSN and DOB help verify borrower identity for legal compliance and security.
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
-                                <input type="date" id="dueDate" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       oninput="updatePreview(); calculatePaymentSchedule()">
-                            </div>
-                        </div>
-                        
-                        <!-- Enhanced Loan Purpose with Dropdown -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Purpose</label>
-                            <select id="purposeDropdown" 
-                                    class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                    onchange="handlePurposeSelection()" oninput="updatePreview()">
-                                <option value="">Select a purpose</option>
-                                <option value="Personal expenses">Personal expenses</option>
-                                <option value="Education/tuition">Education/tuition</option>
-                                <option value="Vehicle repair">Vehicle repair</option>
-                                <option value="Home improvement">Home improvement</option>
-                                <option value="Medical expenses">Medical expenses</option>
-                                <option value="Business startup">Business startup</option>
-                                <option value="Debt consolidation">Debt consolidation</option>
-                                <option value="Emergency fund">Emergency fund</option>
-                                <option value="Investment opportunity">Investment opportunity</option>
-                                <option value="Other">Other (specify below)</option>
-                            </select>
-                            
-                            <input type="text" id="purpose" 
-                                   class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl mt-2 hidden" 
-                                   placeholder="Please specify the loan purpose"
-                                   oninput="updatePreview()">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Payment Schedule</label>
-                            <select id="paymentSchedule" 
-                                    class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                    onchange="togglePaymentBreakdown(); updatePreview()">
-                                <option value="lump_sum">Lump Sum Payment</option>
-                                <option value="monthly">Monthly Payments</option>
-                                <option value="weekly">Weekly Payments</option>
-                                <option value="biweekly">Bi-weekly Payments</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Enhanced Payment Breakdown -->
-                        <div id="paymentBreakdown" class="payment-breakdown rounded-xl p-4 hidden">
-                            <h4 class="font-semibold text-blue-900 mb-3">💰 Payment Schedule Breakdown</h4>
-                            <div id="paymentScheduleDetails" class="text-sm text-blue-800"></div>
-                            <div id="paymentScheduleChart" class="mt-3">
-                                <!-- Payment visualization will be inserted here -->
-                            </div>
-                        </div>
-
-                        <!-- Late Fee Options -->
-                        <div class="border-t pt-4 mt-6">
-                            <label class="flex items-center mb-4">
-                                <input type="checkbox" id="enableLateFee" class="mr-3 w-4 h-4 text-blue-600" onchange="toggleLateFeeOptions()">
-                                <span class="text-sm font-semibold text-gray-700">Enable Late Fees</span>
-                            </label>
-                            
-                            <div id="lateFeeOptions" class="hidden space-y-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Late Fee Type</label>
-                                        <select id="lateFeeType" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
-                                            <option value="flat">Flat Amount</option>
-                                            <option value="percentage">Percentage</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Amount/Percentage</label>
-                                        <input type="number" id="lateFeeAmount" step="0.01" min="0" 
-                                               class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                               placeholder="25.00">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Grace Period (Days)</label>
-                                    <input type="number" id="graceDays" min="0" max="30" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="15" value="15">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Enhanced Party Information -->
-                <div id="form-step-2" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Party Information</h2>
-                    
-                    <!-- Lender Information -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Lender Information (You)</h3>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div class="text-sm text-blue-800">
-                                <span class="font-semibold">Auto-filled:</span> Information below is automatically populated from your profile. 
-                                <a href="profile.html" class="underline hover:no-underline ml-1">Update profile</a> to change defaults.
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
-                                    <input type="text" id="lenderFirstName" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="Your first name" oninput="updatePreview()">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
-                                    <input type="text" id="lenderLastName" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="Your last name" oninput="updatePreview()">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                    <input type="email" id="lenderEmail" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="your@email.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                                    <input type="tel" id="lenderPhone" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
-                                <input type="text" id="lenderAddress" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="Street address">
-                            </div>
-                            
-                            <div class="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
-                                    <input type="text" id="lenderCity" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="City" oninput="updateVenueInfo()">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
-                                    <select id="lenderState" 
-                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl"
-                                            onchange="updateVenueInfo()">
-                                        <option value="">Select State</option>
-                                        <option value="GA">Georgia</option>
-                                        <option value="AL">Alabama</option>
-                                        <option value="FL">Florida</option>
-                                        <option value="TN">Tennessee</option>
-                                        <option value="NC">North Carolina</option>
-                                        <option value="SC">South Carolina</option>
-                                        <option value="MS">Mississippi</option>
-                                        <option value="LA">Louisiana</option>
-                                        <option value="AR">Arkansas</option>
-                                        <option value="TX">Texas</option>
-                                        <option value="OK">Oklahoma</option>
-                                        <option value="KY">Kentucky</option>
-                                        <option value="WV">West Virginia</option>
-                                        <option value="VA">Virginia</option>
-                                        <option value="MD">Maryland</option>
-                                        <option value="DE">Delaware</option>
-                                        <option value="NJ">New Jersey</option>
-                                        <option value="PA">Pennsylvania</option>
-                                        <option value="NY">New York</option>
-                                        <option value="CT">Connecticut</option>
-                                        <option value="RI">Rhode Island</option>
-                                        <option value="MA">Massachusetts</option>
-                                        <option value="VT">Vermont</option>
-                                        <option value="NH">New Hampshire</option>
-                                        <option value="ME">Maine</option>
-                                        <option value="OH">Ohio</option>
-                                        <option value="IN">Indiana</option>
-                                        <option value="IL">Illinois</option>
-                                        <option value="MI">Michigan</option>
-                                        <option value="WI">Wisconsin</option>
-                                        <option value="MN">Minnesota</option>
-                                        <option value="IA">Iowa</option>
-                                        <option value="MO">Missouri</option>
-                                        <option value="ND">North Dakota</option>
-                                        <option value="SD">South Dakota</option>
-                                        <option value="NE">Nebraska</option>
-                                        <option value="KS">Kansas</option>
-                                        <option value="MT">Montana</option>
-                                        <option value="WY">Wyoming</option>
-                                        <option value="CO">Colorado</option>
-                                        <option value="NM">New Mexico</option>
-                                        <option value="ID">Idaho</option>
-                                        <option value="UT">Utah</option>
-                                        <option value="AZ">Arizona</option>
-                                        <option value="NV">Nevada</option>
-                                        <option value="WA">Washington</option>
-                                        <option value="OR">Oregon</option>
-                                        <option value="CA">California</option>
-                                        <option value="AK">Alaska</option>
-                                        <option value="HI">Hawaii</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
-                                    <input type="text" id="lenderZip" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="12345">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">County</label>
-                                <input type="text" id="lenderCounty" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="County name" oninput="updateVenueInfo()">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Borrower Information -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Information</h3>
-                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div class="text-sm text-amber-800">
-                                <span class="font-semibold">Identity Verification:</span> SSN and DOB help verify borrower identity for legal compliance and security.
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
-                                    <input type="text" id="borrowerFirstName" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="Borrower's first name" oninput="updatePreview()">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
-                                    <input type="text" id="borrowerLastName" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="Borrower's last name" oninput="updatePreview()">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                    <input type="email" id="borrowerEmail" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="borrower@email.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                                    <input type="tel" id="borrowerPhone" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
-                                </div>
-                            </div>
-                            
-                            <!-- Enhanced DOB with Validation -->
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
-                                    <input type="date" id="borrowerDob" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           onchange="validateDOB()" oninput="clearDOBError()">
-                                    <div id="dobError" class="text-red-600 text-sm mt-1 hidden"></div>
-                                    <div id="dobValid" class="text-green-600 text-sm mt-1 hidden">✓ Valid date of birth</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">SSN (Last 4 digits)</label>
-                                    <input type="text" id="borrowerSSN" maxlength="4" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="1234" oninput="formatSSN(this)">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
-                                <input type="text" id="borrowerAddress" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="Street address">
-                            </div>
-                            
-                            <div class="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
-                                    <input type="text" id="borrowerCity" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="City">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
-                                    <select id="borrowerState" 
-                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
-                                        <option value="">Select State</option>
-                                        <!-- Same state options as lender -->
-                                        <option value="GA">Georgia</option>
-                                        <option value="AL">Alabama</option>
-                                        <option value="FL">Florida</option>
-                                        <!-- Add full list... -->
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
-                                    <input type="text" id="borrowerZip" 
-                                           class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="12345">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 3: Enhanced Review Contract with Tier Features -->
-                <div id="form-step-3" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Review Contract</h2>
-                    <p class="text-gray-600 mb-6">Please review all details carefully before proceeding to billing.</p>
-                    
-                    <div id="contractReview" class="space-y-4 bg-gray-50 p-6 rounded-xl">
-                        <!-- Contract details will be populated here -->
-                    </div>
-                    
-                    <!-- Enhanced Features Based on Selected Tier -->
-                    <div id="tierFeatureActivation" class="mt-6">
-                        <!-- Basic tier features (always shown) -->
-                        <div class="border rounded-lg p-4 mb-4">
-                            <h4 class="font-semibold text-gray-900 mb-3">✅ Included Features</h4>
-                            <div class="space-y-2 text-sm text-gray-700">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>Standard promissory note generation</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>Digital signatures</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>Email delivery</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Enhanced/Premium features preview (activated based on tier) -->
-                        <div id="enhancedFeaturesPreview" class="feature-enhanced border rounded-lg p-4 mb-4 hidden">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
-                                <h4 class="font-semibold text-gray-900">Advanced Features Active</h4>
-                            </div>
-                            <div class="space-y-2 text-sm text-gray-700">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>📊 Advanced payment analytics & tracking</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>🏦 Credit bureau reporting (if applicable)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>🔔 Automated payment reminders</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>📋 Premium contract templates</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Legal Disclaimers -->
-                    <div class="mt-6 space-y-4">
-                        <label class="flex items-start">
-                            <input type="checkbox" id="agreedToTerms" class="mr-3 mt-1 w-4 h-4 text-blue-600">
-                            <span class="text-sm text-gray-700">
+</div>
+<div class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerFirstName" oninput="updatePreview()" placeholder="Borrower's first name" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerLastName" oninput="updatePreview()" placeholder="Borrower's last name" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerEmail" placeholder="borrower@email.com" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerPhone" oninput="formatPhoneNumber(this)" placeholder="(555) 123-4567" type="tel"/>
+</div>
+</div>
+<!-- Enhanced DOB with Validation -->
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerDob" onchange="validateDOB()" oninput="clearDOBError()" type="date"/>
+<div class="text-red-600 text-sm mt-1 hidden" id="dobError"></div>
+<div class="text-green-600 text-sm mt-1 hidden" id="dobValid">✓ Valid date of birth</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">SSN (Last 4 digits)</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerSSN" maxlength="4" oninput="formatSSN(this)" placeholder="1234" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerAddress" placeholder="Street address" type="text"/>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerCity" placeholder="City" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerState">
+<option value="">Select State</option>
+<!-- Same state options as lender -->
+<option value="GA">Georgia</option>
+<option value="AL">Alabama</option>
+<option value="FL">Florida</option>
+<!-- Add full list... -->
+</select>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="borrowerZip" placeholder="12345" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 3: Enhanced Review Contract with Tier Features -->
+<div class="bg-white rounded-xl border border-gray-200 p-6 hidden" id="form-step-3">
+<h2 class="text-xl font-bold text-gray-900 mb-6">Review Contract</h2>
+<p class="text-gray-600 mb-6">Please review all details carefully before proceeding to billing.</p>
+<div class="space-y-4 bg-gray-50 p-6 rounded-xl" id="contractReview">
+<!-- Contract details will be populated here -->
+</div>
+<!-- Enhanced Features Based on Selected Tier -->
+<div class="mt-6" id="tierFeatureActivation">
+<!-- Basic tier features (always shown) -->
+<div class="border rounded-lg p-4 mb-4">
+<h4 class="font-semibold text-gray-900 mb-3">✅ Included Features</h4>
+<div class="space-y-2 text-sm text-gray-700">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Standard promissory note generation</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Digital signatures</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Email delivery</span>
+</div>
+</div>
+</div>
+<!-- Enhanced/Premium features preview (activated based on tier) -->
+<div class="feature-enhanced border rounded-lg p-4 mb-4 hidden" id="enhancedFeaturesPreview">
+<div class="flex items-center gap-2 mb-3">
+<span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+<h4 class="font-semibold text-gray-900">Advanced Features Active</h4>
+</div>
+<div class="space-y-2 text-sm text-gray-700">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>📊 Advanced payment analytics &amp; tracking</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>🏦 Credit bureau reporting (if applicable)</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>🔔 Automated payment reminders</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>📋 Premium contract templates</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legal Disclaimers -->
+<div class="mt-6 space-y-4">
+<label class="flex items-start">
+<input class="mr-3 mt-1 w-4 h-4 text-blue-600" id="agreedToTerms" type="checkbox"/>
+<span class="text-sm text-gray-700">
                                 I understand that this is a legally binding promissory note and I have reviewed all terms carefully.
                             </span>
-                        </label>
-                        
-                        <label class="flex items-start">
-                            <input type="checkbox" id="agreedToEsign" class="mr-3 mt-1 w-4 h-4 text-blue-600">
-                            <span class="text-sm text-gray-700">
+</label>
+<label class="flex items-start">
+<input class="mr-3 mt-1 w-4 h-4 text-blue-600" id="agreedToEsign" type="checkbox"/>
+<span class="text-sm text-gray-700">
                                 I agree to use electronic signatures for this document and understand they are legally equivalent to handwritten signatures.
                             </span>
-                        </label>
-                    </div>
-                    
-                    <!-- Enhanced UCC Article Section -->
-                    <div class="ucc-section rounded-xl p-4 mt-6">
-                        <h4 class="font-semibold text-orange-900 mb-2">📜 UCC Article 9 Compliance</h4>
-                        <p class="text-sm text-orange-800 mb-3">
+</label>
+</div>
+<!-- Enhanced UCC Article Section -->
+<div class="ucc-section rounded-xl p-4 mt-6">
+<h4 class="font-semibold text-orange-900 mb-2">📜 UCC Article 9 Compliance</h4>
+<p class="text-sm text-orange-800 mb-3">
                             This promissory note includes UCC Article 9 provisions for secured transactions when applicable. 
                             All security interests will be properly documented and filed as required by law.
                         </p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-orange-700">Relevant UCC provisions will be attached to final document</span>
-                            <button type="button" onclick="previewUCCAttachments()" class="text-orange-700 hover:text-orange-900 underline text-xs">
+<div class="flex items-center justify-between">
+<span class="text-xs text-orange-700">Relevant UCC provisions will be attached to final document</span>
+<button class="text-orange-700 hover:text-orange-900 underline text-xs" onclick="previewUCCAttachments()" type="button">
                                 Preview UCC Attachments
                             </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 4: NEW - Billing & Payment -->
-                <div id="form-step-5" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">💳 Plan Selection & Payment</h2>
-                    <p class="text-gray-600 mb-6">Now that your contract is signed, choose your document processing plan to generate your enhanced package.</p>
-                    
-                    <!-- Tier Selection Cards -->
-                    <div class="grid md:grid-cols-2 gap-6 mb-6 max-w-4xl mx-auto">
-                        
-                        <!-- Essential Protection (Standard) -->
-                        <div class="tier-card border-2 border-gray-200 rounded-xl p-6" data-tier="essential" id="essential-tier-card">
-                            <div class="text-center">
-                                <div class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
+</div>
+</div>
+</div>
+<!-- Step 4: NEW - Billing & Payment -->
+<div class="bg-white rounded-xl border border-gray-200 p-6 hidden" id="form-step-5">
+<h2 class="text-xl font-bold text-gray-900 mb-6">💳 Plan Selection &amp; Payment</h2>
+<p class="text-gray-600 mb-6">Now that your contract is signed, choose your document processing plan to generate your enhanced package.</p>
+<!-- Tier Selection Cards -->
+<div class="grid md:grid-cols-2 gap-6 mb-6 max-w-4xl mx-auto">
+<!-- Essential Protection (Standard) -->
+<div class="tier-card border-2 border-gray-200 rounded-xl p-6" data-tier="essential" id="essential-tier-card">
+<div class="text-center">
+<div class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
                                     Standard
                                 </div>
-                                <div class="text-2xl font-bold text-gray-900 mb-1">Essential Protection</div>
-                                <div class="text-3xl font-bold text-gray-900 mb-2">$14.99</div>
-                                <div class="text-sm text-gray-600 mb-4">one-time per contract</div>
-                                
-                                <div class="space-y-2 text-sm text-left">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Legal contract creation</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Digital signatures (both parties)</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Email delivery & tracking</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>PDF download</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-xs text-gray-500 mt-3 mb-2">Perfect for smaller personal loans</div>
-                                
-                                <button type="button" class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+<div class="text-2xl font-bold text-gray-900 mb-1">Essential Protection</div>
+<div class="text-3xl font-bold text-gray-900 mb-2">$14.99</div>
+<div class="text-sm text-gray-600 mb-4">one-time per contract</div>
+<div class="space-y-2 text-sm text-left">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Legal contract creation</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Digital signatures (both parties)</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Email delivery &amp; tracking</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>PDF download</span>
+</div>
+</div>
+<div class="text-xs text-gray-500 mt-3 mb-2">Perfect for smaller personal loans</div>
+<button class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" type="button">
                                     Get Started
                                 </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Maximum Protection (Most Popular) -->
-                        <div class="tier-card border-2 border-blue-500 rounded-xl p-6 relative" data-tier="maximum" id="maximum-tier-card">
-                            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+</div>
+</div>
+<!-- Maximum Protection (Most Popular) -->
+<div class="tier-card border-2 border-blue-500 rounded-xl p-6 relative" data-tier="maximum" id="maximum-tier-card">
+<div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+<span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                                     Most Popular
                                 </span>
-                            </div>
-                            <div class="text-center">
-                                <div class="premium-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
+</div>
+<div class="text-center">
+<div class="premium-badge text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
                                     Maximum Protection
                                 </div>
-                                <div class="text-3xl font-bold text-gray-900 mb-2">$29.99</div>
-                                <div class="text-sm text-gray-600 mb-4">one-time per contract</div>
-                                
-                                <div class="space-y-2 text-sm text-left">
-                                    <div class="text-xs text-gray-500 font-semibold mb-2">Everything in Standard, plus:</div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>🔐 Blockchain timestamp proof</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>📱 Remote signing with ID verification</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>📋 Court evidence package</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>🚀 Smart reminder escalation</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>🔔 Automatic payment reminders</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-xs text-gray-500 mt-3 mb-2">Recommended for all serious loans</div>
-                                
-                                <button type="button" class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+<div class="text-3xl font-bold text-gray-900 mb-2">$29.99</div>
+<div class="text-sm text-gray-600 mb-4">one-time per contract</div>
+<div class="space-y-2 text-sm text-left">
+<div class="text-xs text-gray-500 font-semibold mb-2">Everything in Standard, plus:</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>🔐 Blockchain timestamp proof</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>📱 Remote signing with ID verification</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>📋 Court evidence package</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>🚀 Smart reminder escalation</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>🔔 Automatic payment reminders</span>
+</div>
+</div>
+<div class="text-xs text-gray-500 mt-3 mb-2">Recommended for all serious loans</div>
+<button class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" type="button">
                                     Get Started
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Selected Tier Summary -->
-                    <div id="selectedTierSummary" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-semibold text-blue-900">Selected Plan: <span id="selectedTierName">Enhanced</span></h4>
-                                <p class="text-sm text-blue-800">Enhanced features will be applied during document generation</p>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold text-blue-900" id="selectedTierPrice">$19</div>
-                                <div class="text-sm text-blue-700">One-time payment</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Payment Form -->
-                    <div id="paymentSection" class="border rounded-lg p-6 hidden">
-                        <h4 class="font-semibold text-gray-900 mb-4">💳 Payment Information</h4>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
-                                <div id="card-number" class="border border-gray-300 rounded-lg p-3"></div>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Expiry</label>
-                                    <div id="card-expiry" class="border border-gray-300 rounded-lg p-3"></div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">CVC</label>
-                                    <div id="card-cvc" class="border border-gray-300 rounded-lg p-3"></div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
-                                <input type="text" id="cardholderName" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="Full name on card">
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 pt-4 border-t">
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="text-gray-700">Subtotal:</span>
-                                <span id="subtotalAmount" class="font-semibold">$19.00</span>
-                            </div>
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="text-gray-700">Processing Fee:</span>
-                                <span id="processingFee" class="font-semibold">$0.99</span>
-                            </div>
-                            <div class="flex items-center justify-between text-lg font-bold">
-                                <span>Total:</span>
-                                <span id="totalAmount">$19.99</span>
-                            </div>
-                        </div>
-                        
-                        <button type="button" onclick="processPayment()" id="payButton" 
-                                class="w-full mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                            Complete Payment & Activate Features
+</div>
+</div>
+</div>
+<!-- Selected Tier Summary -->
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden" id="selectedTierSummary">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-semibold text-blue-900">Selected Plan: <span id="selectedTierName">Enhanced</span></h4>
+<p class="text-sm text-blue-800">Enhanced features will be applied during document generation</p>
+</div>
+<div class="text-right">
+<div class="text-2xl font-bold text-blue-900" id="selectedTierPrice">$19</div>
+<div class="text-sm text-blue-700">One-time payment</div>
+</div>
+</div>
+</div>
+<!-- Payment Form -->
+<div class="border rounded-lg p-6 hidden" id="paymentSection">
+<h4 class="font-semibold text-gray-900 mb-4">💳 Payment Information</h4>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
+<div class="border border-gray-300 rounded-lg p-3" id="card-number"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Expiry</label>
+<div class="border border-gray-300 rounded-lg p-3" id="card-expiry"></div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">CVC</label>
+<div class="border border-gray-300 rounded-lg p-3" id="card-cvc"></div>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="cardholderName" placeholder="Full name on card" type="text"/>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t">
+<div class="flex items-center justify-between mb-4">
+<span class="text-gray-700">Subtotal:</span>
+<span class="font-semibold" id="subtotalAmount">$19.00</span>
+</div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-gray-700">Processing Fee:</span>
+<span class="font-semibold" id="processingFee">$0.99</span>
+</div>
+<div class="flex items-center justify-between text-lg font-bold">
+<span>Total:</span>
+<span id="totalAmount">$19.99</span>
+</div>
+</div>
+<button class="w-full mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2" id="payButton" onclick="processPayment()" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                            Complete Payment &amp; Activate Features
                         </button>
-                        
-                        <!-- Demo Mode Button -->
-                        <div class="mt-3 text-center">
-                            <button type="button" onclick="skipPaymentDemo()" 
-                                    class="text-sm text-blue-600 hover:text-blue-800 underline">
+<!-- Demo Mode Button -->
+<div class="mt-3 text-center">
+<button class="text-sm text-blue-600 hover:text-blue-800 underline" onclick="skipPaymentDemo()" type="button">
                                 🎭 Skip Payment (Demo Mode)
                             </button>
-                            <div class="text-xs text-gray-500 mt-1">For testing purposes only</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 5: Enhanced Digital Signatures with Tier Features -->
-                <div id="form-step-4" class="bg-white rounded-xl border border-gray-200 p-6 hidden">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">✍️ Digital Signatures</h2>
-                    
-                    <!-- Note: Enhanced features will be applied after payment -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <div class="flex items-center gap-2 mb-2">
-                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="text-sm font-semibold text-blue-900">Creating Legal Contract</span>
-                        </div>
-                        <div class="text-sm text-blue-800">Sign here to create your legally binding promissory note. Enhanced features will be applied during document generation after payment.</div>
-                    </div>
-                    
-                    <!-- Lender Signature Section -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Signature (Lender)</h3>
-                        
-                        <!-- Enhanced Template Selection (Enhanced+ tiers only) -->
-                        <div id="premiumTemplateSection" class="mb-4 hidden">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
-                                <label class="block text-sm font-semibold text-gray-700">Contract Template</label>
-                            </div>
-                            <select id="contractTemplate" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
-                                <option value="standard">Standard Promissory Note</option>
-                                <option value="commercial">Commercial Loan Agreement ✨</option>
-                                <option value="secured">Secured Note with Collateral ✨</option>
-                                <option value="installment">Installment Loan Agreement ✨</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Signature Method Selection -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Signature Method</label>
-                            <div class="flex space-x-2">
-                                <button type="button" id="lender-draw-btn" 
-                                        class="signature-method-btn active px-4 py-2 border rounded-lg text-sm"
-                                        onclick="setLenderSignatureMethod('draw')">
+<div class="text-xs text-gray-500 mt-1">For testing purposes only</div>
+</div>
+</div>
+</div>
+<!-- Step 5: Enhanced Digital Signatures with Tier Features -->
+<div class="bg-white rounded-xl border border-gray-200 p-6 hidden" id="form-step-4">
+<h2 class="text-xl font-bold text-gray-900 mb-6">✍️ Digital Signatures</h2>
+<!-- Note: Enhanced features will be applied after payment -->
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+<div class="flex items-center gap-2 mb-2">
+<svg class="w-5 h-5 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-sm font-semibold text-blue-900">Creating Legal Contract</span>
+</div>
+<div class="text-sm text-blue-800">Sign here to create your legally binding promissory note. Enhanced features will be applied during document generation after payment.</div>
+</div>
+<!-- Lender Signature Section -->
+<div class="mb-8">
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Your Signature (Lender)</h3>
+<!-- Enhanced Template Selection (Enhanced+ tiers only) -->
+<div class="mb-4 hidden" id="premiumTemplateSection">
+<div class="flex items-center gap-2 mb-2">
+<span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+<label class="block text-sm font-semibold text-gray-700">Contract Template</label>
+</div>
+<select class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" id="contractTemplate">
+<option value="standard">Standard Promissory Note</option>
+<option value="commercial">Commercial Loan Agreement ✨</option>
+<option value="secured">Secured Note with Collateral ✨</option>
+<option value="installment">Installment Loan Agreement ✨</option>
+</select>
+</div>
+<!-- Signature Method Selection -->
+<div class="mb-4">
+<label class="block text-sm font-semibold text-gray-700 mb-2">Signature Method</label>
+<div class="flex space-x-2">
+<button class="signature-method-btn active px-4 py-2 border rounded-lg text-sm" id="lender-draw-btn" onclick="setLenderSignatureMethod('draw')" type="button">
                                     ✏️ Draw
                                 </button>
-                                <button type="button" id="lender-type-btn" 
-                                        class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
-                                        onclick="setLenderSignatureMethod('type')">
+<button class="signature-method-btn px-4 py-2 border rounded-lg text-sm" id="lender-type-btn" onclick="setLenderSignatureMethod('type')" type="button">
                                     ⌨️ Type
                                 </button>
-                                <button type="button" id="lender-click-btn" 
-                                        class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
-                                        onclick="setLenderSignatureMethod('click')">
+<button class="signature-method-btn px-4 py-2 border rounded-lg text-sm" id="lender-click-btn" onclick="setLenderSignatureMethod('click')" type="button">
                                     👆 Click
                                 </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Draw Signature -->
-                        <div id="lender-draw-section" class="mb-4">
-                            <canvas id="lenderCanvas" 
-                                    class="signature-canvas w-full" 
-                                    width="600" height="200">
-                            </canvas>
-                            <div class="mt-2 flex space-x-2">
-                                <button type="button" onclick="clearLenderSignature()" 
-                                        class="px-3 py-1 bg-gray-500 text-white rounded text-sm">
+</div>
+</div>
+<!-- Draw Signature -->
+<div class="mb-4" id="lender-draw-section">
+<canvas class="signature-canvas w-full" height="200" id="lenderCanvas" width="600">
+</canvas>
+<div class="mt-2 flex space-x-2">
+<button class="px-3 py-1 bg-gray-500 text-white rounded text-sm" onclick="clearLenderSignature()" type="button">
                                     Clear
                                 </button>
-                                <span class="text-xs text-gray-500 mt-1">Sign above with your finger or mouse</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Type Signature -->
-                        <div id="lender-type-section" class="mb-4 hidden">
-                            <input type="text" id="lenderTypeInput" 
-                                   class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" 
-                                   placeholder="Type your full name"
-                                   style="font-family: 'Brush Script MT', cursive;">
-                            <p class="text-xs text-gray-500 mt-1">Your typed name will be converted to a signature</p>
-                        </div>
-                        
-                        <!-- Click Signature -->
-                        <div id="lender-click-section" class="mb-4 hidden">
-                            <div class="grid grid-cols-3 gap-2">
-                                <button type="button" onclick="selectLenderSignature(1)" 
-                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                    <div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
-                                        <span id="lender-option-1">John Doe</span>
-                                    </div>
-                                </button>
-                                <button type="button" onclick="selectLenderSignature(2)" 
-                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                    <div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
-                                        <span id="lender-option-2">John Doe</span>
-                                    </div>
-                                </button>
-                                <button type="button" onclick="selectLenderSignature(3)" 
-                                        class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                    <div class="font-script text-lg" style="font-family: 'Allura', cursive;">
-                                        <span id="lender-option-3">John Doe</span>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Auto Reminders (Enhanced+ only) -->
-                        <div id="autoRemindersSection" class="feature-enhanced border rounded-lg p-3 mt-4 hidden">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
-                                <span class="text-sm font-semibold text-gray-900">Automated Payment Reminders</span>
-                            </div>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="enableAutoReminders" class="mr-2 w-4 h-4 text-blue-600" checked>
-                                <span class="text-sm text-gray-700">Send automatic payment reminders to borrower</span>
-                            </label>
-                            <div class="text-xs text-gray-600 mt-1">
+<span class="text-xs text-gray-500 mt-1">Sign above with your finger or mouse</span>
+</div>
+</div>
+<!-- Type Signature -->
+<div class="mb-4 hidden" id="lender-type-section">
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" id="lenderTypeInput" placeholder="Type your full name" style="font-family: 'Brush Script MT', cursive;" type="text"/>
+<p class="text-xs text-gray-500 mt-1">Your typed name will be converted to a signature</p>
+</div>
+<!-- Click Signature -->
+<div class="mb-4 hidden" id="lender-click-section">
+<div class="grid grid-cols-3 gap-2">
+<button class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectLenderSignature(1)" type="button">
+<div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
+<span id="lender-option-1">John Doe</span>
+</div>
+</button>
+<button class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectLenderSignature(2)" type="button">
+<div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
+<span id="lender-option-2">John Doe</span>
+</div>
+</button>
+<button class="lender-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectLenderSignature(3)" type="button">
+<div class="font-script text-lg" style="font-family: 'Allura', cursive;">
+<span id="lender-option-3">John Doe</span>
+</div>
+</button>
+</div>
+</div>
+<!-- Auto Reminders (Enhanced+ only) -->
+<div class="feature-enhanced border rounded-lg p-3 mt-4 hidden" id="autoRemindersSection">
+<div class="flex items-center gap-2 mb-2">
+<span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+<span class="text-sm font-semibold text-gray-900">Automated Payment Reminders</span>
+</div>
+<label class="flex items-center">
+<input checked="" class="mr-2 w-4 h-4 text-blue-600" id="enableAutoReminders" type="checkbox"/>
+<span class="text-sm text-gray-700">Send automatic payment reminders to borrower</span>
+</label>
+<div class="text-xs text-gray-600 mt-1">
                                 Reminders sent 7, 3, and 1 days before due date
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Borrower Signature Section -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Signature</h3>
-                        
-                        <!-- Signature Collection Method -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Collection Method</label>
-                            <div class="space-y-2">
-                                <label class="flex items-center">
-                                    <input type="radio" name="borrowerSignMethod" value="now" 
-                                           class="mr-3 w-4 h-4 text-blue-600" checked 
-                                           onchange="toggleBorrowerSignatureMethod()">
-                                    <span class="text-sm">Sign on this device now</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="borrowerSignMethod" value="request" 
-                                           class="mr-3 w-4 h-4 text-blue-600" 
-                                           onchange="toggleBorrowerSignatureMethod()">
-                                    <span class="text-sm">Send signature request via SMS/Email</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Sign Now Section -->
-                        <div id="borrower-sign-now" class="mb-4">
-                            <div class="mb-4">
-                                <div class="flex space-x-2">
-                                    <button type="button" id="borrower-draw-btn" 
-                                            class="signature-method-btn active px-4 py-2 border rounded-lg text-sm"
-                                            onclick="setBorrowerSignatureMethod('draw')">
+</div>
+</div>
+<!-- Borrower Signature Section -->
+<div>
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Borrower Signature</h3>
+<!-- Signature Collection Method -->
+<div class="mb-4">
+<label class="block text-sm font-semibold text-gray-700 mb-2">Collection Method</label>
+<div class="space-y-2">
+<label class="flex items-center">
+<input checked="" class="mr-3 w-4 h-4 text-blue-600" name="borrowerSignMethod" onchange="toggleBorrowerSignatureMethod()" type="radio" value="now"/>
+<span class="text-sm">Sign on this device now</span>
+</label>
+<label class="flex items-center">
+<input class="mr-3 w-4 h-4 text-blue-600" name="borrowerSignMethod" onchange="toggleBorrowerSignatureMethod()" type="radio" value="request"/>
+<span class="text-sm">Send signature request via SMS/Email</span>
+</label>
+</div>
+</div>
+<!-- Sign Now Section -->
+<div class="mb-4" id="borrower-sign-now">
+<div class="mb-4">
+<div class="flex space-x-2">
+<button class="signature-method-btn active px-4 py-2 border rounded-lg text-sm" id="borrower-draw-btn" onclick="setBorrowerSignatureMethod('draw')" type="button">
                                         ✏️ Draw
                                     </button>
-                                    <button type="button" id="borrower-type-btn" 
-                                            class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
-                                            onclick="setBorrowerSignatureMethod('type')">
+<button class="signature-method-btn px-4 py-2 border rounded-lg text-sm" id="borrower-type-btn" onclick="setBorrowerSignatureMethod('type')" type="button">
                                         ⌨️ Type
                                     </button>
-                                    <button type="button" id="borrower-click-btn" 
-                                            class="signature-method-btn px-4 py-2 border rounded-lg text-sm"
-                                            onclick="setBorrowerSignatureMethod('click')">
+<button class="signature-method-btn px-4 py-2 border rounded-lg text-sm" id="borrower-click-btn" onclick="setBorrowerSignatureMethod('click')" type="button">
                                         👆 Click
                                     </button>
-                                </div>
-                            </div>
-                            
-                            <div id="borrower-draw-section" class="mb-4">
-                                <canvas id="borrowerCanvas" 
-                                        class="signature-canvas w-full" 
-                                        width="600" height="200">
-                                </canvas>
-                                <div class="mt-2 flex space-x-2">
-                                    <button type="button" onclick="clearBorrowerSignature()" 
-                                            class="px-3 py-1 bg-gray-500 text-white rounded text-sm">
+</div>
+</div>
+<div class="mb-4" id="borrower-draw-section">
+<canvas class="signature-canvas w-full" height="200" id="borrowerCanvas" width="600">
+</canvas>
+<div class="mt-2 flex space-x-2">
+<button class="px-3 py-1 bg-gray-500 text-white rounded text-sm" onclick="clearBorrowerSignature()" type="button">
                                         Clear
                                     </button>
-                                    <span class="text-xs text-gray-500 mt-1">Borrower signs above</span>
-                                </div>
-                            </div>
-                            
-                            <div id="borrower-type-section" class="mb-4 hidden">
-                                <input type="text" id="borrowerTypeInput" 
-                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" 
-                                       placeholder="Borrower types full name"
-                                       style="font-family: 'Brush Script MT', cursive;">
-                            </div>
-                            
-                            <div id="borrower-click-section" class="mb-4 hidden">
-                                <div class="grid grid-cols-3 gap-2">
-                                    <button type="button" onclick="selectBorrowerSignature(1)" 
-                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                        <div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
-                                            <span id="borrower-option-1">Jane Smith</span>
-                                        </div>
-                                    </button>
-                                    <button type="button" onclick="selectBorrowerSignature(2)" 
-                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                        <div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
-                                            <span id="borrower-option-2">Jane Smith</span>
-                                        </div>
-                                    </button>
-                                    <button type="button" onclick="selectBorrowerSignature(3)" 
-                                            class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500">
-                                        <div class="font-script text-lg" style="font-family: 'Allura', cursive;">
-                                            <span id="borrower-option-3">Jane Smith</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Send Signature Request Section -->
-                        <div id="borrower-sign-request" class="mb-4 hidden">
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                                <h4 class="font-semibold text-blue-900 mb-3">📤 Send Signature Request</h4>
-                                
-                                <div class="space-y-4">
-                                    <!-- Identity Verification Method -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Identity Verification Method</label>
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
-                                                <input type="radio" name="verificationMethod" value="sms" class="mr-2 w-4 h-4 text-blue-600" checked>
-                                                <div>
-                                                    <div class="font-semibold text-sm">📱 SMS OTP</div>
-                                                    <div class="text-xs text-gray-600">6-digit code via text</div>
-                                                </div>
-                                            </label>
-                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
-                                                <input type="radio" name="verificationMethod" value="email" class="mr-2 w-4 h-4 text-blue-600">
-                                                <div>
-                                                    <div class="font-semibold text-sm">📧 Email OTP</div>
-                                                    <div class="text-xs text-gray-600">Secure email code</div>
-                                                </div>
-                                            </label>
-                                            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
-                                                <input type="radio" name="verificationMethod" value="both" class="mr-2 w-4 h-4 text-blue-600">
-                                                <div>
-                                                    <div class="font-semibold text-sm">🔐 Dual Verify</div>
-                                                    <div class="text-xs text-gray-600">SMS + Email</div>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Contact Verification -->
-                                    <div class="bg-white border border-blue-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-blue-800 mb-3">📋 Verify Borrower Contact Info</h5>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Mobile Phone</label>
-                                                <input type="tel" id="borrowerVerifyPhone" 
-                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
-                                                       placeholder="(555) 123-4567">
-                                                <div class="text-xs text-gray-500 mt-1">Must match borrower info above</div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                                                <input type="email" id="borrowerVerifyEmail" 
-                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
-                                                       placeholder="borrower@email.com">
-                                                <div class="text-xs text-gray-500 mt-1">Primary contact for documents</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <button type="button" onclick="verifyBorrowerContact()" 
-                                                class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+<span class="text-xs text-gray-500 mt-1">Borrower signs above</span>
+</div>
+</div>
+<div class="mb-4 hidden" id="borrower-type-section">
+<input class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl font-script text-xl" id="borrowerTypeInput" placeholder="Borrower types full name" style="font-family: 'Brush Script MT', cursive;" type="text"/>
+</div>
+<div class="mb-4 hidden" id="borrower-click-section">
+<div class="grid grid-cols-3 gap-2">
+<button class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectBorrowerSignature(1)" type="button">
+<div class="font-script text-lg" style="font-family: 'Brush Script MT', cursive;">
+<span id="borrower-option-1">Jane Smith</span>
+</div>
+</button>
+<button class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectBorrowerSignature(2)" type="button">
+<div class="font-script text-lg" style="font-family: 'Dancing Script', cursive;">
+<span id="borrower-option-2">Jane Smith</span>
+</div>
+</button>
+<button class="borrower-sig-option p-4 border-2 border-gray-300 rounded-xl text-center hover:border-blue-500" onclick="selectBorrowerSignature(3)" type="button">
+<div class="font-script text-lg" style="font-family: 'Allura', cursive;">
+<span id="borrower-option-3">Jane Smith</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Send Signature Request Section -->
+<div class="mb-4 hidden" id="borrower-sign-request">
+<div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+<h4 class="font-semibold text-blue-900 mb-3">📤 Send Signature Request</h4>
+<div class="space-y-4">
+<!-- Identity Verification Method -->
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Identity Verification Method</label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+<input checked="" class="mr-2 w-4 h-4 text-blue-600" name="verificationMethod" type="radio" value="sms"/>
+<div>
+<div class="font-semibold text-sm">📱 SMS OTP</div>
+<div class="text-xs text-gray-600">6-digit code via text</div>
+</div>
+</label>
+<label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+<input class="mr-2 w-4 h-4 text-blue-600" name="verificationMethod" type="radio" value="email"/>
+<div>
+<div class="font-semibold text-sm">📧 Email OTP</div>
+<div class="text-xs text-gray-600">Secure email code</div>
+</div>
+</label>
+<label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+<input class="mr-2 w-4 h-4 text-blue-600" name="verificationMethod" type="radio" value="both"/>
+<div>
+<div class="font-semibold text-sm">🔐 Dual Verify</div>
+<div class="text-xs text-gray-600">SMS + Email</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Contact Verification -->
+<div class="bg-white border border-blue-200 rounded-lg p-4">
+<h5 class="font-semibold text-blue-800 mb-3">📋 Verify Borrower Contact Info</h5>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-1">Mobile Phone</label>
+<input class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="borrowerVerifyPhone" placeholder="(555) 123-4567" type="tel"/>
+<div class="text-xs text-gray-500 mt-1">Must match borrower info above</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+<input class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="borrowerVerifyEmail" placeholder="borrower@email.com" type="email"/>
+<div class="text-xs text-gray-500 mt-1">Primary contact for documents</div>
+</div>
+</div>
+<button class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm" onclick="verifyBorrowerContact()" type="button">
                                             ✓ Verify Contact Information
                                         </button>
-                                    </div>
-                                    
-                                    <!-- Signature Request Configuration -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Signature Request Options</label>
-                                        <div class="space-y-3">
-                                            <label class="flex items-start">
-                                                <input type="checkbox" id="requireIdentityVerification" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
-                                                <div>
-                                                    <span class="text-sm font-semibold">🔐 Require Identity Verification</span>
-                                                    <div class="text-xs text-gray-600">Borrower must verify with OTP before signing</div>
-                                                </div>
-                                            </label>
-                                            
-                                            <label class="flex items-start">
-                                                <input type="checkbox" id="requireDocumentReview" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
-                                                <div>
-                                                    <span class="text-sm font-semibold">📖 Require Document Review</span>
-                                                    <div class="text-xs text-gray-600">Borrower must confirm they've read the contract</div>
-                                                </div>
-                                            </label>
-                                            
-                                            <label class="flex items-start">
-                                                <input type="checkbox" id="sendContractCopy" class="mr-2 mt-1 w-4 h-4 text-blue-600" checked>
-                                                <div>
-                                                    <span class="text-sm font-semibold">📄 Send Contract Copy</span>
-                                                    <div class="text-xs text-gray-600">Include full contract with signature request</div>
-                                                </div>
-                                            </label>
-                                            
-                                            <div id="enhancedSignatureOptions" class="feature-enhanced border rounded-lg p-3 hidden">
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
-                                                    <span class="text-sm font-semibold text-gray-900">Advanced Security Options</span>
-                                                </div>
-                                                <div class="space-y-2">
-                                                    <label class="flex items-start">
-                                                        <input type="checkbox" id="enableGeofencing" class="mr-2 mt-1 w-4 h-4 text-blue-600">
-                                                        <div>
-                                                            <span class="text-sm font-semibold">🌍 Location Verification</span>
-                                                            <div class="text-xs text-gray-600">Verify borrower's location during signing</div>
-                                                        </div>
-                                                    </label>
-                                                    <label class="flex items-start">
-                                                        <input type="checkbox" id="enableBiometric" class="mr-2 mt-1 w-4 h-4 text-blue-600">
-                                                        <div>
-                                                            <span class="text-sm font-semibold">👆 Biometric Authentication</span>
-                                                            <div class="text-xs text-gray-600">Fingerprint or face ID verification</div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Custom Message -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message</label>
-                                        <textarea id="signatureRequestMessage" rows="4" 
-                                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                                  placeholder="Hi [Borrower Name], please review and digitally sign the attached promissory note. You'll receive a secure verification code to confirm your identity before signing.">Hi [Borrower Name],
+</div>
+<!-- Signature Request Configuration -->
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Signature Request Options</label>
+<div class="space-y-3">
+<label class="flex items-start">
+<input checked="" class="mr-2 mt-1 w-4 h-4 text-blue-600" id="requireIdentityVerification" type="checkbox"/>
+<div>
+<span class="text-sm font-semibold">🔐 Require Identity Verification</span>
+<div class="text-xs text-gray-600">Borrower must verify with OTP before signing</div>
+</div>
+</label>
+<label class="flex items-start">
+<input checked="" class="mr-2 mt-1 w-4 h-4 text-blue-600" id="requireDocumentReview" type="checkbox"/>
+<div>
+<span class="text-sm font-semibold">📖 Require Document Review</span>
+<div class="text-xs text-gray-600">Borrower must confirm they've read the contract</div>
+</div>
+</label>
+<label class="flex items-start">
+<input checked="" class="mr-2 mt-1 w-4 h-4 text-blue-600" id="sendContractCopy" type="checkbox"/>
+<div>
+<span class="text-sm font-semibold">📄 Send Contract Copy</span>
+<div class="text-xs text-gray-600">Include full contract with signature request</div>
+</div>
+</label>
+<div class="feature-enhanced border rounded-lg p-3 hidden" id="enhancedSignatureOptions">
+<div class="flex items-center gap-2 mb-2">
+<span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced</span>
+<span class="text-sm font-semibold text-gray-900">Advanced Security Options</span>
+</div>
+<div class="space-y-2">
+<label class="flex items-start">
+<input class="mr-2 mt-1 w-4 h-4 text-blue-600" id="enableGeofencing" type="checkbox"/>
+<div>
+<span class="text-sm font-semibold">🌍 Location Verification</span>
+<div class="text-xs text-gray-600">Verify borrower's location during signing</div>
+</div>
+</label>
+<label class="flex items-start">
+<input class="mr-2 mt-1 w-4 h-4 text-blue-600" id="enableBiometric" type="checkbox"/>
+<div>
+<span class="text-sm font-semibold">👆 Biometric Authentication</span>
+<div class="text-xs text-gray-600">Fingerprint or face ID verification</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Custom Message -->
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message</label>
+<textarea class="w-full px-4 py-3 border border-gray-300 rounded-xl" id="signatureRequestMessage" placeholder="Hi [Borrower Name], please review and digitally sign the attached promissory note. You'll receive a secure verification code to confirm your identity before signing." rows="4">Hi [Borrower Name],
 
 Please review and digitally sign the attached promissory note at your earliest convenience. 
 
@@ -1275,372 +1081,314 @@ If you have any questions, please contact me directly.
 
 Best regards,
 [Lender Name]</textarea>
-                                    </div>
-                                    
-                                    <!-- Send Button -->
-                                    <div class="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <div>
-                                                <h5 class="font-semibold text-blue-900">📤 Ready to Send</h5>
-                                                <div class="text-sm text-blue-700">Secure signature request with identity verification</div>
-                                            </div>
-                                            <div class="text-right">
-                                                <div class="text-xs text-gray-600">Estimated delivery:</div>
-                                                <div class="text-sm font-semibold text-blue-800">< 2 minutes</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <button type="button" onclick="sendSecureSignatureRequest()" 
-                                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold flex items-center justify-center gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                            </svg>
+</div>
+<!-- Send Button -->
+<div class="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h5 class="font-semibold text-blue-900">📤 Ready to Send</h5>
+<div class="text-sm text-blue-700">Secure signature request with identity verification</div>
+</div>
+<div class="text-right">
+<div class="text-xs text-gray-600">Estimated delivery:</div>
+<div class="text-sm font-semibold text-blue-800">&lt; 2 minutes</div>
+</div>
+</div>
+<button class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold flex items-center justify-center gap-2" onclick="sendSecureSignatureRequest()" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                             🔐 Send Secure Signature Request
                                         </button>
-                                        
-                                        <div class="text-xs text-blue-600 mt-2 text-center">
+<div class="text-xs text-blue-600 mt-2 text-center">
                                             Borrower will receive: Contract → OTP Verification → Digital Signing → Confirmation
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 6: Enhanced Delivery with UCC Attachments -->
-                <div id="form-step-6" class="bg-white rounded-xl border border-gray-200 p-6 text-center hidden">
-                    <div class="py-8">
-                        <div class="text-6xl mb-6">🎉</div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Documents Generated!</h2>
-                        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 6: Enhanced Delivery with UCC Attachments -->
+<div class="bg-white rounded-xl border border-gray-200 p-6 text-center hidden" id="form-step-6">
+<div class="py-8">
+<div class="text-6xl mb-6">🎉</div>
+<h2 class="text-2xl font-bold text-gray-900 mb-4">Documents Generated!</h2>
+<p class="text-gray-600 mb-8 max-w-md mx-auto">
                             Your legally enforceable promissory note has been created, signed, enhanced with your selected features, and is ready for delivery.
                         </p>
-                        
-                        <!-- Enhanced Tier Features Confirmation -->
-                        <div id="tierFeaturesConfirmation" class="feature-enhanced border rounded-lg p-4 mb-6 hidden">
-                            <div class="flex items-center justify-center gap-2 mb-3">
-                                <span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced Active</span>
-                                <span class="text-sm font-semibold text-gray-900">Advanced features have been activated</span>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>Payment analytics enabled</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>Auto reminders configured</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Blockchain & Audit Trail Information -->
-                        <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
-                            <h3 class="font-semibold text-green-900 mb-3">🔗 Blockchain Verified & UCC Compliant</h3>
-                            <div class="text-sm text-green-800 space-y-2">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span><strong>Digital signatures</strong> cryptographically secured</span>
-                                </div>
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span><strong>Audit trail</strong> with <span id="auditEventCount">12</span> events recorded</span>
-                                </div>
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span><strong>UCC Articles 3 & 9</strong> compliance verified</span>
-                                </div>
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span><strong>Document hash:</strong> <span id="documentHash" class="font-mono text-xs">0x7f9a...</span></span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Enhanced Download Options -->
-                        <div class="space-y-4">
-                            <button onclick="downloadContractWithUCC()" 
-                                    class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
+<!-- Enhanced Tier Features Confirmation -->
+<div class="feature-enhanced border rounded-lg p-4 mb-6 hidden" id="tierFeaturesConfirmation">
+<div class="flex items-center justify-center gap-2 mb-3">
+<span class="enhanced-badge text-white px-2 py-1 rounded text-xs font-semibold">✨ Enhanced Active</span>
+<span class="text-sm font-semibold text-gray-900">Advanced features have been activated</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Payment analytics enabled</span>
+</div>
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Auto reminders configured</span>
+</div>
+</div>
+</div>
+<!-- Blockchain & Audit Trail Information -->
+<div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+<h3 class="font-semibold text-green-900 mb-3">🔗 Blockchain Verified &amp; UCC Compliant</h3>
+<div class="text-sm text-green-800 space-y-2">
+<div class="flex items-center justify-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span><strong>Digital signatures</strong> cryptographically secured</span>
+</div>
+<div class="flex items-center justify-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span><strong>Audit trail</strong> with <span id="auditEventCount">12</span> events recorded</span>
+</div>
+<div class="flex items-center justify-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span><strong>UCC Articles 3 &amp; 9</strong> compliance verified</span>
+</div>
+<div class="flex items-center justify-center gap-2">
+<svg class="w-4 h-4 text-green-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span><strong>Document hash:</strong> <span class="font-mono text-xs" id="documentHash">0x7f9a...</span></span>
+</div>
+</div>
+</div>
+<!-- Enhanced Download Options -->
+<div class="space-y-4">
+<button class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2" onclick="downloadContractWithUCC()">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                 📄 Download Complete Contract Package
                             </button>
-                            
-                            <!-- Send to Borrower Section -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
-                                <h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
+<!-- Send to Borrower Section -->
+<div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+<h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                     📧 Send to Borrower
                                 </h4>
-                                
-                                <div class="space-y-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Email</label>
-                                            <input type="email" id="borrowerFinalEmail" 
-                                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
-                                                   placeholder="borrower@email.com" readonly>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Delivery Method</label>
-                                            <select id="deliveryMethod" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                                                <option value="email">📧 Email Only</option>
-                                                <option value="sms_email">📱 SMS + Email</option>
-                                                <option value="priority_delivery">🚀 Priority Delivery (Enhanced+)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message (Optional)</label>
-                                        <textarea id="deliveryMessage" rows="3" 
-                                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
-                                                  placeholder="Hi [Borrower Name], your signed promissory note is ready. Please review and save this important document for your records."></textarea>
-                                    </div>
-                                    
-                                    <div class="bg-white border border-blue-200 rounded-lg p-3">
-                                        <h5 class="font-semibold text-blue-800 mb-2">📦 What will be sent:</h5>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-700">
-                                            <div class="flex items-center gap-1">
-                                                <span class="text-green-600">✓</span> Main contract (PDF)
+<div class="space-y-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Email</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg" id="borrowerFinalEmail" placeholder="borrower@email.com" readonly="" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Delivery Method</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded-lg" id="deliveryMethod">
+<option value="email">📧 Email Only</option>
+<option value="sms_email">📱 SMS + Email</option>
+<option value="priority_delivery">🚀 Priority Delivery (Enhanced+)</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">Custom Message (Optional)</label>
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg" id="deliveryMessage" placeholder="Hi [Borrower Name], your signed promissory note is ready. Please review and save this important document for your records." rows="3"></textarea>
+</div>
+<div class="bg-white border border-blue-200 rounded-lg p-3">
+<h5 class="font-semibold text-blue-800 mb-2">📦 What will be sent:</h5>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-700">
+<div class="flex items-center gap-1">
+<span class="text-green-600">✓</span> Main contract (PDF)
                                             </div>
-                                            <div class="flex items-center gap-1">
-                                                <span class="text-green-600">✓</span> UCC compliance attachment
+<div class="flex items-center gap-1">
+<span class="text-green-600">✓</span> UCC compliance attachment
                                             </div>
-                                            <div class="flex items-center gap-1">
-                                                <span class="text-green-600">✓</span> Execution certificate
+<div class="flex items-center gap-1">
+<span class="text-green-600">✓</span> Execution certificate
                                             </div>
-                                            <div class="flex items-center gap-1">
-                                                <span class="text-green-600">✓</span> Payment schedule (if applicable)
+<div class="flex items-center gap-1">
+<span class="text-green-600">✓</span> Payment schedule (if applicable)
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex space-x-3">
-                                        <button onclick="sendToBorrower()" 
-                                                class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                            </svg>
+</div>
+</div>
+<div class="flex space-x-3">
+<button class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold flex items-center justify-center gap-2" onclick="sendToBorrower()">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                             Send Complete Package
                                         </button>
-                                        
-                                        <button onclick="scheduledDelivery()" 
-                                                class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
+<button class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2" onclick="scheduledDelivery()">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                             Schedule
                                         </button>
+</div>
+<div class="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+<strong>Auto-delivery:</strong> Both parties will receive copies automatically. Borrower will get SMS/Email confirmation with secure access link.
                                     </div>
-                                    
-                                    <div class="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                                        <strong>Auto-delivery:</strong> Both parties will receive copies automatically. Borrower will get SMS/Email confirmation with secure access link.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="text-xs text-gray-600 mb-4">
+</div>
+</div>
+<div class="text-xs text-gray-600 mb-4">
                                 Package includes: Main contract, UCC Article attachments, execution certificate, and audit trail
                             </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <button onclick="downloadMainContract()" 
-                                        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2" onclick="downloadMainContract()">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                     Main Contract Only
                                 </button>
-                                
-                                <button onclick="downloadUCCAttachments()" 
-                                        class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
+<button class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center gap-2" onclick="downloadUCCAttachments()">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                     📜 UCC Attachments
                                 </button>
-                            </div>
-                            
-                            <button onclick="viewAuditTrail()" 
-                                    class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
+</div>
+<button class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2" onclick="viewAuditTrail()">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
                                 🔗 View Complete Audit Trail
                             </button>
-                            
-                            <a href="dashboard.html" 
-                               class="block w-full px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-center">
+<a class="block w-full px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-center" href="dashboard.html">
                                 Return to Dashboard
                             </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Buttons -->
-                <div class="flex justify-between">
-                    <button id="prevBtn" onclick="prevStep()" 
-                            class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 hidden">
+</div>
+</div>
+</div>
+<!-- Navigation Buttons -->
+<div class="flex justify-between">
+<button class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 hidden" id="prevBtn" onclick="prevStep()">
                         Previous
                     </button>
-                    <div class="flex-1"></div>
-                    <button id="nextBtn" onclick="nextStep()" 
-                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+<div class="flex-1"></div>
+<button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700" id="nextBtn" onclick="nextStep()">
                         Next
                     </button>
-                </div>
-            </div>
-
-            <!-- Enhanced Preview Section -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-8">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">📋 Contract Preview</h3>
-                    
-                    <div class="space-y-4">
-                        <!-- Loan Details -->
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Loan Amount</div>
-                            <div class="text-2xl font-bold text-gray-900" id="previewPrincipal">$0</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Purpose</div>
-                            <div class="text-gray-900" id="previewPurpose">Not specified</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Flat Fee</div>
-                            <div class="text-gray-900" id="previewFee">$0</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Total Amount Due</div>
-                            <div class="text-2xl font-bold text-gray-900" id="previewTotal">$0</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Due Date</div>
-                            <div class="text-gray-900" id="previewDueDate">Not set</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm text-gray-600 mb-1">Payment Schedule</div>
-                            <div class="text-gray-900" id="previewSchedule">Lump Sum</div>
-                        </div>
-                        
-                        <!-- Payment Schedule Breakdown -->
-                        <div id="previewPaymentBreakdown" class="border-t pt-4 hidden">
-                            <div class="text-sm text-gray-600 mb-2">💰 Payment Breakdown</div>
-                            <div class="space-y-1 text-sm">
-                                <div class="flex justify-between">
-                                    <span>Principal:</span>
-                                    <span id="previewBreakdownPrincipal">$0</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Fee:</span>
-                                    <span id="previewBreakdownFee">$0</span>
-                                </div>
-                                <div class="flex justify-between font-semibold border-t pt-1">
-                                    <span>Total Due:</span>
-                                    <span id="previewBreakdownTotal">$0</span>
-                                </div>
-                                <div class="flex justify-between text-blue-600 font-semibold" id="previewMonthlyPayment">
-                                    <span>Monthly Payment:</span>
-                                    <span id="previewBreakdownMonthly">$0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tier Pricing Breakdown -->
-                        <div id="previewTierPricing" class="border-t pt-4">
-                            <div class="text-sm text-gray-600 mb-2">💳 Plan Pricing</div>
-                            <div class="space-y-1 text-sm">
-                                <div class="flex justify-between">
-                                    <span id="previewTierName">Essential Protection:</span>
-                                    <span id="previewTierPrice">$14.99</span>
-                                </div>
-                                <div class="flex justify-between text-gray-500">
-                                    <span>Processing Fee:</span>
-                                    <span id="previewProcessingFee">$0.74</span>
-                                </div>
-                                <div class="flex justify-between font-semibold border-t pt-1">
-                                    <span>Plan Total:</span>
-                                    <span id="previewPlanTotal">$15.73</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="previewLenderSection" class="border-t pt-4 hidden">
-                            <div class="text-sm text-gray-600 mb-1">Lender</div>
-                            <div class="font-semibold" id="previewLender">-</div>
-                        </div>
-                        
-                        <div id="previewBorrowerSection" class="border-t pt-4 hidden">
-                            <div class="text-sm text-gray-600 mb-1">Borrower</div>
-                            <div class="font-semibold" id="previewBorrower">-</div>
-                        </div>
-
-                        <!-- Plan Pricing Section -->
-                        <span id="previewTierName">Essential Protection:</span>
-                        <span id="previewTierPrice">$14.99</span>
-
-                        <!-- Security Features List -->
-                        <div id="securityFeaturesList" class="security-features-list">
-                          <!-- Features will be populated by JavaScript -->
-                        </div>
-                        
-                        <!-- Enhanced Security Features Display (Dynamic based on tier) -->
-                        <div class="border-t pt-4">
-                            <div class="text-sm text-gray-600 mb-2">🔒 Security & Compliance</div>
-                            <div class="space-y-2 text-xs text-gray-600" id="previewSecurityFeatures">
-                                <!-- Will be populated dynamically by updatePreviewForTier() -->
-                            </div>
-                        </div>
-                        
-                        <!-- Tier Status Display -->
-                        <div id="previewTierStatus" class="border-t pt-4">
-                            <div class="text-sm text-gray-600 mb-2">📈 Plan Status</div>
-                            <div class="flex items-center justify-between">
-                                <span class="tier-badge text-white px-2 py-1 rounded text-xs font-semibold" id="previewCurrentTier">
+</div>
+</div>
+<!-- Enhanced Preview Section -->
+<div class="space-y-6">
+<div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-8">
+<h3 class="text-lg font-bold text-gray-900 mb-6">📋 Contract Preview</h3>
+<div class="space-y-4">
+<!-- Loan Details -->
+<div>
+<div class="text-sm text-gray-600 mb-1">Loan Amount</div>
+<div class="text-2xl font-bold text-gray-900" id="previewPrincipal">$0</div>
+</div>
+<div>
+<div class="text-sm text-gray-600 mb-1">Purpose</div>
+<div class="text-gray-900" id="previewPurpose">Not specified</div>
+</div>
+<div>
+<div class="text-sm text-gray-600 mb-1">Flat Fee</div>
+<div class="text-gray-900" id="previewFee">$0</div>
+</div>
+<div>
+<div class="text-sm text-gray-600 mb-1">Total Amount Due</div>
+<div class="text-2xl font-bold text-gray-900" id="previewTotal">$0</div>
+</div>
+<div>
+<div class="text-sm text-gray-600 mb-1">Due Date</div>
+<div class="text-gray-900" id="previewDueDate">Not set</div>
+</div>
+<div>
+<div class="text-sm text-gray-600 mb-1">Payment Schedule</div>
+<div class="text-gray-900" id="previewSchedule">Lump Sum</div>
+</div>
+<!-- Payment Schedule Breakdown -->
+<div class="border-t pt-4 hidden" id="previewPaymentBreakdown">
+<div class="text-sm text-gray-600 mb-2">💰 Payment Breakdown</div>
+<div class="space-y-1 text-sm">
+<div class="flex justify-between">
+<span>Principal:</span>
+<span id="previewBreakdownPrincipal">$0</span>
+</div>
+<div class="flex justify-between">
+<span>Fee:</span>
+<span id="previewBreakdownFee">$0</span>
+</div>
+<div class="flex justify-between font-semibold border-t pt-1">
+<span>Total Due:</span>
+<span id="previewBreakdownTotal">$0</span>
+</div>
+<div class="flex justify-between text-blue-600 font-semibold" id="previewMonthlyPayment">
+<span>Monthly Payment:</span>
+<span id="previewBreakdownMonthly">$0</span>
+</div>
+</div>
+</div>
+<!-- Tier Pricing Breakdown -->
+<div class="border-t pt-4" id="previewTierPricing">
+<div class="text-sm text-gray-600 mb-2">💳 Plan Pricing</div>
+<div class="space-y-1 text-sm">
+<div class="flex justify-between">
+<span id="previewTierName">Essential Protection:</span>
+<span id="previewTierPrice">$14.99</span>
+</div>
+<div class="flex justify-between text-gray-500">
+<span>Processing Fee:</span>
+<span id="previewProcessingFee">$0.74</span>
+</div>
+<div class="flex justify-between font-semibold border-t pt-1">
+<span>Plan Total:</span>
+<span id="previewPlanTotal">$15.73</span>
+</div>
+</div>
+</div>
+<div class="border-t pt-4 hidden" id="previewLenderSection">
+<div class="text-sm text-gray-600 mb-1">Lender</div>
+<div class="font-semibold" id="previewLender">-</div>
+</div>
+<div class="border-t pt-4 hidden" id="previewBorrowerSection">
+<div class="text-sm text-gray-600 mb-1">Borrower</div>
+<div class="font-semibold" id="previewBorrower">-</div>
+</div>
+<!-- Enhanced Security Features Display (Dynamic based on tier) -->
+<div class="border-t pt-4">
+<div class="text-sm text-gray-600 mb-2">🔒 Security &amp; Compliance</div>
+<div class="space-y-2 text-xs text-gray-600" id="previewSecurityFeatures">
+<!-- Will be populated dynamically by updatePreviewForTier() -->
+</div>
+</div>
+<!-- Tier Status Display -->
+<div class="border-t pt-4" id="previewTierStatus">
+<div class="text-sm text-gray-600 mb-2">📈 Plan Status</div>
+<div class="flex items-center justify-between">
+<span class="tier-badge text-white px-2 py-1 rounded text-xs font-semibold" id="previewCurrentTier">
                                     Essential Protection
                                 </span>
-                                <span class="text-xs text-gray-600" id="previewFeaturesActive">4 features active</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Enhanced Progress Indicator -->
-                    <div class="mt-6 pt-4 border-t">
-                        <div class="text-sm text-gray-600 mb-2">📈 Progress</div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 16.67%"></div>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1">Step 1 of 6</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Enhanced JavaScript with Blockchain Features, Tier Management, and UCC Compliance -->
-    <script>
+<span class="text-xs text-gray-600" id="previewFeaturesActive">4 features active</span>
+</div>
+</div>
+</div>
+<!-- Enhanced Progress Indicator -->
+<div class="mt-6 pt-4 border-t">
+<div class="text-sm text-gray-600 mb-2">📈 Progress</div>
+<div class="w-full bg-gray-200 rounded-full h-2">
+<div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="progressBar" style="width: 16.67%"></div>
+</div>
+<div class="text-xs text-gray-500 mt-1">Step 1 of 6</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Enhanced JavaScript with Blockchain Features, Tier Management, and UCC Compliance -->
+<script>
         let currentStep = 1;
         const totalSteps = 6;
         let auditTrail = [];
@@ -3135,168 +2883,6 @@ Best regards,
             event.target.closest('.borrower-sig-option').classList.remove('border-gray-300');
             event.target.closest('.borrower-sig-option').classList.add('border-blue-500');
         }
-
-        // === Authentication & Navigation Logic ===
-        
-        // Check authentication state and show appropriate navigation
-        function checkAuthenticationState() {
-            // Check if user is signed in (localStorage for demo purposes)
-            const isSignedIn = localStorage.getItem('trustlend_auth') === 'true';
-            const publicNav = document.getElementById('publicNav');
-            const privateNav = document.getElementById('privateNav');
-            const logoLink = document.getElementById('logoLink');
-            
-            if (isSignedIn) {
-                // Show private navigation
-                publicNav.classList.add('hidden');
-                privateNav.classList.remove('hidden');
-                privateNav.classList.add('flex');
-                logoLink.href = 'dashboard.html';
-            } else {
-                // Show public navigation
-                publicNav.classList.remove('hidden');
-                publicNav.classList.add('flex');
-                privateNav.classList.add('hidden');
-                logoLink.href = 'index.html';
-            }
-        }
-
-        // Sign in flow
-        function showSignInModal() {
-            // Create sign-in modal
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In to Save Your Contract</h2>
-                    <p class="text-gray-600 mb-6 text-center">Create a free account to save, manage, and track your loan agreements.</p>
-                    
-                    <form id="signInForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="john@example.com">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
-                            Sign In & Save Contract
-                        </button>
-                    </form>
-                    
-                    <div class="text-center mt-6">
-                        <p class="text-sm text-gray-600">Don't have an account?</p>
-                        <button onclick="showSignUpModal()" class="text-blue-600 hover:text-blue-700 font-medium">Create Free Account</button>
-                    </div>
-                    
-                    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Handle sign-in form submission
-            document.getElementById('signInForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // Demo: Simulate successful sign-in
-                localStorage.setItem('trustlend_auth', 'true');
-                closeModal();
-                checkAuthenticationState();
-                alert('Successfully signed in! You can now save your contract.');
-            });
-        }
-
-        function showSignUpModal() {
-            closeModal(); // Close sign-in modal
-            
-            // Create sign-up modal
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Create Your Free Account</h2>
-                    <p class="text-gray-600 mb-6 text-center">Join thousands protecting their money and relationships.</p>
-                    
-                    <form id="signUpForm" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="John">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Doe">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="john@example.com">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" required class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
-                            Create Account & Save Contract
-                        </button>
-                    </form>
-                    
-                    <div class="text-center mt-6">
-                        <p class="text-sm text-gray-600">Already have an account?</p>
-                        <button onclick="showSignInModal()" class="text-blue-600 hover:text-blue-700 font-medium">Sign In</button>
-                    </div>
-                    
-                    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Handle sign-up form submission
-            document.getElementById('signUpForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // Demo: Simulate successful sign-up
-                localStorage.setItem('trustlend_auth', 'true');
-                closeModal();
-                checkAuthenticationState();
-                alert('Account created successfully! Welcome to TrustLend.');
-            });
-        }
-
-        function closeModal() {
-            const modal = document.querySelector('.fixed.inset-0');
-            if (modal) {
-                modal.remove();
-            }
-        }
-
-        // Initialize authentication state when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthenticationState();
-            
-            // Sign In button
-            document.getElementById('signInBtn')?.addEventListener('click', showSignInModal);
-            
-            // Save My Contract button (for non-signed-in users)
-            document.getElementById('needAccountBtn')?.addEventListener('click', function() {
-                showSignInModal();
-            });
-        });
     </script>
-
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/contracts.js"></script>
-    <script src="assets/js/forms.js"></script>
 </body>
 </html>
