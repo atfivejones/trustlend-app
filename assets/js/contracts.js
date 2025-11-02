@@ -112,385 +112,108 @@ const TrustLendContracts = {
     },
 
     updateSecurityFeatures() {
-        const featuresContainer = document.querySelector('.security-features-list');
-        if (!featuresContainer) return;
+// New behavior: render into #securityFeaturesList if present
+const idContainer = document.getElementById('securityFeaturesList');
+const tier = this.state.currentTier;
+if (idContainer) {
+    const features = tier === 'essential' ? [
+        'Legal contract creation',
+        'Digital signatures (both parties)',
+        'Email delivery & tracking',
+        'PDF download',
+        'Basic payment reminders',
+        'Standard legal templates'
+    ] : [
+        'Legal contract creation',
+        'Digital signatures (both parties)',
+        'Email delivery & tracking',
+        'PDF download',
+        'Advanced payment reminders',
+        'Premium legal templates',
+        'Blockchain timestamp proof',
+        'Enhanced audit trail',
+        'Priority customer support',
+        'Multi-language support'
+    ];
 
-        const tier = this.state.currentTier;
-        const features = this.state.tierFeatures[tier];
-        const featureCount = tier === 'essential' ? 6 : 10;
+    idContainer.innerHTML = features.map(feature => `
+        <div class="flex items-center gap-2 text-sm">
+            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span>${feature}</span>
+        </div>
+    `).join('');
+} else {
+    // Legacy behavior: fall back to existing .security-features-list rendering to avoid breaking current UI
+    const featuresContainer = document.querySelector('.security-features-list');
+    if (!featuresContainer) return;
 
-        featuresContainer.innerHTML = features.map(feature => `
-            <li>
-                <span class="check-icon">✓</span>
-                ${feature}
-                ${tier === 'maximum' && feature.includes('Enhanced') ? 
-                    '<span class="enhanced-badge">Enhanced</span>' : ''}
-            </li>
-        `).join('');
+    const features = this.state.tierFeatures[tier];
+    const featureCount = tier === 'essential' ? 6 : 10;
 
-        // Update feature count
-        const featureCountElement = document.querySelector('.feature-count');
-        if (featureCountElement) {
-            featureCountElement.textContent = `${featureCount} features`;
-        }
-    },
+    featuresContainer.innerHTML = features.map(feature => `
+        <li>
+            <span class="check-icon">✓</span>
+            ${feature}
+            ${tier === 'maximum' && feature.includes('Enhanced') ? 
+                '<span class="enhanced-badge">Enhanced</span>' : ''}
+        </li>
+    `).join('');
 
-    updatePricingSection() {
-        const priceElement = document.querySelector('.tier-price-display');
-        if (priceElement) {
-            const price = this.state.tierPricing[this.state.currentTier];
-            priceElement.textContent = `$${price}`;
-        }
+    const featureCountElement = document.querySelector('.feature-count');
+    if (featureCountElement) {
+        featureCountElement.textContent = `${featureCount} features`;
+    }
+}
 
-        // Update tier benefits
-        const benefitsElement = document.querySelector('.tier-benefits');
-        if (benefitsElement) {
-            const tier = this.state.currentTier;
-            const benefits = tier === 'essential' 
-                ? '💙 Perfect for family loans and basic legal protection'
-                : '💎 Ultimate protection for larger loans and maximum legal security';
-            
-            benefitsElement.innerHTML = `<p>${benefits}</p>`;
-        }
-    },
+    
+}
 
-    // ===== CONTRACT PREVIEW =====
-    setupContractPreview() {
-        const previewContainer = document.querySelector('.contract-preview');
-        if (previewContainer) {
-            this.updateContractPreview();
-        }
-    },
+if (tierPriceElement) {
+    const price = tier === 'essential' ? '$14.99' : '$29.99';
+    tierPriceElement.textContent = price;
+}
 
-    updateContractPreview() {
-        const previewElement = document.querySelector('.contract-preview-content');
-        if (!previewElement) return;
+// Also maintain the original preview rendering if the preview container exists
+const previewElement = document.querySelector('.contract-preview-content');
+if (previewElement) {
+    const data = this.state.contractData;
+    previewElement.innerHTML = this.generatePreviewHTML(data, tier);
+}
 
-        const data = this.state.contractData;
-        const tier = this.state.currentTier;
-        
-        previewElement.innerHTML = this.generatePreviewHTML(data, tier);
-    },
+// Update security features (new ID-based container first; otherwise fall back to legacy selector)
+this.updateSecurityFeatures();
 
-    generatePreviewHTML(data, tier) {
-        const totalAmount = parseFloat(data.loanAmount || 0) + parseFloat(data.optionalFee || 0);
-        const monthlyPayment = this.calculateMonthlyPayment(totalAmount, data.loanTerm || 12);
+// Update total pricing breakdown
+this.updatePricingCalculation();
 
-        return `
-            <div class="contract-header">
-                <h3 class="contract-title">Loan Agreement Preview</h3>
-                <span class="plan-status ${tier}">
-                    <span>●</span>
-                    ${tier === 'essential' ? 'Essential Protection' : 'Maximum Protection'}
-                </span>
-            </div>
-            
-            <div class="contract-details">
-                <div class="detail-item">
-                    <div class="detail-label">Loan Amount</div>
-                    <div class="detail-value">${this.formatCurrency(data.loanAmount || 0)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Optional Fee</div>
-                    <div class="detail-value">${this.formatCurrency(data.optionalFee || 0)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Payment Schedule</div>
-                    <div class="detail-value">${this.formatSchedule(data.paymentSchedule || 'monthly')}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Monthly Payment</div>
-                    <div class="detail-value">${this.formatCurrency(monthlyPayment)}</div>
-                </div>
-            </div>
-            
-            <div class="contract-parties">
-                <div class="party-section">
-                    <h4>Lender</h4>
-                    <p>${data.lender.firstName || 'Your'} ${data.lender.lastName || 'Name'}</p>
-                    <p class="status ${data.lender.firstName ? 'signed' : 'pending'}">
-                        ${data.lender.firstName ? '✓ Ready to sign' : '○ Pending information'}
-                    </p>
-                </div>
-                <div class="party-section">
-                    <h4>Borrower</h4>
-                    <p>${data.borrower.firstName || 'Borrower'} ${data.borrower.lastName || 'Name'}</p>
-                    <p class="status pending">○ Awaiting signature</p>
-                </div>
-            </div>
-            
-            <div class="security-features">
-                <div class="security-title">
-                    <span>🛡️</span>
-                    Legal Protection Included
-                </div>
-                <ul class="security-list">
-                    ${this.state.tierFeatures[tier].slice(0, 4).map(feature => `
-                        <li>• ${feature}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    },
+    
 
-    // ===== FORM HANDLING =====
-    setupFormHandlers() {
-        // Loan amount input
-        const loanAmountInput = document.querySelector('input[name="loanAmount"]');
-        if (loanAmountInput) {
-            loanAmountInput.addEventListener('input', this.debounce((e) => {
-                this.updateContractData('loanAmount', e.target.value);
-                this.updateContractPreview();
-                this.validateLoanAmount(e.target.value);
-            }, 300));
-        }
+    updatePricingCalculation() {
+const tier = this.state.currentTier;
+const basePrice = tier === 'essential' ? 14.99 : 29.99;
+const processingFee = 1.17;
+const total = basePrice + processingFee;
 
-        // Optional fee input
-        const optionalFeeInput = document.querySelector('input[name="optionalFee"]');
-        if (optionalFeeInput) {
-            optionalFeeInput.addEventListener('input', this.debounce((e) => {
-                this.updateContractData('optionalFee', e.target.value);
-                this.updateContractPreview();
-            }, 300));
-        }
+// Update new ID-based pricing elements
+const elements = {
+    'subtotal': `$${basePrice.toFixed(2)}`,
+    'processing-fee': `$${processingFee.toFixed(2)}`,
+    'total-amount': `$${total.toFixed(2)}`
+};
 
-        // Payment schedule select
-        const scheduleSelect = document.querySelector('select[name="paymentSchedule"]');
-        if (scheduleSelect) {
-            scheduleSelect.addEventListener('change', (e) => {
-                this.updateContractData('paymentSchedule', e.target.value);
-                this.updateContractPreview();
-            });
-        }
+Object.entries(elements).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+});
 
-        // Loan term input
-        const termInput = document.querySelector('input[name="loanTerm"]');
-        if (termInput) {
-            termInput.addEventListener('input', this.debounce((e) => {
-                this.updateContractData('loanTerm', e.target.value);
-                this.updateContractPreview();
-            }, 300));
-        }
+// Maintain legacy pricing section update (if present) so existing UI still works
+const priceElement = document.querySelector('.tier-price-display');
+if (priceElement) {
+    priceElement.textContent = `$${basePrice}`;
+}
 
-        // Lender information
-        this.setupPartyInformationHandlers('lender');
-        this.setupPartyInformationHandlers('borrower');
-    },
-
-    setupPartyInformationHandlers(partyType) {
-        const fields = ['firstName', 'lastName', 'email', 'phone'];
-        
-        fields.forEach(field => {
-            const input = document.querySelector(`input[name="${partyType}_${field}"]`);
-            if (input) {
-                input.addEventListener('input', this.debounce((e) => {
-                    this.updatePartyData(partyType, field, e.target.value);
-                    this.updateContractPreview();
-                }, 300));
-            }
-        });
-    },
-
-    updateContractData(field, value) {
-        this.state.contractData[field] = value;
-        console.log('Updated contract data:', field, value);
-    },
-
-    updatePartyData(partyType, field, value) {
-        if (!this.state.contractData[partyType]) {
-            this.state.contractData[partyType] = {};
-        }
-        this.state.contractData[partyType][field] = value;
-        console.log('Updated party data:', partyType, field, value);
-    },
-
-    // ===== FORM VALIDATION =====
-    validateLoanAmount(amount) {
-        const numAmount = parseFloat(amount);
-        const errorElement = document.querySelector('.loan-amount-error');
-        
-        if (numAmount < 100) {
-            this.showFieldError('loanAmount', 'Minimum loan amount is $100');
-        } else if (numAmount > 1000000) {
-            this.showFieldError('loanAmount', 'Maximum loan amount is $1,000,000');
-        } else {
-            this.clearFieldError('loanAmount');
-        }
-    },
-
-    showFieldError(fieldName, message) {
-        const field = document.querySelector(`input[name="${fieldName}"]`);
-        if (field) {
-            field.classList.add('error');
-            
-            let errorElement = document.querySelector(`.${fieldName}-error`);
-            if (!errorElement) {
-                errorElement = document.createElement('div');
-                errorElement.className = `form-error ${fieldName}-error`;
-                field.parentNode.appendChild(errorElement);
-            }
-            errorElement.textContent = message;
-        }
-    },
-
-    clearFieldError(fieldName) {
-        const field = document.querySelector(`input[name="${fieldName}"]`);
-        if (field) {
-            field.classList.remove('error');
-            const errorElement = document.querySelector(`.${fieldName}-error`);
-            if (errorElement) {
-                errorElement.remove();
-            }
-        }
-    },
-
-    // ===== CONTRACT MANAGEMENT =====
-    initializeContractManagement() {
-        this.setupContractFilters();
-        this.setupContractActions();
-        this.loadContractsList();
-    },
-
-    setupContractFilters() {
-        const filterTabs = document.querySelectorAll('.filter-tab');
-        filterTabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                this.handleFilterChange(e.target.dataset.filter);
-            });
-        });
-    },
-
-    handleFilterChange(filter) {
-        console.log('Filter changed to:', filter);
-        
-        // Update active tab
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-        
-        // Filter contracts (demo)
-        this.filterContracts(filter);
-    },
-
-    filterContracts(filter) {
-        const contractCards = document.querySelectorAll('.contract-card');
-        contractCards.forEach(card => {
-            const status = card.dataset.status;
-            const shouldShow = filter === 'all' || filter === status;
-            card.style.display = shouldShow ? 'block' : 'none';
-        });
-    },
-
-    setupContractActions() {
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('contract-action')) {
-                e.preventDefault();
-                const action = e.target.dataset.action;
-                const contractId = e.target.closest('.contract-card')?.dataset.contractId;
-                this.handleContractAction(action, contractId);
-            }
-        });
-    },
-
-    handleContractAction(action, contractId) {
-        console.log('Contract action:', action, contractId);
-        
-        switch (action) {
-            case 'view':
-                this.viewContract(contractId);
-                break;
-            case 'remind':
-                this.sendPaymentReminder(contractId);
-                break;
-            case 'download':
-                this.downloadContract(contractId);
-                break;
-            case 'thank':
-                this.sendThankYou(contractId);
-                break;
-            case 'modify':
-                this.modifyContract(contractId);
-                break;
-            default:
-                console.log('Unknown action:', action);
-        }
-    },
-
-    viewContract(contractId) {
-        console.log('Viewing contract:', contractId);
-        // In real app, this would open a detailed view
-        TrustLend.showNotification('Opening contract details...', 'info');
-    },
-
-    sendPaymentReminder(contractId) {
-        console.log('Sending payment reminder for:', contractId);
-        TrustLend.showNotification('Payment reminder sent successfully!', 'success');
-    },
-
-    downloadContract(contractId) {
-        console.log('Downloading contract:', contractId);
-        TrustLend.showNotification('Downloading contract PDF...', 'info');
-        
-        // Simulate download
-        setTimeout(() => {
-            TrustLend.showNotification('Contract downloaded successfully!', 'success');
-        }, 1500);
-    },
-
-    sendThankYou(contractId) {
-        console.log('Sending thank you for:', contractId);
-        TrustLend.showNotification('Thank you message sent!', 'success');
-    },
-
-    modifyContract(contractId) {
-        console.log('Modifying contract:', contractId);
-        TrustLend.showNotification('Opening contract editor...', 'info');
-    },
-
-    loadContractsList() {
-        console.log('Loading contracts list...');
-        // In real app, this would fetch from API
-    },
-
-    // ===== CALCULATIONS =====
-    calculateMonthlyPayment(totalAmount, termMonths) {
-        if (!totalAmount || !termMonths) return 0;
-        return totalAmount / termMonths;
-    },
-
-    calculateTotalRepayment(loanAmount, optionalFee) {
-        return parseFloat(loanAmount || 0) + parseFloat(optionalFee || 0);
-    },
-
-    // ===== UTILITY FUNCTIONS =====
-    formatCurrency(amount) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(amount || 0);
-    },
-
-    formatSchedule(schedule) {
-        const scheduleMap = {
-            weekly: 'Weekly',
-            biweekly: 'Bi-weekly',
-            monthly: 'Monthly',
-            lump: 'Lump Sum'
-        };
-        return scheduleMap[schedule] || 'Monthly';
-    },
-
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
     }
 };
 
