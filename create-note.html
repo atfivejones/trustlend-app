@@ -685,7 +685,7 @@
 </div>
 </div>
 <div class="text-xs text-gray-500 mt-3 mb-2">Perfect for smaller personal loans</div>
-<button class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" type="button">
+<button class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" data-action="show-payment" type="button">
                                     Get Started
                                 </button>
 </div>
@@ -737,7 +737,7 @@
 </div>
 </div>
 <div class="text-xs text-gray-500 mt-3 mb-2">Recommended for all serious loans</div>
-<button class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" type="button">
+<button class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" data-action="show-payment" type="button">
                                     Get Started
                                 </button>
 </div>
@@ -757,7 +757,7 @@
 </div>
 </div>
 <!-- Payment Form -->
-<div class="border rounded-lg p-6 hidden" id="paymentSection">
+<div class="border rounded-lg p-6" id="paymentSection">
 <h4 class="font-semibold text-gray-900 mb-4">💳 Payment Information</h4>
 <div class="space-y-4">
 <div>
@@ -806,7 +806,7 @@
                             </button>
 <div class="text-xs text-gray-500 mt-1">For testing purposes only</div>
 </div>
-</div>
+<button class="btn btn-primary" id="processPaymentBtn" type="button">Pay &amp; Continue</button></div>
 </div>
 <!-- Step 5: Enhanced Digital Signatures with Tier Features -->
 <div class="bg-white rounded-xl border border-gray-200 p-6 hidden" id="form-step-4">
@@ -2936,5 +2936,46 @@ Best regards,
   });
 })();
 </script>
-</body>
+<script type="module">
+// Lightweight client wiring for TEST mode ONLY
+const STRIPE_PUBLISHABLE_KEY = window.STRIPE_PUBLISHABLE_KEY || "pk_test_REPLACE_ME";
+const paySection = document.getElementById("paymentSection");
+const payBtn = document.getElementById("processPaymentBtn");
+
+// Show payment section when "Get Started" is clicked
+document.addEventListener("click", (e) => {
+  const t = e.target;
+  if (t && t.closest && t.closest("[data-action='show-payment']")) {
+    if (paySection) {
+      paySection.classList.remove("hidden");
+      paySection.removeAttribute("aria-hidden");
+      paySection.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+});
+
+// Mount Stripe Elements (test mode). Requires <script src="https://js.stripe.com/v3"></script>
+let stripe, elements, cardNumber, cardExpiry, cardCvc;
+if (window.Stripe && STRIPE_PUBLISHABLE_KEY && document.getElementById("card-number")) {
+  stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+  elements = stripe.elements();
+  cardNumber = elements.create("cardNumber");
+  cardExpiry = elements.create("cardExpiry");
+  cardCvc    = elements.create("cardCvc");
+  cardNumber.mount("#card-number");
+  cardExpiry.mount("#card-expiry");
+  cardCvc.mount("#card-cvc");
+}
+
+// Optional: simple feedback on Pay button in test mode; real charging requires /api/create-payment-intent
+if (payBtn) {
+  payBtn.addEventListener("click", () => {
+    if (!stripe) {
+      alert("Test mode: Stripe not initialized. Add your pk_test key to window.STRIPE_PUBLISHABLE_KEY and backend /api/create-payment-intent.");
+      return;
+    }
+    alert("Test mode UI: Card fields mounted. Hook to /api/create-payment-intent for actual test confirmation.");
+  });
+}
+</script></body>
 </html>
