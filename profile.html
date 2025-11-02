@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile & Settings - TrustLend</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- TrustLend Assets -->
-    <link rel="stylesheet" href="css/mobile-enhancements.css">
-    <script src="js/smart-form-enhancements.js"></script>
-    <script src="js/premium-features.js"></script>
-    <script src="js/promissory-note-generator.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body class="bg-gray-50">
     <!-- TrustLend Universal Navigation -->
@@ -18,7 +14,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
-                <a href="index.html" class="flex items-center space-x-2">
+                <a href="dashboard.html" class="flex items-center space-x-2 hover:opacity-80 transition">
                     <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -41,14 +37,14 @@
                         <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                             Dashboard
                         </a>
-                        <a href="create-note-advanced.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <a href="create-note.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                             Create Note
                         </a>
                         <a href="contracts.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                             My Contracts
                         </a>
-                        <a href="demand-letter-generator.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                            Demand Letter
+                        <a href="profile.html" class="text-blue-600 font-medium px-3 py-2 rounded-lg bg-blue-50 transition-colors">
+                            Profile
                         </a>
                         
                         <!-- Account Dropdown -->
@@ -665,5 +661,9 @@
             }
         }
     </script>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/contracts.js"></script>
+    <script src="assets/js/forms.js"></script>
 </body>
 </html>
