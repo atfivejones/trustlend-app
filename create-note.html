@@ -59,9 +59,16 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         .tier-card.selected {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6 !important;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
+
+        .tier-card:not(.selected) {
+        border-color: #d1d5db !important;
+        background: white;
+        }
+
         .tier-badge {
             background: linear-gradient(135deg, #3b82f6, #6366f1);
         }
