@@ -33,6 +33,7 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
+    padding-top: 1rem; /* Add top padding for badges */
 }
 
 .tier-card {
@@ -44,7 +45,8 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to visible */
+    margin-top: 1rem; /* Add top margin for badge space */
 }
 
 .tier-card:hover {
@@ -58,6 +60,18 @@
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
     box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* Improve unselected card visibility */
+.tier-card:not(.selected) {
+    background: white;
+    color: #212529;
+    border-color: #dee2e6;
+}
+
+.tier-card:not(.selected):hover {
+    border-color: #007bff;
+    background: #f8f9fa;
 }
 
 .tier-card.selected .tier-price {
@@ -76,14 +90,18 @@
 .tier-card.popular::before {
     content: "Most Popular";
     position: absolute;
-    top: 0;
-    right: 0;
-    background: #28a745;
+    top: -12px; /* Position above the card */
+    right: 12px; /* Slight inset from right edge */
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); /* Orange gradient */
     color: white;
-    padding: 0.25rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-bottom-left-radius: 8px;
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 20px; /* Fully rounded badge */
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    z-index: 10;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .tier-name {
@@ -97,6 +115,12 @@
     color: white;
 }
 
+/* Ensure unselected cards remain clearly visible */
+.tier-card:not(.selected) .tier-name {
+    color: #212529;
+    font-weight: 700;
+}
+
 .tier-price {
     font-size: 2rem;
     font-weight: 700;
@@ -104,10 +128,25 @@
     margin-bottom: 1rem;
 }
 
+/* Better contrast for unselected card prices */
+.tier-card:not(.selected) .tier-price {
+    color: #0056b3;
+    font-weight: 800;
+}
+
+.tier-card.selected .tier-price {
+    color: white;
+}
+
 .tier-price .period {
     font-size: 1rem;
     font-weight: 400;
     color: #6c757d;
+}
+
+.tier-card:not(.selected) .tier-price .period {
+    color: #495057;
+    font-weight: 500;
 }
 
 .tier-card.selected .tier-price .period {
@@ -127,12 +166,28 @@
     padding-left: 1.5rem;
 }
 
+/* Better contrast for unselected card features */
+.tier-card:not(.selected) .tier-features li {
+    color: #343a40;
+    font-weight: 500;
+}
+
+.tier-card.selected .tier-features li {
+    color: rgba(255, 255, 255, 0.9);
+}
+
 .tier-features li::before {
     content: "✓";
     position: absolute;
     left: 0;
     color: #28a745;
     font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.tier-card:not(.selected) .tier-features li::before {
+    color: #20c997;
+    font-weight: 900;
 }
 
 .tier-card.selected .tier-features li::before {
