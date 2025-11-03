@@ -1,6 +1,9 @@
 
 // Set your API base (local or deployed)
-const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+// const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  // pdf_manager.js
+const API_BASE = "https://trustlend-api.onrender.com";  // your API URL
+
   ? "http://127.0.0.1:5000"
   : "https://YOUR-DEPLOYED-API-DOMAIN";
 
