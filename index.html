@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustLend - Save Your Family Relationships AND Your Money</title>
+    <meta name="description" content="Don't let money ruin your relationships. Create legally enforceable loan agreements that protect both your money and your family bonds.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'heartbeat': 'heartbeat 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes heartbeat {
+            0%, 50%, 100% { transform: scale(1); }
+            25%, 75% { transform: scale(1.05); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+        }
+        .phone-mockup {
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm">💙</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
+                </a>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="#features" class="text-gray-600 hover:text-gray-900 hidden md:inline">Features</a>
+                    <a href="#legal" class="text-gray-600 hover:text-gray-900 hidden md:inline">Legal Protection</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-gray-900 hidden md:inline">Pricing</a>
+                    <button onclick="window.location.href='create-note.html'; setTimeout(() => document.getElementById('signInBtn')?.click(), 500);" class="text-gray-600 hover:text-gray-900 hidden md:inline">Sign In</button>
+                    <a href="create-note.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Get Started Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-300 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Column - Copy -->
+                <div>
+                    <!-- Emotional Hook -->
+                    <div class="mb-8 animate-fade-in">
+                        <div class="inline-flex items-center px-4 py-2 bg-red-100 text-red-800 rounded-full text-sm font-medium mb-6">
+                            <span class="mr-2">💔</span>
+                            Money is the #1 reason families stop talking to each other
+                        </div>
+                    </div>
+
+                    <!-- Main Headline -->
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-slide-up leading-tight">
+                        Don't Let Money Ruin Your
+                        <br><span class="text-yellow-300 animate-heartbeat">Family & Friendships</span>
+                    </h1>
+
+                    <!-- Emotional + Legal Subheadline -->
+                    <p class="text-lg md:text-xl text-blue-100 mb-8 animate-slide-up">
+                        Create <span class="text-white font-semibold">legally enforceable loan agreements</span> in 5 minutes that keep families together. 
+                        Professional contracts with <span class="text-yellow-300 font-semibold">UCC compliance, blockchain proof, and court-ready documentation</span> - 
+                        so you get paid back without destroying relationships.
+                    </p>
+
+                    <!-- Powerful Stats -->
+                    <div class="grid grid-cols-3 gap-4 mb-8 animate-fade-in">
+                        <div class="text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-white">$2.3B</div>
+                            <div class="text-xs md:text-sm text-blue-200">Lost on family loans yearly</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-white">5 min</div>
+                            <div class="text-xs md:text-sm text-blue-200">To legal protection</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-white">847</div>
+                            <div class="text-xs md:text-sm text-blue-200">Families still talking</div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <a href="create-note.html" class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl text-lg font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-xl text-center">
+                            Create Legal Protection ($14.99)
+                        </a>
+                        <button onclick="scrollToFeatures()" class="border-2 border-white text-white px-6 py-3 rounded-xl text-lg font-bold hover:bg-white hover:text-blue-600 transition-all">
+                            See Legal Features
+                        </button>
+                    </div>
+
+                    <!-- Trust -->
+                    <p class="text-blue-200 text-sm flex items-center">
+                        <span class="text-lg mr-2">⚖️</span>
+                        <span class="font-semibold">UCC Article 3 compliant • Blockchain verified • Court-ready</span>
+                    </p>
+                </div>
+
+                <!-- Right Column - Phone Mockup -->
+                <div class="flex justify-center lg:justify-end">
+                    <div class="phone-mockup p-4 w-80 animate-float">
+                        <!-- Phone Frame -->
+                        <div class="bg-black rounded-3xl p-2">
+                            <div class="bg-white rounded-2xl overflow-hidden">
+                                <!-- Status Bar -->
+                                <div class="bg-gray-100 px-4 py-2 flex justify-between items-center text-xs">
+                                    <span class="font-medium">9:41 AM</span>
+                                    <div class="flex items-center space-x-1">
+                                        <div class="w-4 h-2 bg-green-500 rounded-sm"></div>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+
+                                <!-- App Header -->
+                                <div class="bg-blue-600 text-white p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-lg">💙</span>
+                                            <span class="font-bold">TrustLend</span>
+                                        </div>
+                                        <span class="text-sm bg-white/20 px-2 py-1 rounded">Step 3 of 4</span>
+                                    </div>
+                                </div>
+
+                                <!-- Contract Preview -->
+                                <div class="p-4 bg-white min-h-96">
+                                    <h3 class="font-bold text-gray-900 mb-3 text-center">Legal Contract Preview</h3>
+                                    
+                                    <!-- Contract Details -->
+                                    <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <p class="text-gray-600">Loan Amount</p>
+                                                <p class="font-bold text-lg text-green-600">$5,000</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-600">Optional Fee</p>
+                                                <p class="font-bold">$200 flat</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-600">Payment</p>
+                                                <p class="font-bold">$289/month</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-600">Term</p>
+                                                <p class="font-bold">18 months</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Parties -->
+                                    <div class="space-y-3 mb-4">
+                                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                                            <div>
+                                                <p class="text-xs text-gray-600">Lender</p>
+                                                <p class="font-medium text-sm">Sarah Chen</p>
+                                            </div>
+                                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                                <span class="text-white text-xs">✓</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded border-2 border-yellow-300">
+                                            <div>
+                                                <p class="text-xs text-gray-600">Borrower</p>
+                                                <p class="font-medium text-sm">Mike Chen (Brother)</p>
+                                            </div>
+                                            <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                                <span class="text-white text-xs">?</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Legal Features -->
+                                    <div class="bg-green-50 p-3 rounded-lg mb-4">
+                                        <p class="text-xs font-semibold text-green-800 mb-2">⚖️ Legal Protection Included:</p>
+                                        <div class="space-y-1 text-xs text-green-700">
+                                            <p>• UCC Article 3 Compliance</p>
+                                            <p>• Blockchain Timestamp Proof</p>
+                                            <p>• Complete Audit Trail</p>
+                                            <p>• Court Evidence Package</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sign Button -->
+                                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold text-sm">
+                                        Ready to Sign Legally
+                                    </button>
+                                    
+                                    <p class="text-center text-xs text-gray-500 mt-2">
+                                        Pass phone to borrower after you sign
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Speed Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    From "Can I borrow..." to Legal Protection
+                </h2>
+                <div class="text-6xl font-bold text-blue-600 mb-4">5 Minutes</div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Create a professional, legally enforceable promissory note faster than most people 
+                    spend deciding whether to lend money. No lawyers, no complexity, maximum protection.
+                </p>
+            </div>
+
+            <!-- Quick Steps -->
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">📝</span>
+                    </div>
+                    <h3 class="font-bold mb-2">1. Enter Details</h3>
+                    <p class="text-sm text-gray-600">Amount, optional fee, schedule<br><span class="font-semibold">60 seconds</span></p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">⚖️</span>
+                    </div>
+                    <h3 class="font-bold mb-2">2. Choose Protection</h3>
+                    <p class="text-sm text-gray-600">Essential or Maximum legal coverage<br><span class="font-semibold">30 seconds</span></p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">✍️</span>
+                    </div>
+                    <h3 class="font-bold mb-2">3. Sign Together</h3>
+                    <p class="text-sm text-gray-600">Both sign on phone<br><span class="font-semibold">2 minutes</span></p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🛡️</span>
+                    </div>
+                    <h3 class="font-bold mb-2">4. Protected!</h3>
+                    <p class="text-sm text-gray-600">Legal PDF + court evidence<br><span class="font-semibold">Immediate</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Stories -->
+    <section class="py-20 bg-red-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    These Stories Sound Familiar?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Every family has one. Every friend group has been here. Don't let yours be next.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <!-- Story 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-red-200">
+                    <div class="text-6xl mb-4 text-center">😢</div>
+                    <h3 class="text-xl font-bold mb-4 text-center text-red-600">
+                        "My brother hasn't spoken to me in 2 years"
+                    </h3>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4 italic text-gray-700">
+                        "I lent him $12,000 for his wedding. He promised to pay $500/month. After 3 payments, nothing. When I brought it up at Christmas, he got defensive. Now our whole family is split down the middle."
+                    </div>
+                    <p class="text-red-600 font-semibold text-center">💔 Family destroyed over unclear terms</p>
+                </div>
+
+                <!-- Story 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-red-200">
+                    <div class="text-6xl mb-4 text-center">🤐</div>
+                    <h3 class="text-xl font-bold mb-4 text-center text-red-600">
+                        "I'm too embarrassed to ask for my money back"
+                    </h3>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4 italic text-gray-700">
+                        "My best friend 'borrowed' $3,200 for car repairs 8 months ago. She posts vacation photos while I'm eating ramen. I can't even bring it up anymore. Our friendship feels fake now."
+                    </div>
+                    <p class="text-red-600 font-semibold text-center">😔 No documentation = no recourse</p>
+                </div>
+
+                <!-- Story 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-red-200">
+                    <div class="text-6xl mb-4 text-center">😤</div>
+                    <h3 class="text-xl font-bold mb-4 text-center text-red-600">
+                        "They act like I never lent them anything"
+                    </h3>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4 italic text-gray-700">
+                        "My cousin 'forgot' about the $5,000 I lent for his startup. When I mentioned it, he said 'I thought that was a gift.' Now he avoids me at family gatherings."
+                    </div>
+                    <p class="text-red-600 font-semibold text-center">😡 No proof = their word vs yours</p>
+                </div>
+            </div>
+
+            <!-- The $2.3B Problem -->
+            <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-red-500">
+                <div class="flex items-start">
+                    <div class="text-4xl mr-4">⚠️</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">The $2.3 Billion Problem</h3>
+                        <p class="text-lg text-gray-700 mb-4">
+                            Americans lose <span class="font-bold text-red-600">$2.3 billion every year</span> on unpaid family and friend loans. 
+                            But the hidden cost is even worse: broken relationships, split families, lost friendships that take years to rebuild (if ever).
+                        </p>
+                        <div class="grid md:grid-cols-3 gap-4 text-center">
+                            <div class="bg-red-50 p-3 rounded">
+                                <div class="font-bold text-red-600">$8,500</div>
+                                <div class="text-sm text-gray-600">Average unpaid family loan</div>
+                            </div>
+                            <div class="bg-red-50 p-3 rounded">
+                                <div class="font-bold text-red-600">3+ years</div>
+                                <div class="text-sm text-gray-600">To rebuild trust (if ever)</div>
+                            </div>
+                            <div class="bg-red-50 p-3 rounded">
+                                <div class="font-bold text-red-600">89%</div>
+                                <div class="text-sm text-gray-600">Families that avoid each other</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Legal Protection Section -->
+    <section id="legal" class="py-20 bg-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Real Legal Protection That Holds Up
+                </h2>
+                <p class="text-xl text-gray-600 max-w-4xl mx-auto">
+                    TrustLend contracts are designed to meet the same legal standards as bank promissory notes. 
+                    Every element is crafted for enforceability, evidence collection, and court presentation.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <!-- Legal Standards -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="bg-blue-100 p-3 rounded-lg mr-4">⚖️</span>
+                        Legal Foundation
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">UCC Article 3 Compliance</h4>
+                            <p class="text-gray-600 mb-2">
+                                Meets Uniform Commercial Code requirements for negotiable instruments. 
+                                Same legal framework used by banks and financial institutions.
+                            </p>
+                            <p class="text-blue-600 font-semibold text-sm">✓ Recognized in all 50 states</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Essential Legal Elements</h4>
+                            <p class="text-gray-600 mb-2">
+                                Unconditional promise to pay, definite amount, payable on demand or at a definite time, 
+                                signed by the maker - all requirements included.
+                            </p>
+                            <p class="text-blue-600 font-semibold text-sm">✓ Court-recognized language</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Execution Certificate</h4>
+                            <p class="text-gray-600 mb-2">
+                                Detailed record of when, where, and how the contract was signed, 
+                                with witness information and verification steps.
+                            </p>
+                            <p class="text-blue-600 font-semibold text-sm">✓ Proves authenticity</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evidence Package -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="bg-green-100 p-3 rounded-lg mr-4">📋</span>
+                        Court Evidence Package
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Complete Audit Trail</h4>
+                            <p class="text-gray-600 mb-2">
+                                Timestamped record of every action: contract creation, modifications, 
+                                signatures, payment reminders, and responses.
+                            </p>
+                            <p class="text-green-600 font-semibold text-sm">✓ Chronological evidence chain</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Blockchain Timestamp</h4>
+                            <p class="text-gray-600 mb-2">
+                                Immutable proof of when the contract was signed. Impossible to alter, 
+                                backdate, or dispute - like a digital notary seal.
+                            </p>
+                            <p class="text-green-600 font-semibold text-sm">✓ Tamper-proof verification</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Digital Forensics</h4>
+                            <p class="text-gray-600 mb-2">
+                                IP addresses, device fingerprints, user agents, and geolocation data 
+                                to verify who signed what, when, and where.
+                            </p>
+                            <p class="text-green-600 font-semibold text-sm">✓ Identity verification</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Court Process -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-xl">
+                <h3 class="text-2xl font-bold mb-6 text-center">Designed for Small Claims Court Success</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="text-4xl mb-3">📄</div>
+                        <h4 class="font-bold mb-2">Professional Documentation</h4>
+                        <p class="text-sm opacity-90">
+                            Clean, organized contracts with proper legal language that judges recognize and respect.
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl mb-3">🔍</div>
+                        <h4 class="font-bold mb-2">Clear Evidence</h4>
+                        <p class="text-sm opacity-90">
+                            Complete paper trail showing agreement, signatures, payment schedule, and default.
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl mb-3">⚡</div>
+                        <h4 class="font-bold mb-2">Quick Resolution</h4>
+                        <p class="text-sm opacity-90">
+                            Well-documented cases typically resolve faster with clear evidence of the agreement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features & Benefits Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Features That Protect Your Money AND Relationships
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Every feature designed with both legal protection and relationship preservation in mind
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-blue-100 p-3 rounded-lg">
+                            <span class="text-2xl">📱</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">In-Person & Remote Signing</h3>
+                            <p class="text-gray-700 mb-4">
+                                Both parties can sign on the same device face-to-face, or sign remotely via secure links. 
+                                Canvas signatures with full stylus support for natural handwriting.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">💙 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Shows mutual respect and shared commitment</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-green-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Records signature timing, device, and location</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Professional e-signature service (normally $20-50/month) 
+                                    included in one-time fee
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <span class="text-2xl">🔔</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Automatic Payment Reminders</h3>
+                            <p class="text-gray-700 mb-4">
+                                Smart reminder system sends email and SMS notifications before payments are due. 
+                                Customizable schedule (weekly, monthly, bi-weekly) with professional messaging.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-green-600 mb-1">💚 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Removes you from uncomfortable conversations</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Documents attempts to collect payment</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-green-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Automated reminder service (normally $15-30/month) 
+                                    for life of the loan
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gradient-to-br from-purple-50 to-violet-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-purple-100 p-3 rounded-lg">
+                            <span class="text-2xl">🔗</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Blockchain Timestamp Verification</h3>
+                            <p class="text-gray-700 mb-4">
+                                Creates an immutable timestamp when the contract is signed, proving the agreement 
+                                existed at a specific moment. Impossible to alter or backdate.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-purple-600 mb-1">💜 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Prevents "I never agreed to that" disputes</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Cryptographic proof of document integrity</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-purple-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Blockchain notarization service (normally $50-100/document) 
+                                    with permanent verification
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-yellow-100 p-3 rounded-lg">
+                            <span class="text-2xl">🆔</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Identity Verification (Maximum Plan)</h3>
+                            <p class="text-gray-700 mb-4">
+                                Both parties verify identity using government-issued ID and selfie verification. 
+                                AI validates documents and matches faces to prevent fraud.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-yellow-600 mb-1">💛 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Extra security builds confidence in process</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Prevents signature disputes and identity fraud</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-yellow-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Identity verification service (normally $5-15/verification) 
+                                    with AI validation technology
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-indigo-100 p-3 rounded-lg">
+                            <span class="text-2xl">📊</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Complete Audit Trail</h3>
+                            <p class="text-gray-700 mb-4">
+                                Records every action with timestamps, IP addresses, device information, and user agents. 
+                                Creates a complete chain of evidence for court presentation.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-indigo-600 mb-1">💙 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Clear record prevents memory disputes</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Comprehensive evidence package for court</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-indigo-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Legal documentation service (normally $200-500 from attorney) 
+                                    with digital forensics
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-pink-100 p-3 rounded-lg">
+                            <span class="text-2xl">📄</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Professional PDF Generation</h3>
+                            <p class="text-gray-700 mb-4">
+                                Generates court-ready PDFs with proper legal formatting, UCC appendix, 
+                                execution certificate, and embedded verification codes.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="font-semibold text-pink-600 mb-1">💖 Relationship Benefit:</p>
+                                    <p class="text-gray-600">Professional appearance shows respect</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-600 mb-1">⚖️ Legal Benefit:</p>
+                                    <p class="text-gray-600">Court-accepted format with legal citations</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-white p-3 rounded border-l-4 border-pink-500">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Perceived Value:</strong> Legal document preparation (normally $300-800 from attorney) 
+                                    with instant delivery
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Summary -->
+            <div class="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-xl text-center">
+                <h3 class="text-2xl font-bold mb-4">Total Value of Features</h3>
+                <div class="grid md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <div class="text-3xl font-bold">$500+</div>
+                        <p class="text-sm opacity-90">Professional legal document preparation</p>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">$200+</div>
+                        <p class="text-sm opacity-90">Annual reminder service & verification</p>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">Priceless</div>
+                        <p class="text-sm opacity-90">Preserved family relationships</p>
+                    </div>
+                </div>
+                <p class="text-xl">
+                    <strong>All included for a one-time fee of $14.99 - $29.99</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="py-20 bg-green-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Real Families, Protected Relationships
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    TrustLend users share how professional documentation transformed their lending experience
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-green-200">
+                    <div class="flex items-start mb-6">
+                        <div class="text-4xl mr-4">💚</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-green-600 mb-2">"Our relationship is stronger than ever"</h3>
+                            <p class="text-gray-600 text-sm">Lisa M., helped her sister buy a house</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg mb-4 italic text-gray-700">
+                        "I used TrustLend for a $25,000 loan to my sister for her down payment. Having everything documented made us both feel secure. She actually thanked me for 'keeping it professional.' The automatic reminders mean I never have to ask about payments, and she's never missed one."
+                    </div>
+                    <p class="text-green-600 font-semibold">✅ Family bond preserved AND money protected</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-green-200">
+                    <div class="flex items-start mb-6">
+                        <div class="text-4xl mr-4">🤝</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-green-600 mb-2">"It made him take it seriously"</h3>
+                            <p class="text-gray-600 text-sm">David R., lent to his best friend</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg mb-4 italic text-gray-700">
+                        "When I showed my friend the TrustLend contract for his $8,000 car loan with a $150 flat fee, he said 'Wow, this is legit.' The professional appearance made him realize this wasn't just casual money between friends. He's been paying exactly on schedule for 8 months straight."
+                    </div>
+                    <p class="text-green-600 font-semibold">✅ Friendship respected AND money returned</p>
+                </div>
+            </div>
+
+            <!-- The Magic -->
+            <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-8 rounded-xl text-center">
+                <h3 class="text-3xl font-bold mb-4">Here's The Magic</h3>
+                <p class="text-xl mb-6">
+                    When both people sign a real contract, everything changes. It's no longer "asking family for money back" - 
+                    it's "honoring a legal agreement." The guilt disappears. The awkwardness evaporates. Relationships stay intact.
+                </p>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <div class="text-4xl mb-2">📝</div>
+                        <p class="font-semibold">Clear Expectations</p>
+                        <p class="text-sm opacity-90">No confusion, no assumptions</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl mb-2">🤝</div>
+                        <p class="font-semibold">Mutual Respect</p>
+                        <p class="text-sm opacity-90">Both sides professionally protected</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl mb-2">💖</div>
+                        <p class="font-semibold">Relationships Preserved</p>
+                        <p class="text-sm opacity-90">Love stays separate from money</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Professional Legal Protection
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Attorney-quality documentation at a fraction of the cost. 
+                    Protect your money and relationships with one simple payment.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Essential Plan -->
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Essential Protection</h3>
+                        <div class="text-5xl font-bold text-blue-600 mb-2">$14.99</div>
+                        <p class="text-gray-600">One-time fee per contract</p>
+                    </div>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>UCC Article 3 compliant promissory note</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>In-person or remote digital signing</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>Automatic payment reminder system</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>Blockchain timestamp verification</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>Complete audit trail & evidence package</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 text-xl mr-3">✅</span>
+                            <span>Professional PDF with execution certificate</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <p class="text-sm text-blue-800">
+                            <strong>💙 Perfect for:</strong> Family loans, friend agreements, 
+                            and smaller amounts where basic legal protection is sufficient.
+                        </p>
+                    </div>
+                    
+                    <a href="create-note.html" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        Get Essential Protection
+                    </a>
+                </div>
+
+                <!-- Maximum Plan -->
+                <div class="bg-gradient-to-br from-purple-500 to-blue-600 text-white p-8 rounded-xl shadow-lg relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-bold">Most Secure</span>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Maximum Protection</h3>
+                        <div class="text-5xl font-bold mb-2">$29.99</div>
+                        <p class="text-purple-100">One-time fee per contract</p>
+                    </div>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span><strong>Everything in Essential, plus:</strong></span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span>AI-powered ID verification for both parties</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span>Enhanced audit trail (IP, device, geolocation)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span>Payment receipt embedding in PDF</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span>Extended legal templates & language</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 text-xl mr-3">✅</span>
+                            <span>Priority customer support</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/20 p-4 rounded-lg mb-6">
+                        <p class="text-sm">
+                            <strong>💎 Perfect for:</strong> Larger loans, business relationships, 
+                            or situations requiring maximum legal defensibility.
+                        </p>
+                    </div>
+                    
+                    <a href="create-note.html" class="block w-full bg-yellow-400 text-gray-900 text-center py-3 rounded-lg font-bold hover:bg-yellow-300 transition">
+                        Get Maximum Protection
+                    </a>
+                </div>
+            </div>
+
+            <!-- Value Comparison -->
+            <div class="mt-16 text-center">
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Compare the Value</h3>
+                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                        <div>
+                            <div class="text-3xl mb-2">😢</div>
+                            <p class="font-semibold text-gray-900">DIY / Handwritten Note</p>
+                            <p class="text-2xl font-bold text-red-600">$0</p>
+                            <p class="text-sm text-gray-600">+ high risk of loss</p>
+                            <ul class="text-xs text-left mt-3 space-y-1">
+                                <li>❌ No legal enforceability</li>
+                                <li>❌ No payment reminders</li>
+                                <li>❌ No court evidence</li>
+                                <li>❌ Relationship damage likely</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">💰</div>
+                            <p class="font-semibold text-gray-900">Attorney Services</p>
+                            <p class="text-2xl font-bold text-orange-600">$500+</p>
+                            <p class="text-sm text-gray-600">+ ongoing fees</p>
+                            <ul class="text-xs text-left mt-3 space-y-1">
+                                <li>✅ Legal enforceability</li>
+                                <li>❌ No automated reminders</li>
+                                <li>✅ Court documentation</li>
+                                <li>❌ Formal/intimidating process</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">💚</div>
+                            <p class="font-semibold text-gray-900">TrustLend</p>
+                            <p class="text-2xl font-bold text-green-600">$14.99</p>
+                            <p class="text-sm text-gray-600">+ relationship preserved</p>
+                            <ul class="text-xs text-left mt-3 space-y-1">
+                                <li>✅ Full legal enforceability</li>
+                                <li>✅ Automated reminders</li>
+                                <li>✅ Complete court evidence</li>
+                                <li>✅ Relationship-friendly process</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-lg text-gray-700 mt-6">
+                        <strong>TrustLend delivers attorney-quality protection at 97% less cost</strong> 
+                        while preserving the personal relationships that matter most.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Questions About Legal Protection & Family Loans
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Everything you need to know about TrustLend's legal framework and relationship approach
+                </p>
+            </div>
+
+            <div class="space-y-8">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-600 mb-4">⚖️ Will this actually hold up in court?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            TrustLend contracts are designed to meet the same legal standards as bank promissory notes. 
+                            We include all UCC Article 3 requirements, proper execution certificates, and complete 
+                            audit trails that courts recognize and accept.
+                        </p>
+                        <p class="text-blue-600 font-semibold">
+                            ✅ Professional legal framework used by financial institutions nationwide
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-green-600 mb-4">😊 How do family members react to signing contracts?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            Most borrowers actually appreciate the professional approach. Common responses: 
+                            <em>"I'm glad we're keeping this organized"</em> and <em>"This makes me feel better about borrowing."</em> 
+                            The professional process shows respect for both parties.
+                        </p>
+                        <div class="space-y-2 mt-3">
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-3">💬</span>
+                                <p class="text-gray-700 italic text-sm">"This is so much better than a handshake deal. I know exactly what's expected."</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-3">💬</span>
+                                <p class="text-gray-700 italic text-sm">"Thanks for making this official. I was worried about forgetting the payment schedule."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-yellow-600 mb-4">🤔 What if they refuse to sign?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            If someone won't sign a simple, fair contract for money they're borrowing, 
+                            that's valuable information. In our experience, 90%+ of people sign willingly 
+                            when approached respectfully. Those who refuse often weren't planning to pay anyway.
+                        </p>
+                        <p class="text-yellow-600 font-semibold">
+                            ✅ TrustLend helps you identify and avoid risky lending situations early
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-purple-600 mb-4">🔒 How secure is the signing process?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            All signatures are captured with timestamps, IP addresses, and device fingerprints. 
+                            Maximum plan includes ID verification with AI document validation. 
+                            Data is encrypted at rest and in transit with bank-level security.
+                        </p>
+                        <p class="text-purple-600 font-semibold">
+                            ✅ More secure than traditional paper contracts with digital forensics
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-indigo-600 mb-4">💡 Why not just use a handwritten note?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            Handwritten notes lack automated reminders (creating awkward conversations), 
+                            proper legal language (courts may not enforce), and verification systems 
+                            (easy to dispute). TrustLend provides all the legal protections handwritten notes miss.
+                        </p>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3 text-sm">
+                            <div>
+                                <p class="font-semibold text-red-600 mb-1">Handwritten Problems:</p>
+                                <ul class="text-gray-600 space-y-1">
+                                    <li>• No payment reminders</li>
+                                    <li>• Unclear legal language</li>
+                                    <li>• Easy to dispute/forge</li>
+                                    <li>• No enforcement help</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-green-600 mb-1">TrustLend Solutions:</p>
+                                <ul class="text-gray-600 space-y-1">
+                                    <li>• Automated reminder system</li>
+                                    <li>• UCC-compliant language</li>
+                                    <li>• Tamper-proof verification</li>
+                                    <li>• Court evidence package</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-600 mb-4">💰 Is this worth it for smaller loans?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            Even a $500 loan can destroy a relationship if someone "forgets" about it. 
+                            TrustLend costs the same whether you're lending $500 or $50,000. 
+                            The relationship protection alone is worth more than the fee.
+                        </p>
+                        <p class="text-gray-600 font-semibold">
+                            ✅ Your relationships are worth more than $14.99, regardless of loan amount
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-green-600 mb-4">💡 Why flat fees instead of interest rates?</h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <p class="text-gray-700 mb-3">
+                            Flat fees keep family loans simple and avoid complex banking regulations. 
+                            No need to worry about state usury laws, licensing requirements, or federal disclosure rules. 
+                            Just clear, straightforward agreements that focus on relationships, not profit.
+                        </p>
+                        <p class="text-green-600 font-semibold">
+                            ✅ Simple, family-friendly approach without regulatory complications
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8">
+                Protect Your Money AND Your Relationships
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                Don't let money destroy the relationships that matter most. Create professional, 
+                legally enforceable agreements that keep families together and money protected. 
+                5 minutes today prevents years of regret.
+            </p>
+
+            <div class="bg-white/20 backdrop-blur-sm p-8 rounded-xl mb-8">
+                <h3 class="text-2xl font-bold mb-4">🎯 The Complete Protection Promise</h3>
+                <div class="grid md:grid-cols-2 gap-6 text-left">
+                    <div>
+                        <h4 class="font-bold mb-2">Legal Protection:</h4>
+                        <ul class="space-y-1 text-sm opacity-90">
+                            <li>• UCC Article 3 compliance</li>
+                            <li>• Court-ready documentation</li>
+                            <li>• Blockchain proof of agreement</li>
+                            <li>• Complete evidence package</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2">Relationship Protection:</h4>
+                        <ul class="space-y-1 text-sm opacity-90">
+                            <li>• Professional, respectful process</li>
+                            <li>• Automated reminders (no awkward asks)</li>
+                            <li>• Clear expectations for both sides</li>
+                            <li>• Preserved family bonds</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <a href="create-note.html" class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-yellow-300 transition transform hover:scale-105">
+                    Create Legal Protection ($14.99)
+                </a>
+                <a href="create-note.html" class="bg-purple-600 text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-purple-700 transition border border-white">
+                    Get Maximum Security ($29.99)
+                </a>
+            </div>
+
+            <p class="text-sm opacity-75">
+                💝 Trusted by 847 families • UCC compliant • Blockchain verified • 5-minute setup • One-time fee
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white text-sm">💙</span>
+                        </div>
+                        <span class="text-xl font-bold">TrustLend</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Professional legal protection for family and friend loans. 
+                        UCC-compliant contracts that preserve relationships while protecting your money.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white">Legal Information</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="create-note.html" class="hover:text-white">Create Contract</a></li>
+                        <li><a href="#features" class="hover:text-white">Features</a></li>
+                        <li><a href="#legal" class="hover:text-white">Legal Protection</a></li>
+                        <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>hello@trustlend.app</li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Legal Questions</a></li>
+                        <li><a href="#" class="hover:text-white">Court Documentation</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 TrustLend. All rights reserved. • Protecting families and finances, one agreement at a time. 💙</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToPricing() {
+            document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/contracts.js"></script>
+    <script src="assets/js/forms.js"></script>
+</body>
+</html>

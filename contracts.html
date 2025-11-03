@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Contracts - TrustLend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white text-sm">💙</span>
+                        </div>
+                        <span class="text-2xl font-bold text-blue-600">TrustLend</span>
+                    </a>
+                    <nav class="hidden md:ml-8 md:flex md:space-x-6">
+                        <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Dashboard</a>
+                        <a href="create-note.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Create Note</a>
+                        <a href="contracts.html" class="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">My Contracts</a>
+                        <a href="profile.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Profile</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="create-note.html" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                        + New Note
+                    </a>
+                    <div class="relative">
+                        <button class="user-dropdown-trigger flex items-center text-gray-600 hover:text-gray-900">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+                                <span class="text-sm font-semibold text-blue-600">JD</span>
+                            </div>
+                            <span class="text-sm font-medium mr-2">John Doe</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="user-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help Center</a>
+                            <hr class="my-1">
+                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">My Contracts</h1>
+                <p class="text-lg text-gray-600">Manage your promissory notes and loan agreements</p>
+            </div>
+            <a href="create-note.html" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Create New Note
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Status:</label>
+                    <select class="ml-2 border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                        <option>All</option>
+                        <option>Active</option>
+                        <option>Pending</option>
+                        <option>Complete</option>
+                        <option>Overdue</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Plan:</label>
+                    <select class="ml-2 border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                        <option>All Plans</option>
+                        <option>Essential Protection</option>
+                        <option>Maximum Protection</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Date Range:</label>
+                    <select class="ml-2 border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                        <option>Last 30 days</option>
+                        <option>Last 3 months</option>
+                        <option>Last 6 months</option>
+                        <option>All time</option>
+                    </select>
+                </div>
+                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Contracts List -->
+        <div class="space-y-4">
+            <!-- Contract 1 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900">Personal Emergency Loan</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Active</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Maximum Protection</span>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 text-sm text-gray-600">
+                            <div>
+                                <span class="font-medium">Principal:</span> $5,000.00
+                            </div>
+                            <div>
+                                <span class="font-medium">Borrower:</span> Jane Smith
+                            </div>
+                            <div>
+                                <span class="font-medium">Due Date:</span> Dec 31, 2024
+                            </div>
+                            <div>
+                                <span class="font-medium">Created:</span> Nov 1, 2024
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                        <button class="text-gray-600 hover:text-gray-800 text-sm font-medium">Download</button>
+                        <button class="text-gray-600 hover:text-gray-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contract 2 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900">Vehicle Repair Loan</h3>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending Signature</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Essential Protection</span>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 text-sm text-gray-600">
+                            <div>
+                                <span class="font-medium">Principal:</span> $2,500.00
+                            </div>
+                            <div>
+                                <span class="font-medium">Borrower:</span> Mike Johnson
+                            </div>
+                            <div>
+                                <span class="font-medium">Due Date:</span> Jan 15, 2025
+                            </div>
+                            <div>
+                                <span class="font-medium">Created:</span> 2 hours ago
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                        <button class="text-orange-600 hover:text-orange-800 text-sm font-medium">Send Reminder</button>
+                        <button class="text-gray-600 hover:text-gray-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contract 3 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900">Home Improvement Loan</h3>
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">Complete</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Maximum Protection</span>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 text-sm text-gray-600">
+                            <div>
+                                <span class="font-medium">Principal:</span> $7,500.00
+                            </div>
+                            <div>
+                                <span class="font-medium">Borrower:</span> Sarah Wilson
+                            </div>
+                            <div>
+                                <span class="font-medium">Paid:</span> Oct 15, 2024
+                            </div>
+                            <div>
+                                <span class="font-medium">Created:</span> Sep 1, 2024
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                        <button class="text-gray-600 hover:text-gray-800 text-sm font-medium">Download</button>
+                        <button class="text-green-600 hover:text-green-800 text-sm font-medium">Receipt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (if no contracts) -->
+        <div class="text-center py-12 hidden" id="emptyState">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No contracts yet</h3>
+            <p class="text-gray-600 mb-6">Get started by creating your first promissory note</p>
+            <a href="create-note.html" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Create Your First Note
+            </a>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/contracts.js"></script>
+    <script src="assets/js/forms.js"></script>
+</body>
+</html>
