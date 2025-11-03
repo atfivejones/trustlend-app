@@ -20,12 +20,12 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["60 per minute"])
 class Party(BaseModel):
     name: constr(strip_whitespace=True, min_length=2)
     email: EmailStr
-    phone: constr(regex=r"^\+?[0-9\-()\s]{7,20}$")
+    phone: constr(pattern=r"^\+?[0-9\-()\s]{7,20}$")
 
 class Loan(BaseModel):
     principal: float
     flatFee: float
-    startDate: constr(regex=r"^\d{4}-\d{2}-\d{2}$")
+    startDate: constr(pattern=r"^\d{4}-\d{2}-\d{2}$")
     termMonths: int
     paymentFrequency: Literal["monthly","biweekly","weekly"]
 
