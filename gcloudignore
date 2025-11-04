@@ -1,0 +1,105 @@
+# .gcloudignore - Files to exclude from Google Cloud Run deployment
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation and development files
+README.md
+*.md
+docs/
+.github/
+
+# Frontend files (not needed for backend API)
+*.html
+*.css
+*.js
+assets/
+css/
+js/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+
+# Testing files
+tests/
+test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local development files
+.env.local
+.env.development
+.env.test
+.env.production
+*.log
+logs/
+
+# Docker files (optional - keep if you want them in the image)
+# Dockerfile
+# docker-compose.yml
+
+# Configuration files that shouldn't be deployed
+*.ini
+*.cfg
+config.yaml
+config.yml
+
+# Backup files
+*.bak
+*.backup
+*.old
