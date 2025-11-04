@@ -74,6 +74,5 @@ def generate_schedule():
     return send_file(BytesIO(pdf_bytes), mimetype="application/pdf", as_attachment=True, download_name="payment_schedule.pdf")
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", "8080"))
     app.run(host="0.0.0.0", port=port)
