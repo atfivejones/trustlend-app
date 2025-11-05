@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -356,6 +357,35 @@
                                 <!-- Hidden Due Date for Backward Compatibility -->
                                 <input type="date" id="dueDate" class="hidden" oninput="updatePreview(); calculatePaymentSchedule()">
                             </div>
+                        </div>
+                        
+                        <!-- Final Payment Date (Auto-calculated but editable) -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Final Payment Date
+                                <svg class="w-4 h-4 inline ml-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                            </label>
+                            <div class="relative">
+                                <input type="date" id="finalPaymentDate" 
+                                       class="input-focus w-full px-4 py-3 border border-blue-300 rounded-xl bg-blue-50" 
+                                       onchange="updatePreview(); calculatePaymentSchedule()">
+                                <div class="absolute right-3 top-3 text-blue-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span id="finalPaymentExplanation">Auto-calculated from loan date + term (editable)</span>
+                            </div>
+                            
+                            <!-- Hidden Due Date for Backward Compatibility -->
+                            <input type="date" id="dueDate" class="hidden" oninput="updatePreview(); calculatePaymentSchedule()">
                         </div>
                         
                         <!-- Enhanced Loan Purpose with Dropdown -->
@@ -1758,8 +1788,22 @@ Best regards,
             setTodayAsLoanDate();
             initializeDefaultLoanTerm();
             
+            // Set up example values to match screenshot for testing
+            const principalInput = document.getElementById('principal');
+            const flatFeeInput = document.getElementById('flatFee');
+            const purposeDropdown = document.getElementById('purposeDropdown');
+            
+            if (principalInput && !principalInput.value) {
+                principalInput.value = '2000';
+            }
+            if (flatFeeInput && !flatFeeInput.value) {
+                flatFeeInput.value = '100';
+            }
+            if (purposeDropdown && !purposeDropdown.value) {
+                purposeDropdown.value = 'Personal expenses';
+            }
+            
             loadLenderInfo();
-            updatePreview();
             initializeSignatureCanvases();
             initializeStripe();
             addAuditEvent('Enhanced contract creation started');
@@ -1768,8 +1812,11 @@ Best regards,
             updatePreviewForTier(); // Initialize preview features
             updateContractPreviewPlanStatus(); // Initialize Plan Status section
             
-            // Initialize smart payment dates
+            // Initialize smart payment dates AFTER setting up form values
             calculateSmartPaymentDates();
+            updatePreview(); // Final preview update
+            
+            console.log('🚀 TrustLend Enhanced Form Initialized');
         });
 
         // NEW: Initialize default loan term and smart payment calculations
@@ -1780,108 +1827,50 @@ Best regards,
             }
         }
 
-        // NEW: Smart Payment Date Calculation Function
+        // NEW: Smart Payment Date Calculation Function  
         function calculateSmartPaymentDates() {
             const loanDateInput = document.getElementById('loanDate');
-            const paymentScheduleInput = document.getElementById('paymentSchedule');
             const loanTermInput = document.getElementById('loanTermMonths');
             const customTermInput = document.getElementById('customTermMonths');
-            const firstPaymentInput = document.getElementById('firstPaymentDate');
-            const finalPaymentInput = document.getElementById('finalPaymentDate');
-            const lumpSumDueDateInput = document.getElementById('lumpSumDueDate');
+            const finalPaymentInput = document.getElementById('finalPaymentDate'); // Main visible field
             const dueDateInput = document.getElementById('dueDate'); // Hidden for backward compatibility
-            
-            const smartDatesSection = document.getElementById('smartPaymentDates');
-            const lumpSumSection = document.getElementById('lumpSumDueDateSection');
             
             if (!loanDateInput || !loanDateInput.value) return;
             
             const loanDate = new Date(loanDateInput.value);
-            const paymentSchedule = paymentScheduleInput ? paymentScheduleInput.value : 'lump_sum';
             let termMonths = loanTermInput && loanTermInput.value === 'custom' ? 
-                           parseInt(customTermInput.value) || 6 : 
+                           parseInt(customTermInput?.value) || 6 : 
                            parseInt(loanTermInput ? loanTermInput.value : 6) || 6;
             
             console.log('🎯 Calculating Smart Payment Dates:', {
                 loanDate: loanDate.toDateString(),
-                paymentSchedule,
                 termMonths
             });
             
-            if (paymentSchedule === 'lump_sum') {
-                // For lump sum, show simple due date
-                if (smartDatesSection) smartDatesSection.classList.add('hidden');
-                if (lumpSumSection) lumpSumSection.classList.remove('hidden');
-                
-                // Calculate lump sum due date = loan date + term
-                const lumpSumDue = new Date(loanDate);
-                lumpSumDue.setMonth(lumpSumDue.getMonth() + termMonths);
-                if (lumpSumDueDateInput) {
-                    lumpSumDueDateInput.value = lumpSumDue.toISOString().split('T')[0];
-                }
-                
-                // Update hidden due date for backward compatibility
-                if (dueDateInput) {
-                    dueDateInput.value = lumpSumDue.toISOString().split('T')[0];
-                }
-                
-            } else {
-                // For payment schedules, show smart dates
-                if (smartDatesSection) smartDatesSection.classList.remove('hidden');
-                if (lumpSumSection) lumpSumSection.classList.add('hidden');
-                
-                // Calculate first payment date based on schedule
-                let firstPayment = new Date(loanDate);
-                switch(paymentSchedule) {
-                    case 'weekly':
-                        firstPayment.setDate(firstPayment.getDate() + 7);
-                        break;
-                    case 'biweekly':
-                        firstPayment.setDate(firstPayment.getDate() + 14);
-                        break;
-                    case 'monthly':
-                        firstPayment.setMonth(firstPayment.getMonth() + 1);
-                        break;
-                    default:
-                        firstPayment.setDate(firstPayment.getDate() + 7); // Default weekly
-                }
-                
-                // Calculate final payment date = loan date + term
-                let finalPayment = new Date(loanDate);
-                finalPayment.setMonth(finalPayment.getMonth() + termMonths);
-                
-                // Update the input fields
-                if (firstPaymentInput) {
-                    firstPaymentInput.value = firstPayment.toISOString().split('T')[0];
-                }
-                if (finalPaymentInput) {
-                    finalPaymentInput.value = finalPayment.toISOString().split('T')[0];
-                }
-                
-                // Update hidden due date for backward compatibility (use final payment)
-                if (dueDateInput) {
-                    dueDateInput.value = finalPayment.toISOString().split('T')[0];
-                }
-                
-                // Update explanatory text
-                const firstExplanation = document.getElementById('firstPaymentExplanation');
-                const finalExplanation = document.getElementById('finalPaymentExplanation');
-                
-                const frequencyText = {
-                    'weekly': 'one week',
-                    'biweekly': 'two weeks', 
-                    'monthly': 'one month'
-                }[paymentSchedule] || 'one week';
-                
-                if (firstExplanation) {
-                    firstExplanation.textContent = `Loan date + ${frequencyText} (${firstPayment.toLocaleDateString()})`;
-                }
-                if (finalExplanation) {
-                    finalExplanation.textContent = `Loan date + ${termMonths} months (${finalPayment.toLocaleDateString()})`;
-                }
+            // Calculate final payment date = loan date + term (for ALL payment types)
+            let finalPayment = new Date(loanDate);
+            finalPayment.setMonth(finalPayment.getMonth() + termMonths);
+            
+            // Always update the main Final Payment Date field
+            if (finalPaymentInput) {
+                finalPaymentInput.value = finalPayment.toISOString().split('T')[0];
             }
             
-            console.log('✅ Smart Payment Dates Updated');
+            // Update hidden due date for backward compatibility
+            if (dueDateInput) {
+                dueDateInput.value = finalPayment.toISOString().split('T')[0];
+            }
+            
+            // Update explanation text
+            const finalExplanation = document.getElementById('finalPaymentExplanation');
+            if (finalExplanation) {
+                finalExplanation.textContent = `Auto-calculated: ${loanDate.toLocaleDateString()} + ${termMonths} months = ${finalPayment.toLocaleDateString()}`;
+            }
+            
+            console.log('✅ Smart Payment Dates Updated - Final Payment:', finalPayment.toLocaleDateString());
+            
+            // Trigger preview update
+            updatePreview();
         }
 
         // Handle custom loan term
@@ -2883,77 +2872,126 @@ Best regards,
             const total = principal + flatFee;
             const paymentSchedule = document.getElementById('paymentSchedule').value;
             
-            document.getElementById('previewPrincipal').textContent = '$' + principal.toLocaleString();
-            document.getElementById('previewFee').textContent = '$' + flatFee.toLocaleString();
-            document.getElementById('previewTotal').textContent = '$' + total.toLocaleString();
+            // Update main preview fields to match screenshot structure
+            const previewAmount = document.getElementById('previewAmount');
+            const previewPrincipal = document.getElementById('previewPrincipal');
+            const previewFee = document.getElementById('previewFee');
+            const previewTotal = document.getElementById('previewTotal');
+            const previewPurpose = document.getElementById('previewPurpose');
+            const previewPaymentSchedule = document.getElementById('previewPaymentSchedule');
+            const previewSchedule = document.getElementById('previewSchedule');
+            const previewDueDate = document.getElementById('previewDueDate');
+            
+            // Update loan amount (multiple possible IDs)
+            if (previewAmount) previewAmount.textContent = '$' + principal.toLocaleString();
+            if (previewPrincipal) previewPrincipal.textContent = '$' + principal.toLocaleString();
+            
+            // Update flat fee
+            if (previewFee) previewFee.textContent = '$' + flatFee.toLocaleString();
+            
+            // Update total
+            if (previewTotal) previewTotal.textContent = '$' + total.toLocaleString();
+            
+            // Update purpose
+            const purpose = document.getElementById('purpose').value || document.getElementById('purposeDropdown').value;
+            if (previewPurpose) previewPurpose.textContent = purpose || 'Not specified';
+            
+            // Update payment schedule
+            const scheduleText = {
+                'lump_sum': 'Lump Sum Payment',
+                'monthly': 'Monthly Payments',
+                'weekly': 'Weekly Payments',
+                'biweekly': 'Bi-weekly Payments'
+            };
+            const scheduleDisplay = scheduleText[paymentSchedule] || 'Lump Sum Payment';
+            if (previewPaymentSchedule) previewPaymentSchedule.textContent = scheduleDisplay;
+            if (previewSchedule) previewSchedule.textContent = scheduleDisplay;
+            
+            // Update Due Date display - read from visible finalPaymentDate field first, fallback to hidden dueDate
+            const finalPaymentDate = document.getElementById('finalPaymentDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const displayDate = finalPaymentDate || dueDate;
+            
+            if (previewDueDate) {
+                previewDueDate.textContent = displayDate ? new Date(displayDate).toLocaleDateString() : 'Not set';
+            }
+            
+            // Legacy support for other preview elements
+            const previewBreakdownPrincipal = document.getElementById('previewBreakdownPrincipal');
+            const previewBreakdownFee = document.getElementById('previewBreakdownFee'); 
+            const previewBreakdownTotal = document.getElementById('previewBreakdownTotal');
+            
+            if (previewBreakdownPrincipal) previewBreakdownPrincipal.textContent = '$' + principal.toLocaleString();
+            if (previewBreakdownFee) previewBreakdownFee.textContent = '$' + flatFee.toLocaleString();
+            if (previewBreakdownTotal) previewBreakdownTotal.textContent = '$' + total.toLocaleString();
             
             // Update payment breakdown section
             const breakdownSection = document.getElementById('previewPaymentBreakdown');
             const monthlyPaymentDiv = document.getElementById('previewMonthlyPayment');
             
-            document.getElementById('previewBreakdownPrincipal').textContent = '$' + principal.toLocaleString();
-            document.getElementById('previewBreakdownFee').textContent = '$' + flatFee.toLocaleString();
-            document.getElementById('previewBreakdownTotal').textContent = '$' + total.toLocaleString();
-            
             // Calculate and show monthly payment if not lump sum
             if (paymentSchedule !== 'lump_sum' && total > 0) {
-                breakdownSection.classList.remove('hidden');
-                monthlyPaymentDiv.classList.remove('hidden');
+                if (breakdownSection) breakdownSection.classList.remove('hidden');
+                if (monthlyPaymentDiv) monthlyPaymentDiv.classList.remove('hidden');
                 
-                const dueDate = new Date(document.getElementById('dueDate').value);
+                const finalDate = new Date(displayDate);
                 const loanDate = new Date(document.getElementById('loanDate').value);
                 
-                if (dueDate && loanDate && dueDate > loanDate) {
+                if (finalDate && loanDate && finalDate > loanDate) {
                     let numberOfPayments = 1;
                     
                     if (paymentSchedule === 'monthly') {
-                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 30));
+                        numberOfPayments = Math.ceil((finalDate - loanDate) / (1000 * 60 * 60 * 24 * 30));
                     } else if (paymentSchedule === 'weekly') {
-                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 7));
+                        numberOfPayments = Math.ceil((finalDate - loanDate) / (1000 * 60 * 60 * 24 * 7));
                     } else if (paymentSchedule === 'biweekly') {
-                        numberOfPayments = Math.ceil((dueDate - loanDate) / (1000 * 60 * 60 * 24 * 14));
+                        numberOfPayments = Math.ceil((finalDate - loanDate) / (1000 * 60 * 60 * 24 * 14));
                     }
                     
                     const monthlyPayment = total / numberOfPayments;
-                    document.getElementById('previewBreakdownMonthly').textContent = '$' + monthlyPayment.toFixed(2);
+                    const previewBreakdownMonthly = document.getElementById('previewBreakdownMonthly');
+                    if (previewBreakdownMonthly) {
+                        previewBreakdownMonthly.textContent = '$' + monthlyPayment.toFixed(2);
+                    }
                 } else {
-                    document.getElementById('previewBreakdownMonthly').textContent = 'Set dates to calculate';
+                    const previewBreakdownMonthly = document.getElementById('previewBreakdownMonthly');
+                    if (previewBreakdownMonthly) {
+                        previewBreakdownMonthly.textContent = 'Set dates to calculate';
+                    }
                 }
             } else {
                 if (paymentSchedule === 'lump_sum') {
-                    breakdownSection.classList.remove('hidden');
-                    monthlyPaymentDiv.classList.add('hidden');
+                    if (breakdownSection) breakdownSection.classList.remove('hidden');
+                    if (monthlyPaymentDiv) monthlyPaymentDiv.classList.add('hidden');
                 } else {
-                    breakdownSection.classList.add('hidden');
+                    if (breakdownSection) breakdownSection.classList.add('hidden');
                 }
             }
             
-            const purpose = document.getElementById('purpose').value || document.getElementById('purposeDropdown').value;
-            document.getElementById('previewPurpose').textContent = purpose || 'Not specified';
-            
-            const dueDate = document.getElementById('dueDate').value;
-            document.getElementById('previewDueDate').textContent = dueDate ? new Date(dueDate).toLocaleDateString() : 'Not set';
-            
-            const scheduleText = {
-                'lump_sum': 'Lump Sum',
-                'monthly': 'Monthly Payments',
-                'weekly': 'Weekly Payments',
-                'biweekly': 'Bi-weekly Payments'
-            };
-            document.getElementById('previewSchedule').textContent = scheduleText[document.getElementById('paymentSchedule').value];
-            
             // Update party information
-            const lenderName = (document.getElementById('lenderFirstName').value + ' ' + document.getElementById('lenderLastName').value).trim();
-            if (lenderName) {
-                document.getElementById('previewLender').textContent = lenderName;
-                document.getElementById('previewLenderSection').classList.remove('hidden');
+            const lenderName = (document.getElementById('lenderFirstName')?.value + ' ' + document.getElementById('lenderLastName')?.value).trim();
+            if (lenderName && lenderName !== ' ') {
+                const previewLender = document.getElementById('previewLender');
+                const previewLenderSection = document.getElementById('previewLenderSection');
+                if (previewLender) previewLender.textContent = lenderName;
+                if (previewLenderSection) previewLenderSection.classList.remove('hidden');
             }
             
-            const borrowerName = (document.getElementById('borrowerFirstName').value + ' ' + document.getElementById('borrowerLastName').value).trim();
-            if (borrowerName) {
-                document.getElementById('previewBorrower').textContent = borrowerName;
-                document.getElementById('previewBorrowerSection').classList.remove('hidden');
+            const borrowerName = (document.getElementById('borrowerFirstName')?.value + ' ' + document.getElementById('borrowerLastName')?.value).trim();
+            if (borrowerName && borrowerName !== ' ') {
+                const previewBorrower = document.getElementById('previewBorrower');
+                const previewBorrowerSection = document.getElementById('previewBorrowerSection');
+                if (previewBorrower) previewBorrower.textContent = borrowerName;
+                if (previewBorrowerSection) previewBorrowerSection.classList.remove('hidden');
             }
+            
+            console.log('📋 Preview Updated:', {
+                principal: '$' + principal.toLocaleString(),
+                flatFee: '$' + flatFee.toLocaleString(),
+                total: '$' + total.toLocaleString(),
+                schedule: scheduleDisplay,
+                finalDate: displayDate ? new Date(displayDate).toLocaleDateString() : 'Not set'
+            });
         }
 
         // Form validation functions
