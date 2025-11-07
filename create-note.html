@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,148 +130,19 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
     </style>
-
-<style>
-.tl-tooltip-bubble{position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:50;min-width:220px;max-width:320px;background:#111827;color:#F9FAFB;font-size:.85rem;line-height:1.25rem;padding:10px 12px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.25);opacity:0;visibility:hidden;transition:opacity .15s ease,transform .15s ease,visibility .15s ease;transform-origin:top center;margin-top:8px}
-.tl-tooltip-bubble::after{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);border-width:6px;border-style:solid;border-color:transparent transparent #111827 transparent}
-.tl-tooltip-wrapper:focus-within .tl-tooltip-bubble,.tl-tooltip-wrapper:hover .tl-tooltip-bubble{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
-.tl-tooltip-wrapper .tl-tooltip-bubble{transform:translateX(-50%) translateY(-4px)}
-.tl-tooltip-trigger:focus{outline:2px solid #93C5FD;outline-offset:2px}
-</style>
-
-
-<style>
-.tl-chevron { transition: transform .15s ease; display:inline-block; }
-.tl-rotate-180 { transform: rotate(180deg); }
-</style>
-
-
-<style>
-.tl-invalid { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239,68,68,.12) !important; }
-.tl-hint { font-size: .75rem; color: #b91c1c; margin-top: .25rem; }
-.tl-hint.hidden { display: none; }
-</style>
-
-
-<style>
-.tl-req-asterisk{ color:#dc2626; margin-left:0.25rem; font-weight:700; }
-.tl-req-asterisk[hidden]{ display:none; }
-.tl-req-legend{ font-size:.875rem; color:#6b7280; display:flex; align-items:center; gap:.25rem; }
-.tl-req-legend .dot{ color:#dc2626; font-weight:700; }
-</style>
-
 </head>
 <body class="bg-gray-50">
+  <div id="siteNav"></div>
+
     <!-- TrustLend Universal Navigation -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">TrustLend</span>
-                </a>
-                
-                <!-- Current Tier Display -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <div id="currentTierDisplay" class="flex items-center space-x-2">
-                        <span class="tier-badge text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            Basic Plan
-                        </span>
-                        <span id="featuresUnlocked" class="text-sm text-gray-600">3 features active</span>
-                    </div>
-                    
-                    <!-- Demo Mode Indicator -->
-                    <div id="demoModeIndicator" class="bg-yellow-100 border border-yellow-300 px-2 py-1 rounded text-xs text-yellow-800 font-medium hidden">
-                        🎭 Demo Mode
-                    </div>
-                    
-                    <button onclick="saveDraft()" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
-                        Save Draft
-                    </button>
-                    
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v4"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5v4"></path>
-                        </svg>
-                        Dashboard
-                    </a>
-
-                    <div class="relative group">
-                        <button class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                                <span id="userInitials" class="text-sm font-semibold text-blue-600">TU</span>
-                            </div>
-                            <span class="hidden lg:inline" id="userName">Account</span>
-                            <div class="w-2 h-2 bg-green-500 rounded-full ml-1" title="Blockchain Verified"></div>
-                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                        
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block">
-                            <div class="py-1">
-                                <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
-                                <a href="billing.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Billing & Plans</a>
-                                <a href="audit-trail.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔗 Audit Trail & Verification</a>
-                                <a href="support.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help & Support</a>
-                                <hr class="my-1">
-                                <button onclick="signOut()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
-            <div class="px-4 py-3 space-y-1">
-                <div id="mobileTierDisplay" class="mb-3 p-2 bg-blue-50 rounded-lg">
-                    <div class="tier-badge text-white px-2 py-1 rounded text-sm inline-block">Basic Plan</div>
-                    <div class="text-xs text-gray-600 mt-1">3 features active</div>
-                </div>
-                <button onclick="saveDraft()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Save Draft</button>
-                <a href="dashboard.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Dashboard</a>
-                <hr class="my-2">
-                <a href="profile.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Profile Settings</a>
-                <a href="billing.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Billing & Plans</a>
-                <a href="audit-trail.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                    🔗 Audit Trail & Verification
-                </a>
-                <a href="support.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Help & Support</a>
-                <button onclick="signOut()" class="block w-full text-left px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">Sign Out</button>
-            </div>
-        </div>
-    </header>
+    
 
     <!-- Enhanced Progress Steps (6 Steps) -->
     <div class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2 md:space-x-4 overflow-x-auto">
-                    <div id="step-1" class="step-active flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">
-<div class="mt-2 tl-req-legend" id="reqLegend"><span class="dot">*</span><span>Required field</span></div>
-
-<!-- TrustLend: slim progress bar -->
-<div id="tl-progress" class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-3" aria-hidden="true">
-  <div id="tl-progress-inner" class="h-2 bg-blue-500" style="width:0%"></div>
-</div>
-1</div>
+                    <div id="step-1" class="step-active flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">1</div>
                     <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
                     <div id="step-2" class="step-inactive flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full font-bold text-sm transition-all flex-shrink-0">2</div>
                     <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
@@ -300,14 +172,14 @@
                 <div id="form-step-1" class="bg-white rounded-xl border border-gray-200 p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Loan Information</h2>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Principal Amount</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                                     <input type="number" id="principal" step="0.01" min="1" 
                                            class="input-focus w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="5,000.00" oninput="updatePreview(); calculatePaymentSchedule()" required>
+                                           placeholder="5,000.00" oninput="updatePreview(); calculatePaymentSchedule()">
                                 </div>
                             </div>
                             <div>
@@ -342,58 +214,44 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Start Date</label>
                                 <input type="date" id="loanDate" 
                                        class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       oninput="updatePreview()" required>
+                                       oninput="updatePreview()">
                             </div>
-                            </div>
-<!-- Loan Term & Final Payment Date (Smart) -->
-<div class="grid grid-cols-2 gap-4 mt-4" id="loanTermRow">
-  <div>
-    <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Term</label>
-    <select id="loanTerm" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" required>
-      <option value="">Select term</option>
-      <option value="1m">1 month</option>
-      <option value="3m">3 months</option>
-      <option value="6m">6 months</option>
-      <option value="9m">9 months</option>
-      <option value="12m">12 months</option>
-      <option value="18m">18 months</option>
-      <option value="24m">24 months</option>
-    </select>
-  </div>
-  <div>
-    <div class="flex items-center justify-between">
-      <label class="block text-sm font-semibold text-gray-700 mb-2">Final Payment Date</label>
-      <span class="text-xs text-gray-500">Auto-calculated from start date + term (editable)</span>
-    
-        <div class="tl-tooltip-wrapper relative inline-block align-middle ml-2">
-          <button type="button"
-                  class="tl-tooltip-trigger inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 focus:outline-none"
-                  aria-describedby="fpd-tooltip"
-                  aria-label="Final Payment Date help">
-            <span style="font-size:10px; line-height:1;">i</span>
-          </button>
-          <div id="fpd-tooltip" role="tooltip" class="tl-tooltip-bubble">
-            Auto-calculated from <strong>Loan Start Date</strong> + <strong>Loan Term</strong>. After it’s calculated, you can adjust this date if needed.
-          </div>
+        <div class="form-group">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Term</label>
+            <select id="loanTermMonths" name="loanTerm" 
+                    class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl"
+                    onchange="handleLoanTermChange(); if(window.updatePreview){updatePreview();} if(window.calculatePaymentSchedule){calculatePaymentSchedule();}">
+                <option value="">Select term</option>
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="9">9 months</option>
+                <option value="12">12 months</option>
+                <option value="18">18 months</option>
+                <option value="24">24 months</option>
+            </select>
         </div>
         
-</div>
-    <input type="date" id="finalPaymentDate" class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" readonly required>
-  </div>
-</div>
-
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Final Payment Date</label>
+                                <input type="date" id="dueDate" 
+                                       class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
+                                       oninput="updatePreview(); calculatePaymentSchedule()">
+<div class="text-xs text-gray-500 mt-1">Auto‑calculated from loan start date + term (editable)</div>
+                            </div>
+                        </div>
                         
                         <!-- Enhanced Loan Purpose with Dropdown -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Loan Purpose</label>
                             <select id="purposeDropdown" 
                                     class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                    onchange="handlePurposeSelection()" oninput="updatePreview()" required>
+                                    onchange="handlePurposeSelection()" oninput="updatePreview()">
                                 <option value="">Select a purpose</option>
                                 <option value="Personal expenses">Personal expenses</option>
                                 <option value="Education/tuition">Education/tuition</option>
@@ -417,14 +275,13 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Payment Schedule</label>
                             <select id="paymentSchedule" 
                                     class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                    onchange="togglePaymentBreakdown(); updatePreview(); calculateSmartDueDate()" required>
-<option value="" selected>Select schedule</option>
-
-                                <option value="lump_sum">Lump Sum Payment</option>
-                                <option value="monthly">Monthly Payments</option>
-                                <option value="weekly">Weekly Payments</option>
-                                <option value="biweekly">Bi-weekly Payments</option>
-                            </select>
+                                    onchange="togglePaymentBreakdown(); updatePreview(); calculateSmartDueDate()">
+<option value="">Select Schedule</option>
+<option value="lump_sum">Lump Sum Payment</option>
+<option value="monthly">Monthly Payments</option>
+<option value="weekly">Weekly Payments</option>
+<option value="biweekly">Bi-weekly Payments</option>
+</select>
                         </div>
                         
                         <!-- Smart Payment Due Date -->
@@ -433,7 +290,7 @@
                             <div class="relative">
                                 <input type="date" id="firstPaymentDue" 
                                        class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       onchange="updatePreview(); calculatePaymentSchedule()" data-required-when="schedule:installments">
+                                       onchange="updatePreview(); calculatePaymentSchedule()">
                                 <div class="absolute right-3 top-3 text-gray-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -454,7 +311,7 @@
                             <div class="relative">
                                 <input type="date" id="lumpSumDueDate" 
                                        class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       onchange="updatePreview()" data-required-when="schedule:lump_sum">
+                                       onchange="updatePreview()">
                                 <div class="absolute right-3 top-3 text-gray-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -467,43 +324,7 @@
                         <!-- Enhanced Payment Breakdown -->
                         <div id="paymentBreakdown" class="payment-breakdown rounded-xl p-4 hidden">
                             <h4 class="font-semibold text-blue-900 mb-3">💰 Payment Schedule Breakdown</h4>
-                            <div id="paymentScheduleDetails"></div>
-<div class="mt-3 flex items-center gap-3">
-  <input id="avoidWeekends" type="checkbox" class="h-4 w-4 border-gray-300 rounded">
-  <label for="avoidWeekends" class="text-sm text-gray-700">Avoid weekends (push payments to next business day)</label>
-</div>
-
-<!-- Collapsible schedule list -->
-<div class="mt-3">
-  <button id="toggleScheduleTable"
-          type="button"
-          class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50"
-          aria-expanded="false"
-          aria-controls="paymentScheduleCollapsible"
-          style="text-align:left">
-    <span><strong>Payment dates</strong> <span id="scheduleCountLabel" class="text-gray-500"></span></span>
-    <span class="tl-chevron" id="scheduleChevron">▾</span>
-  </button>
-  
-  <!-- Compact preview shown when collapsed -->
-  <div id="paymentSchedulePreview" class="mt-2 text-sm text-gray-700"></div>
-
-<div class="mt-3 flex flex-wrap items-center gap-3" id="scheduleToolsRow">
-  <div class="flex items-center gap-2">
-    <input id="avoidHolidays" type="checkbox" class="h-4 w-4 border-gray-300 rounded">
-    <label for="avoidHolidays" class="text-sm text-gray-700">Avoid U.S. federal holidays</label>
-  </div>
-  <div class="ml-auto flex items-center gap-2">
-    <button id="copyScheduleBtn" type="button" class="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50">Copy schedule</button>
-    <button id="downloadCsvBtn" type="button" class="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50">Download CSV</button>
-  </div>
-</div>
-
-  <div id="paymentScheduleCollapsible"  class="hidden">
-    <div id="paymentScheduleTable" class="mt-3 overflow-x-auto"></div>
-  </div>
-</div>
-
+                            <div id="paymentScheduleDetails" class="text-sm text-blue-800"></div>
                             <div id="paymentScheduleChart" class="mt-3">
                                 <!-- Payment visualization will be inserted here -->
                             </div>
@@ -580,13 +401,13 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                                     <input type="email" id="lenderEmail" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="your@email.com" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+">
+                                           placeholder="your@email.com">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
                                     <input type="tel" id="lenderPhone" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)" required>
+                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
                                 </div>
                             </div>
                             
@@ -594,7 +415,7 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
                                 <input type="text" id="lenderAddress" 
                                        class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="Street address" required>
+                                       placeholder="Street address">
                             </div>
                             
                             <div class="grid grid-cols-3 gap-4">
@@ -602,13 +423,13 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
                                     <input type="text" id="lenderCity" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="City" oninput="updateVenueInfo()" required>
+                                           placeholder="City" oninput="updateVenueInfo()">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
                                     <select id="lenderState" 
                                             class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl"
-                                            onchange="updateVenueInfo()" required>
+                                            onchange="updateVenueInfo()">
                                         <option value="">Select State</option>
                                         <option value="GA">Georgia</option>
                                         <option value="AL">Alabama</option>
@@ -666,7 +487,7 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
                                     <input type="text" id="lenderZip" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="12345" required pattern="\d{5}(-\d{4})?">
+                                           placeholder="12345">
                                 </div>
                             </div>
                             
@@ -711,13 +532,13 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                                     <input type="email" id="borrowerEmail" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="borrower@email.com" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+">
+                                           placeholder="borrower@email.com">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
                                     <input type="tel" id="borrowerPhone" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)" required>
+                                           placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)">
                                 </div>
                             </div>
                             
@@ -743,7 +564,7 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
                                 <input type="text" id="borrowerAddress" 
                                        class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                       placeholder="Street address" required>
+                                       placeholder="Street address">
                             </div>
                             
                             <div class="grid grid-cols-3 gap-4">
@@ -751,12 +572,12 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
                                     <input type="text" id="borrowerCity" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="City" required>
+                                           placeholder="City">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">State</label>
                                     <select id="borrowerState" 
-                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" required>
+                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl">
                                         <option value="">Select State</option>
                                         <!-- Same state options as lender -->
                                         <option value="GA">Georgia</option>
@@ -769,7 +590,7 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code</label>
                                     <input type="text" id="borrowerZip" 
                                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-xl" 
-                                           placeholder="12345" required pattern="\d{5}(-\d{4})?">
+                                           placeholder="12345">
                                 </div>
                             </div>
                         </div>
@@ -1670,7 +1491,7 @@ Best regards,
                         </div>
                         
                         <div id="previewDueDateSection">
-                            <div class="text-sm text-gray-600 mb-1">Due Date</div>
+                            <div class="text-sm text-gray-600 mb-1">Final Payment Date</div>
                             <div class="text-gray-900" id="previewDueDate">Not set</div>
                         </div>
                         
@@ -3672,651 +3493,132 @@ Best regards,
         })();
         // END CONTRACT PREVIEW FIX
     </script>
-    
-    <!-- 🎯 TrustLend PDF Integration - Adds real PDF generation to Step 6 -->
-    <script src="trustlend-exact-integration-fixed.js"></script>
-
-
-
-
-
-
-  function showStep(i){
-    if(!steps.length) return;
-    idx = Math.max(0, Math.min(i, steps.length-1));
-    steps.forEach(function(s, n){ if(n===idx){ s.classList.remove('hidden'); } else { s.classList.add('hidden'); } });
-    if(dots.length){
-      dots.forEach(function(d, n){
-        d.classList.remove('step-active','step-completed','step-inactive');
-        if(n < idx){ d.classList.add('step-completed'); }
-        else if(n === idx){ d.classList.add('step-active'); }
-        else { d.classList.add('step-inactive'); }
-      });
-    }
-    if(currentStepText) currentStepText.textContent = String(idx+1);
-    if(stepLabel && titles[idx]) stepLabel.textContent = titles[idx];
-    if(stepDesc  &&  descs[idx]) stepDesc.textContent  = descs[idx];
-    updateProgress();
-    try{ steps[idx].scrollIntoView({ behavior:'smooth', block:'start' }); }catch(e){}
-  }
-
-  function next(){
-    // Block if current step has invalid required fields
-    if(!validateStep(steps[idx])){
-      var firstInvalid = steps[idx].querySelector('.tl-invalid');
-      if(firstInvalid){ try{ firstInvalid.scrollIntoView({behavior:'smooth', block:'center'}); firstInvalid.focus({preventScroll:true}); }catch(e){} }
-      return;
-    }
-    showStep(idx+1);
-  }
-  function prev(){ showStep(idx-1); }
-
-  function wire(selector, fn){
-    document.querySelectorAll(selector).forEach(function(el){
-      el.addEventListener('click', function(e){ e.preventDefault(); fn(); });
-    });
-  }
-
-  // Add realtime clearing of invalid state as users type/select
-  function wireRealtime(){
-    steps.forEach(function(stepEl){
-      stepEl.querySelectorAll('input, select, textarea').forEach(function(el){
-        ['input','change'].forEach(function(evt){
-          el.addEventListener(evt, function(){ clearHint(el); });
-        });
-      });
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    var initial = steps.findIndex(function(s){ return !s.classList.contains('hidden'); });
-    if(initial < 0) initial = 0;
-    showStep(initial);
-    // Wire common nav controls while keeping the same buttons and theme
-    wire('#nextBtn, .btn-next, [data-next], #btnNext, button.next', next);
-    wire('#backBtn, .btn-prev, [data-prev], #btnBack, button.prev', prev);
-    // Make dots clickable
-    dots.forEach(function(d, n){ d.style.cursor = 'pointer'; d.addEventListener('click', function(){ showStep(n); }); });
-    // Optional "Go to step" anchors
-    ['1','2','3','4','5','6'].forEach(function(n){
-      var id = '#goToStep' + n, target = parseInt(n,10)-1;
-      document.querySelectorAll(id).forEach(function(el){
-        el.addEventListener('click', function(e){ e.preventDefault(); showStep(target); });
-      });
-    });
-    wireRealtime();
-  });
-})();
-</script>
-
 
 <script>
 (function(){
-  // --- Discover steps in numeric order
-  function stepIndexFromId(id){ var m = id && id.match(/form-step-(\d+)/); return m ? (parseInt(m[1],10)-1) : -1; }
-  var steps = Array.from(document.querySelectorAll('[id^="form-step-"]')).sort(function(a,b){ return stepIndexFromId(a.id)-stepIndexFromId(b.id); });
-  var idx = 0;
+  function parseDateInput(el){ try { return el && el.value ? new Date(el.value + 'T00:00:00') : null; } catch(e){ return null; } }
+  function formatDateISO(d){ if(!d) return ''; const y=d.getFullYear(); const m=('0'+(d.getMonth()+1)).slice(-2); const day=('0'+d.getDate()).slice(-2); return `${y}-${m}-${day}`; }
+  function addMonths(d, months){ const dt=new Date(d); const day=dt.getDate(); dt.setMonth(dt.getMonth()+months); // adjust for month overflow
+    if(dt.getDate()<day){ dt.setDate(0); } return dt; }
+  function addDays(d, days){ const dt=new Date(d); dt.setDate(dt.getDate()+days); return dt; }
 
-  // Step header bits (pills, label/desc, current step #)
-  var dots = [1,2,3,4,5,6].map(function(n){ return document.getElementById('step-'+n); }).filter(Boolean);
-  var stepLabel = document.getElementById('step-label');
-  var stepDesc  = document.getElementById('step-description');
-  var currentStepText = document.getElementById('current-step');
-  var titles = ['Loan Details','Party Information','Review Contract','Digital Signatures','Plan & Payment','Confirmation'];
-  var descs  = ['Enter the basic loan information','Add lender and borrower details','Review all details before continuing','Collect required signatures','Choose plan and enter payment details','Finalize and generate your document'];
-
-  // Progress bar
-  var progressInner = document.getElementById('tl-progress-inner');
-  function updateProgress(){
-    if(!progressInner || !steps.length) return;
-    var pct = (idx) / (steps.length-1) * 100;
-    if(steps.length === 1) pct = 100;
-    progressInner.style.width = Math.max(0, Math.min(100, pct)) + '%';
-  }
-
-  // Helpers
-  function visible(el){ return !!( el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length) ); }
-  function isEmpty(el){
-    if(!el) return true;
-    if(el.type === 'checkbox' || el.type === 'radio'){
-      var group = (el.name ? document.querySelectorAll('[name="'+CSS.escape(el.name)+'"]') : [el]);
-      for(var i=0;i<group.length;i++){ if(group[i].checked) return false; }
-      return true;
-    }
-    return (el.value == null || String(el.value).trim() === '');
-  }
-  function parseDate(v){ var d = v ? new Date(v) : null; return (d && !isNaN(d)) ? d : null; }
-  function toISO(d){ if(!(d instanceof Date)||isNaN(d)) return ''; const tz=new Date(d.getTime()-d.getTimezoneOffset()*60000); return tz.toISOString().slice(0,10); }
-
-  function getScheduleMode(){
-    var sch = document.getElementById('paymentSchedule');
-    var val = sch ? sch.value : '';
-    if(val === 'lump_sum') return 'lump_sum';
-    if(val === 'weekly' || val === 'biweekly' || val === 'monthly') return 'installments';
-    return ''; // placeholder/unknown
-  }
-
-  function shouldRequire(el){
-    if(!el) return false;
-    if(el.hasAttribute('required')) return true;
-    var cond = el.getAttribute('data-required-when');
-    if(!cond) return false;
-    var parts = cond.split(':');
-    if(parts[0] === 'schedule'){
-      var mode = getScheduleMode();
-      if(parts[1] === 'installments') return mode === 'installments';
-      if(parts[1] === 'lump_sum')    return mode === 'lump_sum';
-    }
-    if(parts[0] === 'always'){ return true; }
-    return false;
-  }
-
-  function stepRequiredFields(stepEl){
-    if(!stepEl) return [];
-    var els = Array.from(stepEl.querySelectorAll('input, select, textarea'));
-    els = els.filter(function(el){ return shouldRequire(el); });
-    return els;
-  }
-
-  function clearHint(el){
-    if(!el) return;
-    el.classList.remove('tl-invalid');
-    el.removeAttribute('aria-invalid');
-    var hint = el.closest('div') && el.closest('div').querySelector('.tl-hint');
-    if(hint) hint.classList.add('hidden');
-  }
-  function markInvalid(el, msg){
-    if(!el) return;
-    el.classList.add('tl-invalid');
-    var wrap = el.closest('div');
-    if(wrap){
-      var hint = wrap.querySelector('.tl-hint');
-      if(!hint){ hint = document.createElement('div'); hint.className = 'tl-hint'; wrap.appendChild(hint); }
-      hint.textContent = msg || 'This field is required.';
-      hint.classList.remove('hidden');
-    }
-    el.setAttribute('aria-invalid','true');
-  }
-
-  // Step summary banner
-  function ensureSummary(stepEl){
-    var bar = stepEl.querySelector('.tl-step-summary');
-    if(!bar){
-      bar = document.createElement('div');
-      bar.className = 'tl-step-summary text-sm bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3 hidden';
-      stepEl.insertBefore(bar, stepEl.firstChild);
-    }
-    return bar;
-  }
-  function showSummary(stepEl, items){
-    var bar = ensureSummary(stepEl);
-    if(!items || !items.length){ bar.classList.add('hidden'); bar.innerHTML=''; return; }
-    bar.innerHTML = '<div class="font-medium mb-1">Please complete the following:</div><ul class="list-disc ml-5">' +
-      items.map(function(t){ return '<li>'+t+'</li>'; }).join('') + '</ul>';
-    bar.classList.remove('hidden');
-  }
-
-  // Label helpers
-  function labelFor(el){
-    if(!el || !el.id) return null;
-    var lab = document.querySelector('label[for="'+CSS.escape(el.id)+'"]');
-    if(lab && lab.textContent) return lab.textContent.trim();
-    return el.getAttribute('aria-label') || el.placeholder || el.name || el.id;
-  }
-
-  function validateFormats(stepEl, errors){
-    // Email formats
-    [['lenderEmail'], ['borrowerEmail']].forEach(function(ids){
-      ids.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el && visible(el) && !isEmpty(el)){
-          var val = String(el.value||'').trim();
-          var ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val);
-          if(!ok){ markInvalid(el, 'Enter a valid email.'); errors.push('Valid email for ' + (labelFor(el)||id)); }
-        }
-      });
-    });
-    // Principal > 0
-    var p = document.getElementById('principal');
-    if(p && visible(p) && !isEmpty(p)){
-      var v = parseFloat(String(p.value).replace(/,/g,'')) || 0;
-      if(!(v > 0)){ markInvalid(p, 'Enter an amount greater than 0.'); errors.push('Principal greater than 0'); }
-    }
-    // Date logic
-    var start = parseDate(document.getElementById('loanDate')?.value);
-    var first = parseDate(document.getElementById('firstPaymentDue')?.value);
-    var finalD = parseDate(document.getElementById('finalPaymentDate')?.value);
-    var mode = getScheduleMode();
-    if(mode === 'installments'){
-      if(start && first && first < start){
-        var el = document.getElementById('firstPaymentDue');
-        markInvalid(el, 'First payment cannot be before start date.'); errors.push('First payment date after start date');
+  window.handleLoanTermChange = function(){
+      const startEl = document.getElementById('loanDate');
+      const termEl = document.getElementById('loanTermMonths');
+      const finalEl = document.getElementById('dueDate');
+      const scheduleEl = document.getElementById('paymentSchedule');
+      if(!startEl || !termEl || !finalEl) return;
+      const start = parseDateInput(startEl);
+      const months = parseInt(termEl.value || '0', 10);
+      if(start && months){
+          const finalDate = addMonths(start, months);
+          finalEl.value = formatDateISO(finalDate);
+          // if schedule is lump sum, align first payment to final date
+          if(scheduleEl && scheduleEl.value === 'lump_sum'){
+              const lumpEl = document.getElementById('lumpSumDueDate');
+              if(lumpEl){ lumpEl.value = finalEl.value; }
+              const firstEl = document.getElementById('firstPaymentDue');
+              if(firstEl){ firstEl.value = finalEl.value; }
+          }
       }
-    }
-    if(start && finalD && finalD < start){
-      var el2 = document.getElementById('finalPaymentDate');
-      markInvalid(el2, 'Final payment cannot be before start date.'); errors.push('Final payment date after start date');
-    }
+  };
+
+  function updateFirstPaymentFromSchedule(){
+      const startEl = document.getElementById('loanDate');
+      const scheduleEl = document.getElementById('paymentSchedule');
+      const firstEl = document.getElementById('firstPaymentDue');
+      const lumpEl = document.getElementById('lumpSumDueDate');
+      const finalEl = document.getElementById('dueDate');
+      const termEl = document.getElementById('loanTermMonths');
+      const start = parseDateInput(startEl);
+      if(!scheduleEl || !start) return;
+
+      let daysToAdd = 0;
+      switch(scheduleEl.value){
+        case 'weekly': daysToAdd = 7; break;
+        case 'biweekly': daysToAdd = 14; break;
+        case 'monthly': 
+            const next = addMonths(start, 1);
+            if(firstEl) firstEl.value = formatDateISO(next);
+            break;
+        case 'lump_sum':
+            if(finalEl){
+                // if no final set yet but term exists, compute it
+                if(!finalEl.value && termEl && termEl.value){
+                    const months = parseInt(termEl.value||'0',10);
+                    if(months){ finalEl.value = formatDateISO(addMonths(start, months)); }
+                }
+                if(lumpEl){ lumpEl.value = finalEl.value; }
+                if(firstEl){ firstEl.value = finalEl.value; }
+            }
+            return;
+        default:
+            // "Select Schedule" -> clear derived
+            if(firstEl){ firstEl.value=''; }
+            if(lumpEl){ lumpEl.value=''; }
+            return;
+      }
+      if(daysToAdd){
+        const computed = addDays(start, daysToAdd);
+        if(firstEl) firstEl.value = formatDateISO(computed);
+      }
   }
 
-  function validateStep(stepEl){
-    var ok = true;
-    var missing = [];
-    var fields = stepRequiredFields(stepEl);
-    fields.forEach(function(el){
-      clearHint(el);
-      if(!visible(el)) return;
-      if(isEmpty(el)){ ok = false; markInvalid(el); missing.push(labelFor(el) || el.id); }
-    });
-    // Format & logical checks
-    var fmtErrors = [];
-    validateFormats(stepEl, fmtErrors);
-    if(fmtErrors.length){ ok = false; missing = missing.concat(fmtErrors); }
-    showSummary(stepEl, missing);
-    return ok;
-  }
-
-  // --- Step show/hide
-  function showStep(i){
-    if(!steps.length) return;
-    idx = Math.max(0, Math.min(i, steps.length-1));
-    steps.forEach(function(s, n){ if(n===idx){ s.classList.remove('hidden'); } else { s.classList.add('hidden'); } });
-    if(dots.length){
-      dots.forEach(function(d, n){
-        d.classList.remove('step-active','step-completed','step-inactive');
-        if(n < idx){ d.classList.add('step-completed'); }
-        else if(n === idx){ d.classList.add('step-active'); }
-        else { d.classList.add('step-inactive'); }
-      });
-    }
-    if(currentStepText) currentStepText.textContent = String(idx+1);
-    if(stepLabel && titles[idx]) stepLabel.textContent = titles[idx];
-    if(stepDesc  &&  descs[idx]) stepDesc.textContent  = descs[idx];
-    updateProgress();
-    try{ steps[idx].scrollIntoView({ behavior:'smooth', block:'start' }); }catch(e){}
-  }
-
-  function next(){
-    if(!validateStep(steps[idx])){
-      var firstInvalid = steps[idx].querySelector('.tl-invalid');
-      if(firstInvalid){ try{ firstInvalid.scrollIntoView({behavior:'smooth', block:'center'}); firstInvalid.focus({preventScroll:true}); }catch(e){} }
-      return;
-    }
-    showStep(idx+1);
-  }
-  function prev(){ showStep(idx-1); }
-
-  function wire(selector, fn){
-    document.querySelectorAll(selector).forEach(function(el){
-      el.addEventListener('click', function(e){ e.preventDefault(); fn(); });
-    });
-  }
-  function wireRealtime(){
-    steps.forEach(function(stepEl){
-      stepEl.querySelectorAll('input, select, textarea').forEach(function(el){
-        ['input','change'].forEach(function(evt){ el.addEventListener(evt, function(){ clearHint(el); ensureSummary(stepEl); showSummary(stepEl, []); }); });
-      });
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    var initial = steps.findIndex(function(s){ return !s.classList.contains('hidden'); });
-    if(initial < 0) initial = 0;
-    showStep(initial);
-    wire('#nextBtn, .btn-next, [data-next], #btnNext, button.next', next);
-    wire('#backBtn, .btn-prev, [data-prev], #btnBack, button.prev', prev);
-    dots.forEach(function(d, n){ d.style.cursor='pointer'; d.addEventListener('click', function(){ showStep(n); }); });
-    ['1','2','3','4','5','6'].forEach(function(n){ var id='#goToStep'+n, target=parseInt(n,10)-1;
-      document.querySelectorAll(id).forEach(function(el){ el.addEventListener('click', function(e){ e.preventDefault(); showStep(target); }); });
-    });
-    wireRealtime();
-  });
-})();
-</script>
-
-
-<script>
-// TL Optional Refinements Start
-(function(){
-  // ---------- Phone Masks (US) ----------
-  function maskPhone(el){
-    var digits = (el.value || '').replace(/\D/g, '').slice(0, 10);
-    var out = digits;
-    if(digits.length >= 7){ out = '('+digits.slice(0,3)+') '+digits.slice(3,6)+'-'+digits.slice(6); }
-    else if(digits.length >= 4){ out = '('+digits.slice(0,3)+') '+digits.slice(3); }
-    else if(digits.length >= 1){ out = '('+digits; }
-    el.value = out;
-  }
-  ['lenderPhone','borrowerPhone'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.setAttribute('inputmode','tel');
-    el.addEventListener('input', function(){ maskPhone(el); });
-    el.addEventListener('blur', function(){ maskPhone(el); });
-  });
-
-  // ---------- State Dropdown Upgrade ----------
-  var US_STATES = [
-    'AL','AK','AZ','AR','CA','CO','CT','DC','DE','FL','GA','HI','IA','ID','IL','IN','KS','KY','LA','MA','MD','ME','MI','MN','MO','MS','MT','NC','ND','NE','NH','NJ','NM','NV','NY','OH','OK','OR','PA','PR','RI','SC','SD','TN','TX','UT','VA','VI','VT','WA','WI','WV','WY'
-  ];
-  function upgradeState(id){
-    var el = document.getElementById(id);
-    if(!el || el.tagName === 'SELECT') return;
-    var sel = document.createElement('select');
-    sel.id = el.id;
-    sel.name = el.name || el.id;
-    sel.className = el.className || 'input-focus w-full px-4 py-3 border border-gray-300 rounded-xl';
-    // Placeholder
-    var p = document.createElement('option'); p.value=''; p.textContent='Select state'; sel.appendChild(p);
-    US_STATES.forEach(function(s){
-      var o = document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o);
-    });
-    // Preserve value if present
-    var v = (el.value || '').toUpperCase();
-    if(US_STATES.indexOf(v) >= 0){ sel.value = v; }
-    // Replace
-    el.parentNode.replaceChild(sel, el);
-  }
-  upgradeState('lenderState');
-  upgradeState('borrowerState');
-
-  // ---------- ZIP+4 helper & autofill hook ----------
-  function formatZip(el){
-    var d = (el.value||'').replace(/\D/g,'').slice(0,9);
-    if(d.length > 5){ el.value = d.slice(0,5) + '-' + d.slice(5); }
-    else { el.value = d; }
-  }
-  function zipHook(idZip, idCity, idState){
-    var zip = document.getElementById(idZip);
-    if(!zip) return;
-    zip.setAttribute('inputmode','numeric');
-    zip.addEventListener('input', function(){ formatZip(zip); });
-    zip.addEventListener('blur', function(){
-      // Emit an event you can integrate with your ZIP->City/State provider later
-      var evt = new CustomEvent('zip:entered', { detail: { id: idZip, zip: zip.value } });
-      document.dispatchEvent(evt);
-      // Optional: if state is a dropdown and single obvious mapping exists, you could set it here.
-      // (Left as hook to avoid inaccurate guesses without a dataset.)
-    });
-  }
-  zipHook('lenderZip','lenderCity','lenderState');
-  zipHook('borrowerZip','borrowerCity','borrowerState');
-
-  // ---------- Holiday Avoidance (US Federal) ----------
-  function nthDowOfMonth(year, month, dow, n){ // month 0-11, dow 0-6 (Sun-Sat)
-    var d = new Date(year, month, 1), count = 0;
-    while(d.getMonth() === month){
-      if(d.getDay() === dow){ count++; if(count === n) return new Date(d); }
-      d.setDate(d.getDate()+1);
-    }
-    return null;
-  }
-  function lastDowOfMonth(year, month, dow){
-    var d = new Date(year, month+1, 0);
-    while(d.getDay() !== dow){ d.setDate(d.getDate()-1); }
-    return d;
-  }
-  function observed(date){
-    // Shift to Friday/Monday if weekend
-    var d = new Date(date);
-    if(d.getDay() === 0){ d.setDate(d.getDate()+1); } // Sunday -> Monday
-    if(d.getDay() === 6){ d.setDate(d.getDate()-1); } // Saturday -> Friday
-    return d;
-  }
-  function usFederalHolidays(year){
-    var H = [];
-    // Fixed-date (observed)
-    H.push(observed(new Date(year, 0, 1)));   // New Year's Day
-    H.push(nthDowOfMonth(year, 0, 1, 3));     // MLK Day (3rd Mon Jan)
-    H.push(nthDowOfMonth(year, 1, 1, 3));     // Presidents' Day (3rd Mon Feb)
-    H.push(lastDowOfMonth(year, 4, 1));       // Memorial Day (last Mon May)
-    H.push(observed(new Date(year, 5, 19)));  // Juneteenth (June 19)
-    H.push(observed(new Date(year, 6, 4)));   // Independence Day
-    H.push(nthDowOfMonth(year, 8, 1, 1));     // Labor Day (1st Mon Sep)
-    H.push(nthDowOfMonth(year, 9, 1, 2));     // Columbus/Indigenous (2nd Mon Oct)
-    H.push(observed(new Date(year,10,11)));   // Veterans Day (Nov 11)
-    // Thanksgiving (4th Thu Nov)
-    var thanksgiving = nthDowOfMonth(year, 10, 4, 4);
-    H.push(thanksgiving);
-    H.push(observed(new Date(year,11,25)));   // Christmas (Dec 25)
-    return H.map(function(d){ return d && new Date(d.getFullYear(), d.getMonth(), d.getDate()); });
-  }
-  var holidayCache = {};
-  function isHoliday(d){
-    if(!(d instanceof Date) || isNaN(d)) return false;
-    var y = d.getFullYear();
-    if(!holidayCache[y]){
-      var list = usFederalHolidays(y);
-      // Normalize to yyyy-mm-dd strings for quick compare
-      holidayCache[y] = new Set(list.map(function(x){ return x.toISOString().slice(0,10); }));
-    }
-    return holidayCache[y].has(new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10));
-  }
-
-  // Hook into existing schedule builder by patching bump rule to include holidays
-  var avoidHolidaysEl = document.getElementById('avoidHolidays');
-  function bumpToBusinessDay(d){
-    var r = new Date(d);
-    var tries = 0;
-    while(tries < 10 && (r.getDay()===0 || r.getDay()===6 || (avoidHolidaysEl && avoidHolidaysEl.checked && isHoliday(r)))){
-      r.setDate(r.getDate()+1);
-      tries++;
-    }
-    return r;
-  }
-
-  // Monkey-patch existing render/build if available
-  // We look for a function that creates schedule; if not, we hook into known elements and rebuild when inputs change.
-  function hookSchedule(){
-    // If global builder exists, we cannot rebind it safely. Instead, we detect DOM updates and re-apply bumping via a MutationObserver.
-    var table = document.getElementById('paymentScheduleTable');
-    if(!table) return;
-    var obs = new MutationObserver(function(){
-      // No-op; just ensures the schedule re-renders uses the newest bump rule on input changes (see listeners below)
-    });
-    obs.observe(table, { childList: true, subtree: true });
-  }
-  hookSchedule();
-
-  ['avoidHolidays'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el){ el.addEventListener('change', function(){ document.dispatchEvent(new Event('trustlend:recalc')); }); }
-  });
-  // Ensure First Payment auto-bumps to business day if toggled
-  var firstPaymentDue = document.getElementById('firstPaymentDue');
-  if(firstPaymentDue){
-    firstPaymentDue.addEventListener('change', function(){
-      var d = new Date(firstPaymentDue.value);
-      if(isNaN(d)) return;
-      var bumped = bumpToBusinessDay(d);
-      firstPaymentDue.value = bumped.toISOString().slice(0,10);
-    });
-  }
-
-  // ---------- Export: Copy + CSV ----------
-  function collectSchedule(){
-    var rows = [];
-    var table = document.querySelector('#paymentScheduleTable table tbody');
-    if(!table) return rows;
-    table.querySelectorAll('tr').forEach(function(tr){
-      var tds = tr.querySelectorAll('td');
-      if(tds.length >= 3){
-        rows.push({
-          index: tds[0].textContent.trim(),
-          date: tds[1].textContent.trim(),
-          amount: tds[2].textContent.trim().replace(/^\$/, '')
-        });
+  // Hook into existing controls
+  document.addEventListener('change', function(e){
+      if(e.target && e.target.id === 'paymentSchedule'){
+          updateFirstPaymentFromSchedule();
+          // ensure sections visibility respects selection
+          const ps = e.target.value;
+          const paymentDueSection = document.getElementById('paymentDueDateSection');
+          const lumpSection = document.getElementById('lumpSumDueDateSection');
+          if(paymentDueSection && lumpSection){
+              if(ps === 'lump_sum'){
+                  paymentDueSection.classList.add('hidden');
+                  lumpSection.classList.remove('hidden');
+              } else if(ps){
+                  lumpSection.classList.add('hidden');
+                  paymentDueSection.classList.remove('hidden');
+              } else {
+                  paymentDueSection.classList.add('hidden');
+                  lumpSection.classList.add('hidden');
+              }
+          }
+      }
+      if(e.target && e.target.id === 'loanTermMonths'){
+          handleLoanTermChange();
+      }
+      if(e.target && e.target.id === 'loanDate'){
+          handleLoanTermChange();
+          updateFirstPaymentFromSchedule();
       }
     });
-    return rows;
-  }
-  function toCSV(rows){
-    var header = 'Index,Date,Amount\n';
-    var body = rows.map(function(r){ return [r.index, r.date, r.amount].join(','); }).join('\n');
-    return header + body + '\n';
-  }
-  var copyBtn = document.getElementById('copyScheduleBtn');
-  if(copyBtn){
-    copyBtn.addEventListener('click', async function(){
-      var rows = collectSchedule();
-      if(!rows.length){ alert('No schedule to copy yet.'); return; }
-      var text = rows.map(function(r){ return r.index+'. '+r.date+' - $'+r.amount; }).join('\n');
-      try{ await navigator.clipboard.writeText(text); copyBtn.textContent='Copied!'; setTimeout(function(){ copyBtn.textContent='Copy schedule'; }, 1200); }
-      catch(e){ alert('Copy failed. You can select and copy manually.'); }
-    });
-  }
-  var csvBtn = document.getElementById('downloadCsvBtn');
-  if(csvBtn){
-    csvBtn.addEventListener('click', function(){
-      var rows = collectSchedule();
-      if(!rows.length){ alert('No schedule to export yet.'); return; }
-      var csv = toCSV(rows);
-      var blob = new Blob([csv], {type:'text/csv'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'trustlend_payment_schedule.csv';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
-  }
 
-  // Rebroadcast when key fields change so existing schedule JS re-renders (if wired to input/change)
-  ['loanDate','loanTerm','finalPaymentDate','paymentSchedule','firstPaymentDue','lumpSumDueDate','principal','flatFee','avoidWeekends','avoidHolidays']
-    .forEach(function(id){
-      var el = document.getElementById(id);
-      if(el){ el.addEventListener('change', function(){ document.dispatchEvent(new Event('trustlend:recalc')); }); }
-      if(el && (el.tagName==='INPUT')){ el.addEventListener('input', function(){ document.dispatchEvent(new Event('trustlend:recalc')); }); }
-    });
-
-  // Expose bumpToBusinessDay so existing schedule code (if any) can call it.
-  window.__tl_bumpToBusinessDay = bumpToBusinessDay;
-})();
-// TL Optional Refinements End
-</script>
-
-
-
-
-
-<script>
-(function(){
-  function toISO(d){ if(!(d instanceof Date)||isNaN(d)) return ''; const tz=new Date(d.getTime()-d.getTimezoneOffset()*60000); return tz.toISOString().slice(0,10); }
+  // On load: set Loan Start Date default to today if empty, set paymentSchedule default to blank
   document.addEventListener('DOMContentLoaded', function(){
-    var loanDateEl = document.getElementById('loanDate');
-    if(loanDateEl && !loanDateEl.value){
-      loanDateEl.value = toISO(new Date()); // default to today
-      // fire change so existing listeners recompute term/final dates/first due, etc.
-      try { loanDateEl.dispatchEvent(new Event('change', { bubbles:true })); } catch(e){}
-    }
-  });
-})();
-</script>
-
-
-<script>
-(function(){
-  // Determine conditional requirement state
-  function getScheduleMode(){
-    var sch = document.getElementById('paymentSchedule');
-    var val = sch ? sch.value : '';
-    if(val === 'lump_sum') return 'lump_sum';
-    if(val === 'weekly' || val === 'biweekly' || val === 'monthly') return 'installments';
-    return ''; // placeholder/unknown
-  }
-
-  function ensureAsteriskFor(el){
-    if(!el || !el.id) return;
-    var lab = document.querySelector('label[for="'+CSS.escape(el.id)+'"]');
-    if(!lab) return;
-    var star = lab.querySelector('.tl-req-asterisk');
-    if(!star){
-      star = document.createElement('span');
-      star.className = 'tl-req-asterisk';
-      star.textContent = '*';
-      lab.appendChild(star);
-    }
-    // aria-required toggle
-    var must = mustRequire(el);
-    if(must){ el.setAttribute('aria-required','true'); } else { el.removeAttribute('aria-required'); }
-
-    // Conditional visibility
-    var cond = el.getAttribute('data-required-when');
-    if(!cond){
-      star.hidden = !must;
-      return;
-    }
-    var parts = cond.split(':');
-    if(parts[0] === 'schedule'){
-      var mode = getScheduleMode();
-      if(parts[1] === 'installments'){ star.hidden = !(mode === 'installments'); }
-      else if(parts[1] === 'lump_sum'){ star.hidden = !(mode === 'lump_sum'); }
-      else { star.hidden = true; }
-    } else if(parts[0] === 'always'){
-      star.hidden = false;
-    } else {
-      star.hidden = !must;
-    }
-  }
-
-  function mustRequire(el){
-    if(!el) return false;
-    if(el.hasAttribute('required')) return true;
-    var cond = el.getAttribute('data-required-when');
-    if(!cond) return false;
-    var parts = cond.split(':');
-    if(parts[0] === 'schedule'){
-      var mode = getScheduleMode();
-      if(parts[1] === 'installments') return mode === 'installments';
-      if(parts[1] === 'lump_sum')    return mode === 'lump_sum';
-    }
-    if(parts[0] === 'always'){ return true; }
-    return false;
-  }
-
-  function refreshAsterisks(){
-    var fields = Array.from(document.querySelectorAll('input, select, textarea'));
-    fields.forEach(function(el){
-      if(el.hasAttribute('required') || el.hasAttribute('data-required-when')){
-        ensureAsteriskFor(el);
+      const startEl = document.getElementById('loanDate');
+      if(startEl && !startEl.value){
+          const today = new Date();
+          startEl.value = formatDateISO(today);
       }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    refreshAsterisks();
-
-    var sch = document.getElementById('paymentSchedule');
-    if(sch){ sch.addEventListener('change', refreshAsterisks); }
-
-    // Refresh on recalc / stepchange hooks if present
-    document.addEventListener('trustlend:recalc', refreshAsterisks);
-    document.addEventListener('trustlend:stepchange', refreshAsterisks);
-
-    // Refresh on navigation button clicks (best effort selectors)
-    ['#nextBtn','.btn-next','[data-next]','#btnNext','button.next',
-     '#backBtn','.btn-prev','[data-prev]','#btnBack','button.prev'].forEach(function(sel){
-      document.querySelectorAll(sel).forEach(function(btn){
-        btn.addEventListener('click', function(){ setTimeout(refreshAsterisks, 0); });
-      });
-    });
-
-    // Watch for step panel visibility/class changes
-    var obs = new MutationObserver(function(muts){
-      var needs = false;
-      muts.forEach(function(m){
-        if(m.type === 'attributes' && m.target && /form-step-/.test(m.target.id)){
-          needs = true;
-        }
-        if(m.type === 'childList') needs = true;
-      });
-      if(needs) setTimeout(refreshAsterisks, 0);
-    });
-    document.querySelectorAll('[id^="form-step-"]').forEach(function(step){
-      obs.observe(step, { attributes: true, attributeFilter: ['class', 'style'], childList: true, subtree: true });
-    });
+      const schedEl = document.getElementById('paymentSchedule');
+      if(schedEl){
+          schedEl.value = '';
+          // hide both sections until user chooses
+          const paymentDueSection = document.getElementById('paymentDueDateSection');
+          const lumpSection = document.getElementById('lumpSumDueDateSection');
+          if(paymentDueSection) paymentDueSection.classList.add('hidden');
+          if(lumpSection) lumpSection.classList.add('hidden');
+      }
+      // compute final date if a term is preset
+      handleLoanTermChange();
   });
+
+  // Expose for other modules if needed
+  window.updateFirstPaymentFromSchedule = updateFirstPaymentFromSchedule;
 })();
 </script>
 
+  <script src="app.js"></script>
 </body>
 </html>
