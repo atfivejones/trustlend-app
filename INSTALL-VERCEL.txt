@@ -1,0 +1,11 @@
+Vercel Functions Pack (Node) — How to use
+1) Copy the /api folder, package.json, and vercel.json to your repo root.
+2) In Vercel project settings, add env vars:
+   - STRIPE_SECRET_KEY=sk_test_xxx
+   - DOCUMINT_API_KEY=...
+   - DOCUMINT_TEMPLATE_ID=...
+   - ALLOWED_ORIGIN=https://your-app.vercel.app
+3) Deploy with `vercel` or connect GitHub → Vercel.
+4) In create-note.html, set window.STRIPE_PUBLISHABLE_KEY='pk_test_xxx' before loading stripe.
+5) Ensure your Plan & Payment step shows a div#card-element and a button#pay-and-continue.
+6) PDF payload will automatically include paymentReceipt via window.buildPdfPayload() hook.
