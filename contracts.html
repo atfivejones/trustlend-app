@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,52 +10,10 @@
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body class="bg-gray-50">
+  <div id="siteNav"></div>
+
     <!-- Navigation Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <a href="dashboard.html" class="flex items-center space-x-2 hover:opacity-80 transition">
-                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white text-sm">💙</span>
-                        </div>
-                        <span class="text-2xl font-bold text-blue-600">TrustLend</span>
-                    </a>
-                    <nav class="hidden md:ml-8 md:flex md:space-x-6">
-                        <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Dashboard</a>
-                        <a href="create-note.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Create Note</a>
-                        <a href="contracts.html" class="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">My Contracts</a>
-                        <a href="profile.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Profile</a>
-                    </nav>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="create-note.html" 
-                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        + New Note
-                    </a>
-                    <div class="relative">
-                        <button class="user-dropdown-trigger flex items-center text-gray-600 hover:text-gray-900">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                                <span class="text-sm font-semibold text-blue-600">JD</span>
-                            </div>
-                            <span class="text-sm font-medium mr-2">John Doe</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div class="user-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
-                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile Settings</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help Center</a>
-                            <hr class="my-1">
-                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -128,7 +87,7 @@
                                 <span class="font-medium">Borrower:</span> Jane Smith
                             </div>
                             <div>
-                                <span class="font-medium">Due Date:</span> Dec 31, 2024
+                                <span class="font-medium">Final Payment Date:</span> Dec 31, 2024
                             </div>
                             <div>
                                 <span class="font-medium">Created:</span> Nov 1, 2024
@@ -164,7 +123,7 @@
                                 <span class="font-medium">Borrower:</span> Mike Johnson
                             </div>
                             <div>
-                                <span class="font-medium">Due Date:</span> Jan 15, 2025
+                                <span class="font-medium">Final Payment Date:</span> Jan 15, 2025
                             </div>
                             <div>
                                 <span class="font-medium">Created:</span> 2 hours ago
@@ -238,5 +197,42 @@
     <script src="assets/js/app.js"></script>
     <script src="assets/js/contracts.js"></script>
     <script src="assets/js/forms.js"></script>
+
+<script>
+(function(){
+  function setText(id, val){ var el=document.getElementById(id); if(el){ el.textContent = val || 'Not set'; } }
+  function hideCls(sel, hide){ document.querySelectorAll(sel).forEach(n => n.classList[hide?'add':'remove']('hidden')); }
+
+  window.updateContractScheduleSummary = function(data){
+    // data.paymentSchedule, data.firstPaymentDue, data.lumpSumDueDate, data.dueDate
+    var scheduleNameMap = {
+      'lump_sum': 'Lump Sum Payment',
+      'weekly': 'Weekly Payments',
+      'biweekly': 'Bi-weekly Payments',
+      'monthly': 'Monthly Payments'
+    };
+    var name = scheduleNameMap[data.paymentSchedule] || (data.paymentSchedule ? data.paymentSchedule : 'Not set');
+    setText('summaryPaymentSchedule', name);
+
+    // Toggle rows
+    if (data.paymentSchedule === 'lump_sum'){
+      hideCls('#contractScheduleSummary .nonLump', true);
+      hideCls('#contractScheduleSummary .lumpOnly', false);
+      var finalDate = data.lumpSumDueDate || data.dueDate || '';
+      setText('summaryFinalPayment', finalDate ? new Date(finalDate).toLocaleDateString() : 'Not set');
+    } else if (data.paymentSchedule){
+      hideCls('#contractScheduleSummary .nonLump', false);
+      hideCls('#contractScheduleSummary .lumpOnly', true);
+      var fpd = data.firstPaymentDue || '';
+      setText('summaryFirstPayment', fpd ? new Date(fpd).toLocaleDateString() : 'Not set');
+    } else {
+      hideCls('#contractScheduleSummary .nonLump', true);
+      hideCls('#contractScheduleSummary .lumpOnly', true);
+    }
+  };
+})();
+</script>
+
+  <script src="app.js"></script>
 </body>
 </html>
